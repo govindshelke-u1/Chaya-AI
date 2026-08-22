@@ -14,20 +14,172 @@ class ChayaAIEngine {
       pestsAndDiseases: []
     };
     this.isLoaded = false;
-    this.apiKey = localStorage.getItem('gemini_api_key') || '';
+    // NOTE: API keys are NOT stored or used in the browser anymore.
+    // Gemini / Market / ElevenLabs calls go through this site's own
+    // /api/* backend routes (Vercel serverless functions), which read
+    // the real keys from server-side Environment Variables.
+    this.backendStatus = { gemini: false, market: false, tts: false, checked: false };
   }
 
-  setApiKey(key) {
-    this.apiKey = (key || '').trim();
-    if (this.apiKey) {
-      localStorage.setItem('gemini_api_key', this.apiKey);
-    } else {
-      localStorage.removeItem('gemini_api_key');
+  async checkBackendStatus() {
+    try {
+      const res = await fetch('/api/index?action=status');
+      if (res.ok) {
+        const data = await res.json();
+        this.backendStatus = { ...data, checked: true };
+      }
+    } catch (e) {
+      console.warn('Backend status check failed (running without /api backend?):', e);
+      this.backendStatus = { gemini: false, market: false, tts: false, checked: true };
+    }
+    return this.backendStatus;
+  }
+
+  // ---------------------------------------------------------------------
+  // 🌦️ LIVE WEATHER DETECTION (Open-Meteo — free, no API key required)
+  // ---------------------------------------------------------------------
+  async fetchLiveWeather(lat, lon) {
+    // Default fallback coordinates: Nanded district center
+    const latitude = lat || 19.15;
+    const longitude = lon || 77.31;
+
+    try {
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation,rain,weather_code,wind_speed_10m&daily=precipitation_probability_max,temperature_2m_max,temperature_2m_min&timezone=auto`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Weather API status: ${res.status}`);
+      const data = await res.json();
+
+      const code = data.current?.weather_code ?? 0;
+      const condition = this._weatherCodeToMarathi(code);
+
+      return {
+        source: 'open-meteo',
+        temperature: data.current?.temperature_2m,
+        humidity: data.current?.relative_humidity_2m,
+        rain_now_mm: data.current?.rain ?? data.current?.precipitation ?? 0,
+        wind_kmh: data.current?.wind_speed_10m,
+        rain_chance_today: data.daily?.precipitation_probability_max?.[0] ?? null,
+        temp_max: data.daily?.temperature_2m_max?.[0],
+        temp_min: data.daily?.temperature_2m_min?.[0],
+        condition_mr: condition.text,
+        icon: condition.icon,
+        sprayAdvice: this._sprayAdviceFromWeather(data)
+      };
+    } catch (e) {
+      console.warn('Weather fetch failed, using fallback estimate:', e);
+      return {
+        source: 'fallback_estimate',
+        temperature: 29,
+        humidity: 55,
+        rain_now_mm: 0,
+        wind_kmh: 8,
+        rain_chance_today: null,
+        condition_mr: 'हवामान माहिती अनुपलब्ध',
+        icon: '⛅',
+        sprayAdvice: 'लाईव्ह हवामान डेटा उपलब्ध नाही — फवारणीपूर्वी स्थानिक अंदाज तपासा.'
+      };
     }
   }
 
-  hasApiKey() {
-    return !!this.apiKey;
+  _weatherCodeToMarathi(code) {
+    // WMO Weather interpretation codes (simplified, Open-Meteo standard)
+    const map = {
+      0: { text: 'निरभ्र आकाश (Clear Sky)', icon: '☀️' },
+      1: { text: 'बऱ्यापैकी निरभ्र', icon: '🌤️' },
+      2: { text: 'अंशतः ढगाळ', icon: '⛅' },
+      3: { text: 'ढगाळ वातावरण', icon: '☁️' },
+      45: { text: 'धुके', icon: '🌫️' },
+      48: { text: 'दाट धुके', icon: '🌫️' },
+      51: { text: 'हलकी रिमझिम', icon: '🌦️' },
+      61: { text: 'हलका पाऊस', icon: '🌧️' },
+      63: { text: 'मध्यम पाऊस', icon: '🌧️' },
+      65: { text: 'जोरदार पाऊस', icon: '⛈️' },
+      80: { text: 'सरी (Showers)', icon: '🌦️' },
+      95: { text: 'गडगडाटी वादळ', icon: '⛈️' }
+    };
+    return map[code] || { text: 'सामान्य हवामान', icon: '🌥️' };
+  }
+
+  _sprayAdviceFromWeather(data) {
+    const rain = data.current?.precipitation ?? 0;
+    const rainChance = data.daily?.precipitation_probability_max?.[0] ?? 0;
+    const wind = data.current?.wind_speed_10m ?? 0;
+
+    if (rain > 0 || rainChance > 60) {
+      return '🚫 पावसाची शक्यता जास्त आहे — आज फवारणी टाळा, औषध वाहून जाईल.';
+    }
+    if (wind > 20) {
+      return '⚠️ जोरदार वारा आहे — फवारणी औषध वाया जाऊ शकते, सकाळी लवकर किंवा संध्याकाळी फवारणी करा.';
+    }
+    return '✅ फवारणीसाठी हवामान अनुकूल आहे.';
+  }
+
+  // ---------------------------------------------------------------------
+  // 💹 LIVE APMC MARKET PRICING — via /api/index?action=market backend proxy
+  // ---------------------------------------------------------------------
+  async fetchLiveMarketPrices(district = 'Nanded', state = 'Maharashtra') {
+    try {
+      const url = `/api/index?action=market&district=${encodeURIComponent(district)}&state=${encodeURIComponent(state)}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Market proxy status: ${res.status}`);
+      const data = await res.json();
+
+      if (data.source === 'live' && data.rates && data.rates.length) {
+        return { source: 'data_gov_in_live', rates: data.rates };
+      }
+      // Backend not configured, or fetch failed there -> use locally bundled JSON
+      return { source: 'local_cache', rates: this.knowledgeBase.marketPrices?.rates || null };
+    } catch (e) {
+      console.warn('Live market price fetch failed, falling back to local data:', e);
+      return { source: 'local_cache_fallback', rates: this.knowledgeBase.marketPrices?.rates || null };
+    }
+  }
+
+  // ---------------------------------------------------------------------
+  // 🔊 TEXT-TO-SPEECH — via /api/index?action=tts backend proxy (ElevenLabs key stays server-side)
+  // Falls back to the browser's built-in voice if the backend isn't configured.
+  // ---------------------------------------------------------------------
+  async speak(text, { onStart, onEnd, onError } = {}) {
+    const cleanText = (text || '').replace(/[*_#`]/g, '').replace(/\s+/g, ' ').trim();
+    if (!cleanText) return;
+
+    try {
+      if (onStart) onStart();
+      const response = await fetch('/api/index?action=tts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: cleanText })
+      });
+
+      const contentType = response.headers.get('content-type') || '';
+
+      if (response.ok && contentType.includes('audio')) {
+        const audioBlob = await response.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
+        audio.onended = () => { onEnd && onEnd(); URL.revokeObjectURL(audioUrl); };
+        audio.onerror = () => { onError && onError('audio_playback_failed'); };
+        await audio.play();
+        return;
+      }
+      // Backend responded but not configured / failed -> fall through to browser voice
+      throw new Error('tts_backend_not_configured');
+    } catch (e) {
+      console.warn('Backend TTS unavailable, falling back to browser voice:', e);
+    }
+
+    // Fallback: built-in browser speech synthesis (Marathi/Hindi voice if available)
+    if ('speechSynthesis' in window) {
+      if (onStart) onStart();
+      const utter = new SpeechSynthesisUtterance(cleanText);
+      utter.lang = 'mr-IN';
+      utter.onend = () => onEnd && onEnd();
+      utter.onerror = () => onError && onError('speech_synthesis_failed');
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(utter);
+    } else if (onError) {
+      onError('tts_unavailable');
+    }
   }
 
   async loadKnowledgeBase() {
@@ -168,10 +320,6 @@ class ChayaAIEngine {
 
   async generateGroundedAdvice(userInput, topCrops) {
     const offlineEvaluation = topCrops || this.evaluateCropsOffline(userInput);
-    
-    if (!this.apiKey) {
-      return this.generateOfflineAIResponse(userInput, offlineEvaluation);
-    }
 
     try {
       const groundedContext = this.buildGroundedContext(userInput, offlineEvaluation);
@@ -189,34 +337,22 @@ class ChayaAIEngine {
 4. 🚨 **धोक्याची कीड व झटपट फवारणी औषध**
 `;
 
-      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.apiKey}`;
-      const payload = {
-        contents: [
-          {
-            role: 'user',
-            parts: [{ text: `${systemPrompt}\n\nडेटा:\n${groundedContext}\n\nशेतकऱ्याचा प्रश्न: ${userQuestion}\n\nथेट संक्षिप्त मराठी सल्ला:` }]
-          }
-        ],
-        generationConfig: { temperature: 0.3, maxOutputTokens: 800 }
-      };
-
-      const response = await fetch(endpoint, {
+      const response = await fetch('/api/index?action=gemini', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ systemPrompt, groundedContext, userQuestion })
       });
 
-      if (!response.ok) throw new Error(`Gemini status: ${response.status}`);
+      if (!response.ok) throw new Error(`Gemini proxy status: ${response.status}`);
       const result = await response.json();
-      const aiText = result.candidates?.[0]?.content?.parts?.[0]?.text;
 
-      if (aiText) {
-        return { source: 'gemini_grounded', text: aiText, rankedCrops: offlineEvaluation };
+      if (result.text) {
+        return { source: 'gemini_grounded', text: result.text, rankedCrops: offlineEvaluation };
       } else {
-        throw new Error('Empty response');
+        throw new Error(result.error || 'empty_response');
       }
     } catch (e) {
-      console.warn('Gemini fallback:', e);
+      console.warn('Gemini backend unavailable, using offline engine:', e);
       return this.generateOfflineAIResponse(userInput, offlineEvaluation);
     }
   }

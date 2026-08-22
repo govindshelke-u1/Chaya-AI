@@ -180,6 +180,39 @@ class ChayaChatWidget {
         border-radius: 14px;
         line-height: 1.45;
         word-break: break-word;
+        position: relative;
+      }
+      .msg-speak-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        margin-left: 6px;
+        border: none;
+        background: rgba(16, 185, 129, 0.15);
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 0.75rem;
+        vertical-align: middle;
+      }
+      .msg-speak-btn.listening {
+        background: #10b981;
+        animation: pulseRecord 1s infinite alternate;
+      }
+      @media (max-width: 600px) {
+        .chat-drawer {
+          width: calc(100vw - 20px);
+          right: 10px;
+          bottom: 80px;
+          height: 70vh;
+        }
+        .chat-launcher {
+          right: 14px;
+          bottom: 14px;
+          padding: 10px 16px;
+        }
+        .chat-launcher .chat-label { display: none; }
       }
       .chat-msg.bot .msg-bubble {
         background: #f3f4f6;
@@ -314,9 +347,21 @@ class ChayaChatWidget {
       .replace(/\n/g, '<br>')
       .replace(/- /g, '• ');
 
-    msgElem.innerHTML = `<div class="msg-bubble">${formatted}</div>`;
+    const speakBtnHtml = sender === 'bot'
+      ? `<button class="msg-speak-btn" onclick="window.chayaChat.speakMessage(this, ${JSON.stringify(text).replace(/"/g, '&quot;')})">🔊</button>`
+      : '';
+
+    msgElem.innerHTML = `<div class="msg-bubble">${formatted}${speakBtnHtml}</div>`;
     messagesBox.appendChild(msgElem);
     messagesBox.scrollTop = messagesBox.scrollHeight;
+  }
+
+  speakMessage(btnEl, text) {
+    btnEl.classList.add('listening');
+    window.chayaAI.speak(text, {
+      onEnd: () => btnEl.classList.remove('listening'),
+      onError: () => btnEl.classList.remove('listening')
+    });
   }
 
   startVoiceInput() {
