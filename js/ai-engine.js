@@ -14,11 +14,10 @@ class ChayaAIEngine {
       pestsAndDiseases: []
     };
     this.isLoaded = false;
-    // NOTE: API keys are NOT stored or used in the browser anymore.
-    // Gemini / Market / ElevenLabs calls go through this site's own
-    // /api/* backend routes (Vercel serverless functions), which read
-    // the real keys from server-side Environment Variables.
-    this.backendStatus = { gemini: false, market: false, tts: false, checked: false };
+    // ElevenLabs Text-to-Speech credentials
+    this.elevenLabsApiKey = 'sk_95a7190e49293e6a937319a122e1f1d0fc1d4662ada867fc';
+    this.elevenLabsVoiceId = 'k2intd1ORm0YUH8etnXg';
+    this.backendStatus = { gemini: false, market: false, tts: !!this.elevenLabsApiKey, checked: false };
   }
 
   async checkBackendStatus() {
@@ -26,11 +25,11 @@ class ChayaAIEngine {
       const res = await fetch('/api/index?action=status');
       if (res.ok) {
         const data = await res.json();
-        this.backendStatus = { ...data, checked: true };
+        this.backendStatus = { ...data, tts: data.tts || !!this.elevenLabsApiKey, checked: true };
       }
     } catch (e) {
       console.warn('Backend status check failed (running without /api backend?):', e);
-      this.backendStatus = { gemini: false, market: false, tts: false, checked: true };
+      this.backendStatus = { gemini: false, market: false, tts: !!this.elevenLabsApiKey, checked: true };
     }
     return this.backendStatus;
   }
@@ -144,6 +143,8 @@ class ChayaAIEngine {
     if (!cleanText) return;
 
     let usedElevenLabs = false;
+    
+    // 1. Try serverless backend proxy (/api/index?action=tts)
     try {
       if (onStart) onStart();
       const response = await fetch('/api/index?action=tts', {
@@ -164,42 +165,58 @@ class ChayaAIEngine {
         usedElevenLabs = true;
         return;
       }
-
-      // Backend responded but didn't give us audio — read the actual reason
-      // instead of guessing, so it's visible in the browser console.
-      let reason = `http_${response.status}`;
-      try {
-        const body = contentType.includes('application/json')
-          ? JSON.stringify(await response.json())
-          : (await response.text()).slice(0, 300);
-        reason = body || reason;
-      } catch (_) { /* ignore parse errors, keep status-based reason */ }
-
-      console.error(
-        `[Chaya TTS] ElevenLabs backend did not return audio (status ${response.status}). ` +
-        `Reason: ${reason}. ` +
-        `Falling back to browser voice. Check: (1) ELEVENLABS_API_KEY / ELEVENLABS_VOICE_ID are set ` +
-        `in Vercel → Settings → Environment Variables, (2) you redeployed AFTER adding them, ` +
-        `(3) the key/voice ID has no extra spaces, (4) your ElevenLabs quota isn't exhausted.`
-      );
-      throw new Error('tts_backend_failed');
     } catch (e) {
-      if (!usedElevenLabs) {
-        console.warn('[Chaya TTS] Falling back to browser voice:', e.message || e);
+      // Backend not available (e.g. running on local static server)
+    }
+
+    // 2. Direct ElevenLabs API call from browser
+    if (!usedElevenLabs && this.elevenLabsApiKey && this.elevenLabsVoiceId) {
+      try {
+        const directRes = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${this.elevenLabsVoiceId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'xi-api-key': this.elevenLabsApiKey
+          },
+          body: JSON.stringify({
+            text: cleanText.slice(0, 2000),
+            model_id: 'eleven_multilingual_v2',
+            voice_settings: { stability: 0.5, similarity_boost: 0.75 }
+          })
+        });
+
+        if (directRes.ok) {
+          const audioBlob = await directRes.blob();
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audio = new Audio(audioUrl);
+          audio.onended = () => { onEnd && onEnd(); URL.revokeObjectURL(audioUrl); };
+          audio.onerror = () => { onError && onError('audio_playback_failed'); };
+          await audio.play();
+          usedElevenLabs = true;
+          return;
+        } else {
+          let errDetail = '';
+          try { errDetail = await directRes.text(); } catch (_) {}
+          console.error(`[Chaya TTS] ElevenLabs API error (${directRes.status}):`, errDetail);
+        }
+      } catch (errDirect) {
+        console.warn('[Chaya TTS] Direct ElevenLabs API call failed:', errDirect);
       }
     }
 
-    // Fallback: built-in browser speech synthesis (Marathi/Hindi voice if available)
-    if ('speechSynthesis' in window) {
-      if (onStart) onStart();
-      const utter = new SpeechSynthesisUtterance(cleanText);
-      utter.lang = 'mr-IN';
-      utter.onend = () => onEnd && onEnd();
-      utter.onerror = () => onError && onError('speech_synthesis_failed');
-      window.speechSynthesis.cancel();
-      window.speechSynthesis.speak(utter);
-    } else if (onError) {
-      onError('tts_unavailable');
+    // 3. Fallback: built-in browser speech synthesis (Marathi/Hindi voice if available)
+    if (!usedElevenLabs) {
+      if ('speechSynthesis' in window) {
+        if (onStart) onStart();
+        const utter = new SpeechSynthesisUtterance(cleanText);
+        utter.lang = 'mr-IN';
+        utter.onend = () => onEnd && onEnd();
+        utter.onerror = () => onError && onError('speech_synthesis_failed');
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utter);
+      } else if (onError) {
+        onError('tts_unavailable');
+      }
     }
   }
 
