@@ -1,0 +1,9 @@
+{
+  "name": "chaya-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Chaya AI - Smart Agricultural Advisor (Nanded, Maharashtra)",
+  "engines": {
+    "node": ">=18"
+  }
+}

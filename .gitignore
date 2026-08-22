@@ -1,0 +1,11 @@
+# Local environment secrets — never commit real API keys
+.env
+.env.local
+.env*.local
+
+# Vercel local dev cache
+.vercel
+
+# OS / editor
+.DS_Store
+node_modules/

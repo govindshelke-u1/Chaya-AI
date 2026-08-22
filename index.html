@@ -199,8 +199,67 @@
             gap: 14px;
         }
 
+        /* ===== Responsive breakpoints (Mobile + Laptop friendly) ===== */
         @media (max-width: 600px) {
             .row-grid { grid-template-columns: 1fr; }
+            .container { margin-top: 16px; padding: 0 12px; }
+            .glass-card { padding: 18px; border-radius: 16px; }
+            .card-title { font-size: 1.08rem; flex-wrap: wrap; gap: 6px; }
+            header { padding: 10px 14px; }
+            .brand { font-size: 1.1rem; }
+            .header-actions { gap: 8px; }
+            .api-badge { font-size: 0.72rem; padding: 4px 9px; }
+            .live-tag { font-size: 0.68rem; }
+            .btn { font-size: 1rem; padding: 13px; }
+            .weather-widget { flex-direction: column; align-items: flex-start; gap: 8px; }
+            .weather-stats { width: 100%; justify-content: space-between; }
+        }
+
+        @media (max-width: 380px) {
+            .header-actions { flex-wrap: wrap; justify-content: flex-end; }
+            .brand span:last-child { display: inline; }
+        }
+
+        @media (min-width: 601px) and (max-width: 1024px) {
+            .container { max-width: 680px; }
+        }
+
+        @media (min-width: 1025px) {
+            .container { max-width: 780px; }
+            .glass-card { padding: 34px; }
+        }
+
+        input, select, textarea, button { font-size: 16px; } /* prevents iOS zoom-on-focus */
+
+        /* ===== Weather Widget ===== */
+        .weather-widget {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+            border: 1px solid #7dd3fc;
+            border-radius: 14px;
+            padding: 12px 16px;
+            margin-bottom: 18px;
+        }
+        .weather-main { display: flex; align-items: center; gap: 10px; }
+        .weather-icon { font-size: 1.8rem; }
+        .weather-temp { font-size: 1.15rem; font-weight: 800; color: #0c4a6e; }
+        .weather-cond { font-size: 0.78rem; color: #075985; font-weight: 600; }
+        .weather-stats { display: flex; gap: 12px; font-size: 0.78rem; color: #0c4a6e; font-weight: 700; }
+        .weather-advice { font-size: 0.78rem; color: #7c2d12; background: #fff7ed; border: 1px solid #fed7aa; padding: 6px 10px; border-radius: 8px; margin-top: 8px; font-weight: 600; }
+
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
         }
 
         .soil-badge {
@@ -343,6 +402,19 @@
                 <span class="rag-badge">📁 पूर्व-साठवलेले कृषी डेटाबेस</span>
             </div>
 
+            <!-- Live Weather Widget -->
+            <div class="weather-widget" id="weatherWidget">
+                <div class="weather-main">
+                    <span class="weather-icon" id="weatherIcon">⏳</span>
+                    <div>
+                        <div class="weather-temp" id="weatherTemp">हवामान लोड होत आहे...</div>
+                        <div class="weather-cond" id="weatherCond"></div>
+                    </div>
+                </div>
+                <div class="weather-stats" id="weatherStats"></div>
+            </div>
+            <div class="weather-advice" id="weatherAdvice" style="display:none;"></div>
+
             <form id="farmForm" onsubmit="submitForm(event)">
                 
                 <div class="form-group">
@@ -423,15 +495,19 @@
                 ⚙️ छाया AI - मॉडेल व API सेटिंग
             </h3>
             <p style="font-size:0.85rem; color:#4b5563; line-height:1.4; margin-bottom:14px;">
-                छाया AI इनबिल्ट <b>स्मार्ट नॉलेज इंजिन</b> वापरून ऑफलाइनही उत्तम कार्य करते. आपण <b>Google Gemini API Key</b> टाकल्यास अधिक सविस्तर व संवादात्मक मराठी विश्लेषण थेट जनरेट होईल.
+                छाया AI इनबिल्ट <b>स्मार्ट नॉलेज इंजिन</b> वापरून ऑफलाइनही उत्तम कार्य करते. AI, Live बाजारभाव व आवाज (Voice) या सेवा आता <b>सुरक्षित बॅकएंडवरून</b> (Vercel Environment Variables) चालतात — त्यामुळे इथे कोणतीही Key टाकण्याची गरज नाही.
             </p>
-            <div style="margin-bottom:14px;">
-                <label style="font-size:0.85rem; margin-bottom:4px;">Google Gemini API Key (पर्यायी):</label>
-                <input type="password" id="apiKeyInput" placeholder="उदा. AIzaSy..." style="font-family:monospace;">
+            <div id="backendStatusList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+                <div class="status-row"><span>🧠 Gemini AI</span><span id="statusGemini">तपासत आहे...</span></div>
+                <div class="status-row"><span>💹 Live बाजारभाव</span><span id="statusMarket">तपासत आहे...</span></div>
+                <div class="status-row"><span>🔊 ElevenLabs आवाज</span><span id="statusTts">तपासत आहे...</span></div>
+                <div class="status-row"><span>🌦️ हवामान</span><span style="color:#059669; font-weight:700;">✅ नेहमी सुरू (Open-Meteo)</span></div>
             </div>
+            <p style="font-size:0.72rem; color:#9ca3af; margin-bottom:14px;">
+                ℹ️ जे "कॉन्फिगर नाही" दिसते आहे, त्यासाठी developer ला Vercel Project → Settings → Environment Variables मध्ये संबंधित Key टाकावी लागेल (GEMINI_API_KEY / MARKET_API_KEY / ELEVENLABS_API_KEY).
+            </p>
             <div style="display:flex; justify-content:flex-end; gap:10px;">
-                <button type="button" onclick="closeApiModal()" style="padding:8px 16px; border:1px solid #d1d5db; background:white; border-radius:8px; cursor:pointer;">रद्द करा</button>
-                <button type="button" onclick="saveApiKey()" style="padding:8px 18px; border:none; background:var(--primary); color:white; border-radius:8px; font-weight:700; cursor:pointer;">जतन करा</button>
+                <button type="button" onclick="closeApiModal()" style="padding:8px 18px; border:none; background:var(--primary); color:white; border-radius:8px; font-weight:700; cursor:pointer;">ठीक आहे</button>
             </div>
         </div>
     </div>
@@ -446,7 +522,41 @@
             await window.chayaAI.loadKnowledgeBase();
             updateSoilData();
             checkApiStatus();
+            loadWeatherWidget();
         });
+
+        function loadWeatherWidget() {
+            const applyWeather = (w) => {
+                document.getElementById("weatherIcon").innerText = w.icon;
+                document.getElementById("weatherTemp").innerText = `${Math.round(w.temperature)}°C`;
+                document.getElementById("weatherCond").innerText = w.condition_mr;
+                document.getElementById("weatherStats").innerHTML = `
+                    <span>💧 ${w.humidity ?? '--'}%</span>
+                    <span>🌬️ ${Math.round(w.wind_kmh || 0)} km/h</span>
+                    ${w.rain_chance_today !== null ? `<span>🌧️ ${w.rain_chance_today}%</span>` : ''}
+                `;
+                const adviceBox = document.getElementById("weatherAdvice");
+                adviceBox.innerText = w.sprayAdvice;
+                adviceBox.style.display = "block";
+            };
+
+            if ('geolocation' in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    async (pos) => {
+                        const w = await window.chayaAI.fetchLiveWeather(pos.coords.latitude, pos.coords.longitude);
+                        applyWeather(w);
+                    },
+                    async () => {
+                        // Permission denied -> fallback to Nanded district default coordinates
+                        const w = await window.chayaAI.fetchLiveWeather();
+                        applyWeather(w);
+                    },
+                    { timeout: 6000 }
+                );
+            } else {
+                window.chayaAI.fetchLiveWeather().then(applyWeather);
+            }
+        }
 
         function updateSoilData() {
             const taluka = document.getElementById("taluka").value;
@@ -484,29 +594,33 @@
         }
 
         function openApiModal() {
-            document.getElementById("apiKeyInput").value = localStorage.getItem('gemini_api_key') || '';
             document.getElementById("apiModal").style.display = "flex";
+            refreshBackendStatusPanel();
         }
 
         function closeApiModal() {
             document.getElementById("apiModal").style.display = "none";
         }
 
-        function saveApiKey() {
-            const key = document.getElementById("apiKeyInput").value.trim();
-            window.chayaAI.setApiKey(key);
-            checkApiStatus();
-            closeApiModal();
+        async function refreshBackendStatusPanel() {
+            const status = await window.chayaAI.checkBackendStatus();
+            const render = (id, ok) => {
+                document.getElementById(id).innerHTML = ok
+                    ? '<span style="color:#059669;">✅ कनेक्टेड</span>'
+                    : '<span style="color:#b91c1c;">⚪ कॉन्फिगर नाही</span>';
+            };
+            render('statusGemini', status.gemini);
+            render('statusMarket', status.market);
+            render('statusTts', status.tts);
         }
 
         function checkApiStatus() {
-            const key = localStorage.getItem('gemini_api_key');
-            const statusText = document.getElementById("apiStatusText");
-            if (key) {
-                statusText.innerText = "Gemini AI कनेक्टेड 🟢";
-            } else {
-                statusText.innerText = "ऑफलाइन AI इंजिन ⚡";
-            }
+            window.chayaAI.checkBackendStatus().then((status) => {
+                const statusText = document.getElementById("apiStatusText");
+                let label = status.gemini ? "Gemini AI कनेक्टेड 🟢" : "ऑफलाइन AI इंजिन ⚡";
+                if (status.tts) label += " 🔊";
+                statusText.innerText = label;
+            });
         }
 
         function submitForm(e) {

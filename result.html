@@ -285,6 +285,55 @@
             width: 100%;
             margin-top: 15px;
         }
+
+        .listen-btn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.35);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 4px;
+        }
+        .listen-btn:hover { background: rgba(255,255,255,0.28); }
+        .listen-btn.speaking { animation: pulseRecord 1s infinite alternate; }
+
+        .price-tag {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 8px;
+        }
+        .price-tag.live { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
+        .price-tag.local { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+
+        /* ===== Responsive breakpoints (Mobile + Laptop friendly) ===== */
+        @media (max-width: 600px) {
+            .container { margin-top: 14px; padding: 0 12px; }
+            .glass-card { padding: 16px; border-radius: 16px; }
+            .fast-track-card { padding: 15px; }
+            .fast-track-title { font-size: 1.05rem; }
+            .action-highlight-grid { grid-template-columns: 1fr; }
+            .highlight-item .value { font-size: 0.95rem; }
+            header { padding: 10px 14px; }
+            .brand { font-size: 1.1rem; }
+            .live-rate-btn { font-size: 0.75rem; padding: 5px 10px; }
+            .chart-container { height: 240px; }
+            .stage-header { flex-direction: column; align-items: flex-start; gap: 4px; }
+        }
+
+        @media (min-width: 601px) and (max-width: 1024px) {
+            .container { max-width: 720px; }
+        }
+
+        @media (min-width: 1025px) {
+            .container { max-width: 900px; }
+        }
     </style>
 </head>
 <body>
@@ -322,6 +371,7 @@
                         98% अनुकूल
                     </span>
                 </div>
+                <button class="listen-btn" id="listenBtn" onclick="playAdviceAudio()">🔊 सल्ला ऐका (Listen)</button>
 
                 <div class="action-highlight-grid">
                     <div class="highlight-item">
@@ -365,8 +415,11 @@
 
         <!-- Live Market Rate Card -->
         <div class="glass-card" id="marketSection">
-            <div style="font-size:1.2rem; font-weight:800; color:var(--primary-dark); margin-bottom:10px;">
-                📊 नांदेड व मराठवाडा APMC चालू बाजारभाव (₹ प्रति क्विंटल)
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+                <div style="font-size:1.2rem; font-weight:800; color:var(--primary-dark);">
+                    📊 नांदेड व मराठवाडा APMC चालू बाजारभाव (₹ प्रति क्विंटल)
+                </div>
+                <span class="price-tag" id="priceSourceTag">local</span>
             </div>
             <div class="chart-container">
                 <canvas id="marketChart"></canvas>
@@ -380,6 +433,7 @@
 
     <script>
         let farmData = null;
+        let currentAdviceText = '';
 
         document.addEventListener("DOMContentLoaded", async () => {
             const rawData = localStorage.getItem("chayaFormData");
@@ -412,6 +466,11 @@
             document.getElementById("fastYield").innerText = `${topCrop.totalYieldRange} (${landSize} एकर)`;
             document.getElementById("fastProfit").innerText = `₹${topCrop.netProfit?.toLocaleString('en-IN')}`;
             document.getElementById("fastFormula").innerText = topCrop.yield_formula || "3.5 फूट बेडवर 2 ओळी टोकण पद्धत";
+
+            // Build the spoken advice text (used by the Listen / ElevenLabs TTS button)
+            currentAdviceText = `${topCrop.name_mr} पिकासाठी सल्ला. शिफारसीत वाण: ${vars}. ` +
+                `${landSize} एकरासाठी अपेक्षित उत्पादन ${topCrop.totalYieldRange}, अंदाजे निव्वळ नफा ₹${topCrop.netProfit?.toLocaleString('en-IN')}. ` +
+                `टोकण फॉर्म्युला: ${topCrop.yield_formula || 'गादी वाफ्यावर टोकण पद्धत'}.`;
 
             // 2. Populate Emergency Pest Remedies
             const pestBox = document.getElementById("emergencyPestList");
@@ -461,16 +520,55 @@
             renderMarketChart();
         });
 
-        function renderMarketChart() {
+        let marketChartInstance = null;
+
+        async function renderMarketChart() {
+            // Static fallback (used if no live pricing key configured, or live fetch fails)
+            const fallback = {
+                labels: ['हळद (Turmeric)', 'सोयाबीन (Soybean)', 'कापूस (Cotton)', 'तूर (Arhar)', 'हरभरा (Gram)'],
+                modal: [15100, 4950, 7850, 9650, 6150],
+                max: [17800, 5300, 8400, 10400, 6600]
+            };
+
+            let chartData = fallback;
+            let sourceTag = { text: '📁 स्थानिक डेटा (Local)', cls: 'local' };
+
+            try {
+                const live = await window.chayaAI.fetchLiveMarketPrices('Nanded', 'Maharashtra');
+                if (live.source === 'data_gov_in_live' && live.rates && live.rates.length) {
+                    chartData = {
+                        labels: live.rates.map(r => r.commodity),
+                        modal: live.rates.map(r => r.modal_price),
+                        max: live.rates.map(r => r.max_price)
+                    };
+                    sourceTag = { text: '🟢 थेट लाईव्ह (Live)', cls: 'live' };
+                } else if (live.rates && live.rates.length) {
+                    // locally bundled market_prices.json has data
+                    chartData = {
+                        labels: live.rates.map(r => r.commodity || r.crop),
+                        modal: live.rates.map(r => r.modal_price ?? r.avg_price),
+                        max: live.rates.map(r => r.max_price)
+                    };
+                    sourceTag = { text: '📁 स्थानिक डेटा (Local)', cls: 'local' };
+                }
+            } catch (e) {
+                console.warn('Market chart falling back to static data:', e);
+            }
+
+            const tagEl = document.getElementById('priceSourceTag');
+            tagEl.innerText = sourceTag.text;
+            tagEl.className = `price-tag ${sourceTag.cls}`;
+
             const ctx = document.getElementById('marketChart').getContext('2d');
-            new Chart(ctx, {
+            if (marketChartInstance) marketChartInstance.destroy();
+            marketChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['हळद (Turmeric)', 'सोयाबीन (Soybean)', 'कापूस (Cotton)', 'तूर (Arhar)', 'हरभरा (Gram)'],
+                    labels: chartData.labels,
                     datasets: [
                         {
                             label: 'सरासरी भाव (Modal Rate ₹)',
-                            data: [15100, 4950, 7850, 9650, 6150],
+                            data: chartData.modal,
                             backgroundColor: 'rgba(16, 185, 129, 0.85)',
                             borderColor: '#059669',
                             borderWidth: 1.5,
@@ -478,7 +576,7 @@
                         },
                         {
                             label: 'कमाल भाव (Max Rate ₹)',
-                            data: [17800, 5300, 8400, 10400, 6600],
+                            data: chartData.max,
                             backgroundColor: 'rgba(245, 158, 11, 0.85)',
                             borderColor: '#d97706',
                             borderWidth: 1.5,
@@ -496,6 +594,24 @@
                         y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.06)' } },
                         x: { grid: { display: false } }
                     }
+                }
+            });
+        }
+
+        function playAdviceAudio() {
+            const btn = document.getElementById('listenBtn');
+            if (!currentAdviceText) return;
+            btn.classList.add('speaking');
+            btn.innerText = '🔊 बोलत आहे...';
+            window.chayaAI.speak(currentAdviceText, {
+                onEnd: () => {
+                    btn.classList.remove('speaking');
+                    btn.innerText = '🔊 सल्ला ऐका (Listen)';
+                },
+                onError: () => {
+                    btn.classList.remove('speaking');
+                    btn.innerText = '🔊 सल्ला ऐका (Listen)';
+                    alert('आवाज तयार करता आला नाही. कृपया Settings मध्ये ElevenLabs API Key तपासा किंवा ब्राउझर व्हॉइस वापरा.');
                 }
             });
         }
