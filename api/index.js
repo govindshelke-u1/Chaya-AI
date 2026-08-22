@@ -42,7 +42,7 @@ async function handleStatus(req, res) {
   return res.status(200).json({
     gemini: !!process.env.GEMINI_API_KEY,
     market: !!process.env.MARKET_API_KEY,
-    tts: !!process.env.ELEVENLABS_API_KEY
+    tts: !!(process.env.ELEVENLABS_API_KEY || 'sk_95a7190e49293e6a937319a122e1f1d0fc1d4662ada867fc')
   });
 }
 
@@ -155,8 +155,8 @@ async function handleTts(req, res) {
     return res.status(405).json({ error: 'method_not_allowed' });
   }
 
-  const apiKey = process.env.ELEVENLABS_API_KEY;
-  const voiceId = process.env.ELEVENLABS_VOICE_ID || '21m00Tcm4TlvDq8ikWAM';
+  const apiKey = process.env.ELEVENLABS_API_KEY || 'sk_95a7190e49293e6a937319a122e1f1d0fc1d4662ada867fc';
+  const voiceId = process.env.ELEVENLABS_VOICE_ID || 'k2intd1ORm0YUH8etnXg';
 
   if (!apiKey) {
     return res.status(200).json({ error: 'not_configured' });
