@@ -143,6 +143,7 @@ class ChayaAIEngine {
     const cleanText = (text || '').replace(/[*_#`]/g, '').replace(/\s+/g, ' ').trim();
     if (!cleanText) return;
 
+    let usedElevenLabs = false;
     try {
       if (onStart) onStart();
       const response = await fetch('/api/index?action=tts', {
@@ -160,12 +161,32 @@ class ChayaAIEngine {
         audio.onended = () => { onEnd && onEnd(); URL.revokeObjectURL(audioUrl); };
         audio.onerror = () => { onError && onError('audio_playback_failed'); };
         await audio.play();
+        usedElevenLabs = true;
         return;
       }
-      // Backend responded but not configured / failed -> fall through to browser voice
-      throw new Error('tts_backend_not_configured');
+
+      // Backend responded but didn't give us audio — read the actual reason
+      // instead of guessing, so it's visible in the browser console.
+      let reason = `http_${response.status}`;
+      try {
+        const body = contentType.includes('application/json')
+          ? JSON.stringify(await response.json())
+          : (await response.text()).slice(0, 300);
+        reason = body || reason;
+      } catch (_) { /* ignore parse errors, keep status-based reason */ }
+
+      console.error(
+        `[Chaya TTS] ElevenLabs backend did not return audio (status ${response.status}). ` +
+        `Reason: ${reason}. ` +
+        `Falling back to browser voice. Check: (1) ELEVENLABS_API_KEY / ELEVENLABS_VOICE_ID are set ` +
+        `in Vercel → Settings → Environment Variables, (2) you redeployed AFTER adding them, ` +
+        `(3) the key/voice ID has no extra spaces, (4) your ElevenLabs quota isn't exhausted.`
+      );
+      throw new Error('tts_backend_failed');
     } catch (e) {
-      console.warn('Backend TTS unavailable, falling back to browser voice:', e);
+      if (!usedElevenLabs) {
+        console.warn('[Chaya TTS] Falling back to browser voice:', e.message || e);
+      }
     }
 
     // Fallback: built-in browser speech synthesis (Marathi/Hindi voice if available)
