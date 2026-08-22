@@ -1,0 +1,145 @@
+{
+  "last_updated": "2026-08-22",
+  "apmc_markets": [
+    "नांदेड मोंढा (Nanded)",
+    "अर्धापूर मार्केट (Ardhapur)",
+    "भोकर बाजार समिती (Bhokar)",
+    "हिंगोली मोंढा (Hingoli)",
+    "लातूर (Latur)"
+  ],
+  "rates": [
+    {
+      "crop_id": "turmeric",
+      "crop_name_mr": "हळद (Turmeric)",
+      "market": "नांदेड / सांगली मोंढा",
+      "unit": "₹ प्रति क्विंटल",
+      "min_rate": 13200,
+      "modal_rate": 15100,
+      "max_rate": 17800,
+      "trend": "upward (तेजी)",
+      "best_selling_window": "मार्च ते जून (नवीन आवक स्थिर झाल्यावर)",
+      "historical_trend": [
+        12000,
+        13400,
+        14200,
+        15100,
+        15800,
+        15100
+      ]
+    },
+    {
+      "crop_id": "banana",
+      "crop_name_mr": "केळी (Banana G9)",
+      "market": "अर्धापूर / नांदेड थेट व्यापारी",
+      "unit": "₹ प्रति क्विंटल / टन",
+      "min_rate": 1400,
+      "modal_rate": 1750,
+      "max_rate": 2100,
+      "trend": "stable (स्थिर)",
+      "best_selling_window": "उन्हाळा व सणासुदीचा काळ (ऑगस्ट-नोव्हेंबर)",
+      "historical_trend": [
+        1300,
+        1450,
+        1600,
+        1750,
+        1900,
+        1750
+      ]
+    },
+    {
+      "crop_id": "cotton",
+      "crop_name_mr": "कापूस (Cotton)",
+      "market": "भोकर / किनवट APMC",
+      "unit": "₹ प्रति क्विंटल",
+      "min_rate": 7200,
+      "modal_rate": 7850,
+      "max_rate": 8400,
+      "trend": "upward (सुधारणा)",
+      "best_selling_window": "डिसेंबर ते फेब्रुवारी",
+      "historical_trend": [
+        7100,
+        7300,
+        7500,
+        7700,
+        8000,
+        7850
+      ]
+    },
+    {
+      "crop_id": "soybean",
+      "crop_name_mr": "सोयाबीन (Soybean)",
+      "market": "नांदेड / लातूर मोंढा",
+      "unit": "₹ प्रति क्विंटल",
+      "min_rate": 4600,
+      "modal_rate": 4950,
+      "max_rate": 5300,
+      "trend": "stable",
+      "best_selling_window": "नोव्हेंबर-जानेवारी (भाव वाढीचा अंदाज पाहून)",
+      "historical_trend": [
+        4500,
+        4650,
+        4800,
+        4900,
+        5100,
+        4950
+      ]
+    },
+    {
+      "crop_id": "pigeon_pea",
+      "crop_name_mr": "तूर (Pigeon Pea / Arhar)",
+      "market": "नांदेड APMC",
+      "unit": "₹ प्रति क्विंटल",
+      "min_rate": 9100,
+      "modal_rate": 9650,
+      "max_rate": 10400,
+      "trend": "bullish (उच्च मागणी)",
+      "best_selling_window": "जानेवारी ते एप्रिल",
+      "historical_trend": [
+        8500,
+        8900,
+        9200,
+        9500,
+        9800,
+        9650
+      ]
+    },
+    {
+      "crop_id": "onion",
+      "crop_name_mr": "कांदा (Onion)",
+      "market": "नांदेड / सोलापूर APMC",
+      "unit": "₹ प्रति क्विंटल",
+      "min_rate": 1800,
+      "modal_rate": 2450,
+      "max_rate": 3200,
+      "trend": "volatile (चढउतार)",
+      "best_selling_window": "ऑगस्ट-सप्टेंबर व जानेवारी",
+      "historical_trend": [
+        1500,
+        1800,
+        2200,
+        2600,
+        2900,
+        2450
+      ]
+    },
+    {
+      "crop_id": "chickpea",
+      "crop_name_mr": "हरभरा (Gram / Chana)",
+      "market": "नांदेड / लातूर मोंढा",
+      "unit": "₹ प्रति क्विंटल",
+      "min_rate": 5700,
+      "modal_rate": 6150,
+      "max_rate": 6600,
+      "trend": "stable",
+      "best_selling_window": "मार्च ते मे",
+      "historical_trend": [
+        5500,
+        5700,
+        5900,
+        6100,
+        6300,
+        6150
+      ]
+    }
+  ]
+}

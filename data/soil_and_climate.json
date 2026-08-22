@@ -1,0 +1,169 @@
+{
+  "talukas": {
+    "ardhapur": {
+      "name_mr": "अर्धापूर (Ardhapur)",
+      "soil_type": "गाळाची व खोल काळी माती (Alluvial & Deep Black)",
+      "soil_category": "alluvial",
+      "ph": 7.2,
+      "ec": "0.35 dS/m (सामान्य)",
+      "organic_carbon": "0.62% (मध्यम ते उत्तम)",
+      "available_nitrogen": "कमी ते मध्यम (210 kg/ha)",
+      "available_phosphorus": "मध्यम (18 kg/ha)",
+      "available_potassium": "भरपूर (340 kg/ha)",
+      "micronutrient_status": "झिंक व लोह (Fe) कमतरता संभवते, सेंद्रिय खतांची गरज",
+      "avg_rainfall_mm": 920,
+      "water_table": "मुबलक (गोदावरी/आसना नदी व कालवा क्षेत्र)",
+      "top_crops": [
+        "turmeric",
+        "banana",
+        "sugarcane",
+        "onion",
+        "soybean"
+      ]
+    },
+    "bhokar": {
+      "name_mr": "भोकर (Bhokar)",
+      "soil_type": "काळी कापसाची माती व मध्यम भारी जमीन (Medium Black Clay)",
+      "soil_category": "black_medium",
+      "ph": 7.4,
+      "ec": "0.40 dS/m (योग्य)",
+      "organic_carbon": "0.55% (मध्यम)",
+      "available_nitrogen": "मध्यम (225 kg/ha)",
+      "available_phosphorus": "मध्यम (16 kg/ha)",
+      "available_potassium": "उत्तम (310 kg/ha)",
+      "micronutrient_status": "सल्फर व झिंकची सूक्ष्म कमतरता",
+      "avg_rainfall_mm": 890,
+      "water_table": "मध्यम (विहिरी व ठिबकवर अवलंबून)",
+      "top_crops": [
+        "turmeric",
+        "soybean",
+        "cotton",
+        "pigeon_pea",
+        "chickpea"
+      ]
+    },
+    "kinwat": {
+      "name_mr": "किनवट (Kinwat)",
+      "soil_type": "तांबडी-काळी व डोंगर उताराची मध्यम माती (Red-Black Loam)",
+      "soil_category": "red_black",
+      "ph": 6.8,
+      "ec": "0.28 dS/m (उत्कृष्ट)",
+      "organic_carbon": "0.68% (चांगले)",
+      "available_nitrogen": "मध्यम (240 kg/ha)",
+      "available_phosphorus": "कमी (12 kg/ha)",
+      "available_potassium": "मध्यम (260 kg/ha)",
+      "micronutrient_status": "फॉस्फरस व बोरॉनची आवश्यकता",
+      "avg_rainfall_mm": 1050,
+      "water_table": "मध्यम ते कमी (डोंगराळ भाग, पावसावर अधिक अवलंबून)",
+      "top_crops": [
+        "cotton",
+        "soybean",
+        "pigeon_pea",
+        "chickpea"
+      ]
+    },
+    "nanded": {
+      "name_mr": "नांदेड ग्रामीण व शहर (Nanded Rural)",
+      "soil_type": "मध्यम काळी व पोयट्याची जमीन (Medium Black & Silt)",
+      "soil_category": "black_medium",
+      "ph": 7.3,
+      "ec": "0.32 dS/m",
+      "organic_carbon": "0.58%",
+      "available_nitrogen": "मध्यम (220 kg/ha)",
+      "available_phosphorus": "मध्यम (19 kg/ha)",
+      "available_potassium": "भरपूर (325 kg/ha)",
+      "micronutrient_status": "सामान्य, संतुलित NPK ची गरज",
+      "avg_rainfall_mm": 910,
+      "water_table": "मध्यम ते मुबलक (गोदावरी काठ)",
+      "top_crops": [
+        "banana",
+        "turmeric",
+        "soybean",
+        "onion",
+        "sugarcane"
+      ]
+    },
+    "mudkhed": {
+      "name_mr": "मुदखेड (Mudkhed)",
+      "soil_type": "गाळाची काळी सुपिक जमीन (Godavari Basin Alluvial)",
+      "soil_category": "alluvial",
+      "ph": 7.2,
+      "ec": "0.36 dS/m",
+      "organic_carbon": "0.64%",
+      "available_nitrogen": "मध्यम (230 kg/ha)",
+      "available_phosphorus": "मध्यम (20 kg/ha)",
+      "available_potassium": "भरपूर (350 kg/ha)",
+      "micronutrient_status": "उत्तम सुपीकता, गंधक व झिंक उपयुक्त",
+      "avg_rainfall_mm": 900,
+      "water_table": "मुबलक (नदी व कालवे)",
+      "top_crops": [
+        "turmeric",
+        "banana",
+        "sugarcane",
+        "soybean"
+      ]
+    },
+    "loha": {
+      "name_mr": "लोहा (Loha)",
+      "soil_type": "मध्यम काळी व हलकी मुरमाड जमीन (Medium Black & Murrum)",
+      "soil_category": "black_medium",
+      "ph": 7.5,
+      "ec": "0.42 dS/m",
+      "organic_carbon": "0.50%",
+      "available_nitrogen": "कमी (190 kg/ha)",
+      "available_phosphorus": "मध्यम (15 kg/ha)",
+      "available_potassium": "मध्यम (280 kg/ha)",
+      "micronutrient_status": "सेंद्रिय कर्ब वाढवणे आवश्यक",
+      "avg_rainfall_mm": 840,
+      "water_table": "मध्यम ते कमी",
+      "top_crops": [
+        "soybean",
+        "cotton",
+        "pigeon_pea",
+        "chickpea",
+        "onion"
+      ]
+    },
+    "hadgaon": {
+      "name_mr": "हदगाव (Hadgaon)",
+      "soil_type": "काळी कसदार व पाण्याचा निचरा होणारी जमीन (Deep Black Soil)",
+      "soil_category": "black_deep",
+      "ph": 7.3,
+      "ec": "0.34 dS/m",
+      "organic_carbon": "0.60%",
+      "available_nitrogen": "मध्यम (220 kg/ha)",
+      "available_phosphorus": "मध्यम (17 kg/ha)",
+      "available_potassium": "उत्तम (320 kg/ha)",
+      "micronutrient_status": "झिंक व सल्फर दिल्यास अधिक उत्पन्न",
+      "avg_rainfall_mm": 950,
+      "water_table": "मध्यम ते मुबलक (कयाधू नदी खोरे)",
+      "top_crops": [
+        "turmeric",
+        "cotton",
+        "soybean",
+        "banana",
+        "pigeon_pea"
+      ]
+    },
+    "dharmabad": {
+      "name_mr": "धर्माबाद (Dharmabad)",
+      "soil_type": "गाळाची व मध्यम काळी जमीन (Alluvial & Clay)",
+      "soil_category": "alluvial",
+      "ph": 7.4,
+      "ec": "0.38 dS/m",
+      "organic_carbon": "0.59%",
+      "available_nitrogen": "मध्यम (215 kg/ha)",
+      "available_phosphorus": "मध्यम (18 kg/ha)",
+      "available_potassium": "भरपूर (330 kg/ha)",
+      "micronutrient_status": "कॅल्शियम व मॅग्नेशियम मुबलक",
+      "avg_rainfall_mm": 880,
+      "water_table": "मुबलक (गोदावरी-मंजिरा संगम परिसर)",
+      "top_crops": [
+        "sugarcane",
+        "turmeric",
+        "onion",
+        "soybean"
+      ]
+    }
+  }
+}

@@ -1,0 +1,394 @@
+{
+  "crops": [
+    {
+      "id": "soybean",
+      "name_mr": "सोयाबीन (सुधारित टोकण / BBF पद्धत)",
+      "name_en": "Soybean (High-Yield Patil Biotech Schedule)",
+      "scientific_name": "Glycine max",
+      "icon": "🌱",
+      "season": [
+        "kharif"
+      ],
+      "sowing_months": [
+        "15 जून ते 15 जुलै (किमान 50% ओलावा असताना)"
+      ],
+      "duration_days": "95 ते 115 दिवस",
+      "suitable_soils": [
+        "पाण्याचा चांगला निचरा होणारी मध्यम ते भारी जमीन",
+        "काळी गाळाची जमीन"
+      ],
+      "soil_ph_range": [
+        6.5,
+        7.5
+      ],
+      "water_requirement": "moderate",
+      "water_critical_stages": [
+        "रोप अवस्था (25-30 दिवस)",
+        "फुलोरा अवस्था (40-55 दिवस)",
+        "शेंगा भरणे (50-70 दिवस)"
+      ],
+      "yield_formula": "1 किलो बियाण्याला 1 क्विंटल उत्पादन फॉर्म्युला (1.5 लाख झाडे प्रति एकर)",
+      "recommended_varieties": [
+        {
+          "name": "फुले संगम (KDS-726)",
+          "duration": "110-115 दिवस",
+          "yield_ha": "25-30 क्विंटल",
+          "soil": "भारी जमीन",
+          "features": "लंबट पाने, 4-5 पानांची संख्या, भरपूर उत्पादन"
+        },
+        {
+          "name": "फुले किमया (KDS-753)",
+          "duration": "100-105 दिवस",
+          "yield_ha": "27-32 क्विंटल",
+          "soil": "भारी जमीन",
+          "features": "गडद हिरवी पाने, तांबेरा रोगास अत्यंत प्रतिकारक"
+        },
+        {
+          "name": "फुले दुर्वा (KDS-992)",
+          "duration": "95-100 दिवस",
+          "yield_ha": "27-35 क्विंटल",
+          "soil": "मध्यम ते भारी",
+          "features": "त्रिकोणी पाने, 95 दिवसांत काढणीस तयार"
+        },
+        {
+          "name": "एमएयुएस 71 (समृद्धी)",
+          "duration": "93-100 दिवस",
+          "yield_ha": "28-30 क्विंटल",
+          "soil": "मध्यम जमीन",
+          "features": "शेंगा न तडकणारे (Non-shattering) वाण"
+        },
+        {
+          "name": "जे.एस. 9305",
+          "duration": "90-95 दिवस",
+          "yield_ha": "22-25 क्विंटल",
+          "soil": "हलकी ते मध्यम जमीन",
+          "features": "लवकर येणारे, उभाट वाढणारे"
+        }
+      ],
+      "yield_per_acre_qtl": {
+        "min": 12,
+        "max": 18
+      },
+      "avg_market_rate_per_qtl": 4900,
+      "estimated_cost_per_acre": 14000,
+      "estimated_revenue_per_acre": 73500,
+      "net_profit_per_acre": 59500,
+      "seed_management": {
+        "rate_per_acre": "15 ते 20 किलो (टोकण पद्धतीने 15 kg बियाणे = 1.5 लाख झाडे)",
+        "germination_test": "100 दाणे ओल्या गोणपाटावर ठेवून 80%+ उगवण क्षमता तपासावी.",
+        "seed_treatment": "अमृत बीजप्रक्रिया किट (रायझोबियम + पीएसबी + ट्रायकोडर्मा)"
+      },
+      "sowing_geometry": {
+        "token_bed_method": "3.5 फूट बेडवर 2 ओळी (ओळीतील अंतर 1.5 ते 2 फूट, रोपांतील अंतर 6 इंच/15 cm).",
+        "bbf_intercrop": "रुंद वरंबा सरी (BBF) वर 4 ओळी सोयाबीन + 1 ओळ तूर (4:2 किंवा 4:1 गुणोत्तर)."
+      },
+      "weed_control": [
+        {
+          "timing": "पेरणीनंतर 48 तासांच्या आत (Pre-emergence)",
+          "chemical": "ऑथॉरिटी एन.एक्स.टी (Sulfentrazone + Clomazone) 500g किंवा स्ट्रॉंग आर्म (Diclosulam 84%) 12.4g प्रति एकर."
+        },
+        {
+          "timing": "पेरणीनंतर 20-25 दिवसांनी (Post-emergence)",
+          "chemical": "वीडब्लॉक (Imazethapyr 10% SL) 400ml किंवा शाकेद (Propaquizafop + Imazethapyr) 800ml प्रति एकर."
+        }
+      ],
+      "stage_fertilizer_schedule": [
+        {
+          "stage": "पेरणी करताना (Basal)",
+          "dose": "10:26:26 (75 kg) किंवा DAP (50 kg) + MOP (25 kg) + एनपीके कॉन्सॉ (25 kg) प्रति एकर."
+        },
+        {
+          "stage": "10 दिवसांनी (Drip)",
+          "dose": "एनपीके कॉन्सॉ 2 लिटर + गुळ 2 kg (200L पाण्यात भिजवून सोडणे)."
+        },
+        {
+          "stage": "25 दिवसांनी (फूटवे)",
+          "dose": "19:19:19 (3 kg) + अमृत कीट ड्रिपने."
+        }
+      ],
+      "stage_spray_schedule": [
+        {
+          "stage": "15 ते 20 दिवस",
+          "target": "चक्रीभुंगा, खोडमाशी नियंत्रण व फूटवे",
+          "spray": "अलिका (Thiamethoxam + Lambda) 15ml + 19:19:19 (100g) + ब्लेझ सुपर (5ml) प्रति 15L पंप."
+        },
+        {
+          "stage": "30 ते 40 दिवस",
+          "target": "पाने खाणारी अळी व फुलधारणा",
+          "spray": "12:61:00 (100g) + मायक्रोडील झेब्रॉन (50ml) + पोकलँड (25ml) + ब्लेझ सुपर (5ml) प्रति 15L पंप."
+        },
+        {
+          "stage": "50 ते 60 दिवस",
+          "target": "अळी नियंत्रण व फुलांचे शेंगांत रूपांतर",
+          "spray": "00:52:34 (100g) + फोलीबियोन (40ml) + कडू राजा (15ml) प्रति 15L पंप."
+        },
+        {
+          "stage": "70 ते 75 दिवस",
+          "target": "दाणा टपोरा भरणे व तांबेरा/करपा प्रतिबंध",
+          "spray": "कोराजन (6ml) + साफ पावडर Carbendazim+Mancozeb (50g) + के सर्ज (5g) प्रति 15L पंप."
+        }
+      ],
+      "critical_pest_remedies": [
+        {
+          "pest": "चक्रीभुंगा व खोडमाशी (Girdle Beetle & Stem Fly)",
+          "remedy": "अलिका 10ml किंवा कोराजन 10ml प्रति 15L पंप. एकरी 50 निळ्या रंगाचे चिकट सापळे लावावेत."
+        },
+        {
+          "pest": "पिवळा मोझॅक व्हायरस (Yellow Mosaic)",
+          "remedy": "पांढरी माशी नियंत्रणासाठी अरेना गोल्ड (25g) + टाटा माणिक Acetamiprid (10g) प्रति 15L पंप."
+        },
+        {
+          "pest": "लष्करी अळी व उंट अळी (Semilooper / Spodoptera)",
+          "remedy": "पोकलँड 25ml + कडू राजा 15ml प्रति 15L पंप."
+        }
+      ]
+    },
+    {
+      "id": "turmeric",
+      "name_mr": "हळद (सुधारित 3.5 फूट बेड व ड्रिप शेड्युल)",
+      "name_en": "Turmeric (High-Yield Patil Biotech Schedule)",
+      "scientific_name": "Curcuma longa",
+      "icon": "🟡",
+      "season": [
+        "kharif"
+      ],
+      "sowing_months": [
+        "15 मे ते 15 जून (वाफसा आल्यावर लागवड)"
+      ],
+      "duration_days": "240 ते 270 दिवस (8 ते 9 महिने)",
+      "suitable_soils": [
+        "पाण्याचा उत्तम निचरा असणारी मध्यम ते भारी गाळाची व काळी माती"
+      ],
+      "soil_ph_range": [
+        5.0,
+        7.5
+      ],
+      "water_requirement": "abundant",
+      "water_schedule_note": "सुरुवातीच्या 3 महिन्यांत दर 7-10 दिवसांनी पाणी. ड्रिप डिस्चार्ज सव्वा फुटावर प्रति तास 4 लिटर असावा.",
+      "recommended_varieties": [
+        {
+          "name": "सेलम (Salem)",
+          "duration": "8.5-9 महिने",
+          "yield_ha": "ओली 350-400 क्विंटल (वाळलेली 70-80 क्विंटल)",
+          "curcumin": "4 ते 4.5%",
+          "features": "जाड ठसठशीत हळकुंडे, नांदेड मोंढ्यात सर्वाधिक मागणी"
+        },
+        {
+          "name": "फुले स्वरूपा (Phule Swarupa)",
+          "duration": "255 दिवस",
+          "yield_ha": "ओली 358 क्विंटल (वाळलेली 78.8 क्विंटल)",
+          "curcumin": "5.19%",
+          "features": "राहुरी विद्यापीठ विकसित, करपा व कंदमाशीस प्रतिकारक"
+        },
+        {
+          "name": "राजापुरी (Rajapuri)",
+          "duration": "8-9 महिने",
+          "yield_ha": "वाळलेली 50-60 क्विंटल",
+          "curcumin": "6.30%",
+          "features": "अंगठ्यासारखी आखूड व जाड हळकुंडे, उच्च क्युरकुमिन"
+        },
+        {
+          "name": "वायगाव (Waigaon)",
+          "duration": "7-7.5 महिने",
+          "yield_ha": "वाळलेली 38-45 क्विंटल",
+          "curcumin": "6 ते 7%",
+          "features": "कच्च्या आंबा कैरीसारखा सुवास, लवकर येणारी"
+        }
+      ],
+      "yield_per_acre_qtl": {
+        "min": 25,
+        "max": 35
+      },
+      "avg_market_rate_per_qtl": 14800,
+      "estimated_cost_per_acre": 65000,
+      "estimated_revenue_per_acre": 444000,
+      "net_profit_per_acre": 379000,
+      "seed_management": {
+        "rate_per_acre": "7 ते 10 क्विंटल (मातृकंद/जेठागड्डा 50-60g वजनाचा, 1 एकरात 12,000 ते 15,000 बेणे)",
+        "dormancy_breaking": "बेण्याचा ढीग करून पाणी शिंपडणे व उसाच्या पाचटाने झाकून 60-80 दिवस सुप्तावस्था मोडणे.",
+        "seed_treatment": "ट्रायकोकार्ड 500g + ह्युमॉल गोल्ड 100g + वामीझोन 100g + एनपीके कॉन्सॉ 500ml प्रति 100L पाण्यात बुडवून लागवड."
+      },
+      "sowing_geometry": {
+        "bed_size": "3.5 फूट रुंदीचा बेड, बेडवर 2 ओळी (1.5 फूट अंतर, दोन कंदातील अंतर 9 ते 12 इंच)."
+      },
+      "stage_fertilizer_schedule": [
+        {
+          "stage": "बेड तयार करताना (Basal)",
+          "dose": "शेणखत 10 टन + सिंगल सुपर फॉस्फेट (300 kg) किंवा DAP (100 kg) + MOP (100 kg) + निंबोळी पेंड (150 kg) + फिप्रोनिल (5 kg) प्रति एकर."
+        },
+        {
+          "stage": "लागवडीनंतर 5 दिवसांनी",
+          "dose": "एनपीके कॉन्सॉ (1 लिटर) + वामीझोन (200g) + गुळ (2 kg) 200L पाण्यात भिजवून ड्रिपने सोडणे."
+        },
+        {
+          "stage": "25 दिवसांनी (फूटवे)",
+          "dose": "19:19:19 (3 kg) + अमृत कीट प्रति एकर ड्रिपने."
+        },
+        {
+          "stage": "40 दिवसांनी (कंद विकास)",
+          "dose": "12:61:00 (8 kg) + अमृत कीट ड्रिपने."
+        },
+        {
+          "stage": "60 दिवसांनी (भरणी डोस)",
+          "dose": "24:24:00 (100 kg) + MOP (50 kg) + ह्युमॉल गोल्ड (1 kg) प्रति एकर."
+        },
+        {
+          "stage": "80 दिवसांनी",
+          "dose": "10:26:26 (50 kg) + MOP (50 kg) + ह्युमॅग (25 kg) प्रति एकर."
+        },
+        {
+          "stage": "165 ते 210 दिवस (कंद फुगवण)",
+          "dose": "00:52:34 (15 kg) + अमोनियम सल्फेट (25 kg) ड्रिपने."
+        },
+        {
+          "stage": "240 दिवस (अंतिम फुगवण)",
+          "dose": "00:00:23 (10 kg) + क्लोरो (1 लिटर) ड्रिपने."
+        }
+      ],
+      "stage_spray_schedule": [
+        {
+          "stage": "30 दिवस",
+          "target": "सुरुवातीची वाढ व रोग नियंत्रण",
+          "spray": "M-45 (Mancozeb) 40g + 19:19:19 (100g) + पोकलँड (25ml) प्रति 15L पंप."
+        },
+        {
+          "stage": "60 दिवस",
+          "target": "कंदमाशी नियंत्रण व झाडाचा पोत",
+          "spray": "साफ (Carbendazim+Mancozeb) 30g + सोलोमन (Beta-cyfluthrin+Imidacloprid) 15ml + झिंकोडील (25ml) प्रति 15L पंप."
+        },
+        {
+          "stage": "90 दिवस",
+          "target": "करपा व कंदमाशी नियंत्रण",
+          "spray": "अमिस्टर टॉप (Azoxystrobin+Difenoconazole) 25ml + फेन्थॉएट (50ml) प्रति 15L पंप."
+        },
+        {
+          "stage": "150 दिवस",
+          "target": "जिवाणू करपा नियंत्रण",
+          "spray": "अ‍ॅम्प्लिगो (15ml) + स्ट्रेप्टोसायक्लिन (2g) + डॉक्टर प्लस (40g) प्रति 15L पंप."
+        },
+        {
+          "stage": "180 दिवस",
+          "target": "पानावरील करपा",
+          "spray": "कस्टोडिया (Azoxystrobin+Tebuconazole) 20ml + ऑक्सिजन (50ml) प्रति 15L पंप."
+        }
+      ],
+      "critical_pest_remedies": [
+        {
+          "pest": "सॉफ्ट रॉट / कंदकुज (Rhizome Rot)",
+          "remedy": "ह्युमोल गोल्ड 500g + जिनेट (Thiophanate Methyl + Kasugamycin) 300ml प्रति एकर ड्रिपने सोडावे."
+        },
+        {
+          "pest": "बॅक्टेरियल विल्ट (Bacterial Wilt)",
+          "remedy": "ब्लू कॉपर (Copper Oxychloride) 40g + स्ट्रेप्टोसायक्लिन 1g प्रति 15L पंप फवारा."
+        },
+        {
+          "pest": "कंदमाशी (Rhizome Fly)",
+          "remedy": "एकरी 10 ते 15 मक्षिका सापळे लावा. फेन्थॉएट 50% EC 50ml प्रति 15L पंप फवारा."
+        },
+        {
+          "pest": "हुमणी अळी (White Grub)",
+          "remedy": "डह्युमैनासुर जी 4 kg शेणखतात मिसळा किंवा डेंटात्सू 100g 200L पाण्यात ड्रिपने सोडा."
+        }
+      ]
+    },
+    {
+      "id": "cotton",
+      "name_mr": "बीटी कापूस (कापूस)",
+      "name_en": "Bt Cotton",
+      "scientific_name": "Gossypium hirsutum",
+      "icon": "⚪",
+      "season": [
+        "kharif"
+      ],
+      "sowing_months": [
+        "जून-जुलै"
+      ],
+      "duration_days": "150-180 दिवस",
+      "suitable_soils": [
+        "खोल काळी जमीन",
+        "मध्यम भारी जमीन"
+      ],
+      "soil_ph_range": [
+        6.5,
+        8.2
+      ],
+      "water_requirement": "moderate",
+      "recommended_varieties": [
+        {
+          "name": "राशी 659 / अजित 155",
+          "duration": "160 दिवस",
+          "features": "बोंडांचे मोठे वजन, रसशोषक किडींना सहनशील"
+        }
+      ],
+      "yield_per_acre_qtl": {
+        "min": 9,
+        "max": 16
+      },
+      "avg_market_rate_per_qtl": 7800,
+      "estimated_cost_per_acre": 22000,
+      "estimated_revenue_per_acre": 97500,
+      "net_profit_per_acre": 75500,
+      "stage_fertilizer_schedule": [
+        {
+          "stage": "पेरणीवेळी",
+          "dose": "10:26:26 (50 kg) + SSP (50 kg) + मॅग्नेशियम सल्फेट (10 kg)"
+        },
+        {
+          "stage": "30 दिवसांनी",
+          "dose": "युरिया 30 kg + 10:26:26 (25 kg)"
+        }
+      ],
+      "critical_pest_remedies": [
+        {
+          "pest": "गुलाबी बोंडअळी (Pink Bollworm)",
+          "remedy": "एकरी 5 कामगंध सापळे लावा. प्रोफेनोफॉस + सायपरमेथ्रीन 35ml/पंप फवारा."
+        },
+        {
+          "pest": "रसशोषक किडी (मावा, तुडतुडे)",
+          "remedy": "उलाला (Flonicamid) 6g किंवा पोलो 20g प्रति 15L पंप."
+        }
+      ]
+    },
+    {
+      "id": "pigeon_pea",
+      "name_mr": "तूर (गोदावरी / BDN-711)",
+      "name_en": "Pigeon Pea (Arhar)",
+      "scientific_name": "Cajanus cajan",
+      "icon": "🌾",
+      "season": [
+        "kharif",
+        "intercrop"
+      ],
+      "sowing_months": [
+        "जून-जुलै"
+      ],
+      "duration_days": "150-180 दिवस",
+      "suitable_soils": [
+        "मध्यम ते भारी निचरा होणारी जमीन"
+      ],
+      "soil_ph_range": [
+        6.5,
+        7.8
+      ],
+      "water_requirement": "low",
+      "yield_per_acre_qtl": {
+        "min": 7,
+        "max": 12
+      },
+      "avg_market_rate_per_qtl": 9500,
+      "estimated_cost_per_acre": 12000,
+      "estimated_revenue_per_acre": 90250,
+      "net_profit_per_acre": 78250,
+      "critical_pest_remedies": [
+        {
+          "pest": "शेंग पोखरणारी अळी",
+          "remedy": "कोराजन 6ml प्रति 15L पंप फवारा."
+        },
+        {
+          "pest": "मर रोग (Wilt)",
+          "remedy": "ट्रायकोडर्मा 2.5 kg शेणखतातून द्या."
+        }
+      ]
+    }
+  ]
+}
