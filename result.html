@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>छाया AI - शेतकरी सल्ला व वेळापत्रक (Chaya AI Smart Advisor)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #064e3b;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --glass: rgba(255, 255, 255, 0.94);
+            --border: rgba(255, 255, 255, 0.5);
+            --text: #1f2937;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Baloo 2', 'Poppins', sans-serif;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: linear-gradient(135deg, rgba(6, 78, 59, 0.85), rgba(16, 185, 129, 0.6)), 
+                        url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
+            min-height: 100vh;
+            color: var(--text);
+            position: relative;
+            padding-bottom: 70px;
+        }
+
+        /* Ambient Floating Particles */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            background: rgba(255, 255, 255, 0.35);
+            border-radius: 50%;
+            animation: floatUp 12s infinite linear;
+            z-index: 1;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(105vh) rotate(0deg) scale(0.8); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
+        }
+
+        header {
+            background: rgba(6, 78, 59, 0.90);
+            backdrop-filter: blur(12px);
+            color: white;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .brand {
+            font-size: 1.35rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .live-rate-btn {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #fecaca;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 22px auto 0;
+            padding: 0 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 14px;
+            background: rgba(0,0,0,0.3);
+            padding: 6px 14px;
+            border-radius: 20px;
+            backdrop-filter: blur(8px);
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            padding: 24px;
+            border-radius: 22px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+            margin-bottom: 24px;
+        }
+
+        .farm-summary {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .summary-chip {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 1px solid #a7f3d0;
+        }
+
+        /* Fast-Track Farmer Highlight Box */
+        .fast-track-card {
+            background: linear-gradient(135deg, #064e3b, #047857);
+            color: white;
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 22px;
+            box-shadow: 0 10px 24px rgba(6, 78, 59, 0.25);
+        }
+
+        .fast-track-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.25);
+            padding-bottom: 10px;
+            margin-bottom: 14px;
+        }
+
+        .fast-track-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .action-highlight-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .highlight-item {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .highlight-item .label {
+            font-size: 0.8rem;
+            color: #d1fae5;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .highlight-item .value {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.35;
+        }
+
+        /* Timeline Stage Cards */
+        .timeline-section-title {
+            color: var(--primary-dark);
+            font-size: 1.15rem;
+            font-weight: 800;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stage-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .stage-card {
+            background: white;
+            border-radius: 14px;
+            padding: 16px;
+            border-left: 6px solid var(--primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .stage-card.urgent {
+            border-left-color: #ef4444;
+            background: #fffafa;
+        }
+
+        .stage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .stage-days {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #065f46;
+            background: #d1fae5;
+            padding: 3px 10px;
+            border-radius: 8px;
+        }
+
+        .stage-target {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .stage-spray-formula {
+            font-size: 0.92rem;
+            color: #0f172a;
+            background: #f8fafc;
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-top: 6px;
+            line-height: 1.45;
+        }
+
+        /* Emergency Pest Action Box */
+        .emergency-pest-box {
+            background: #fef2f2;
+            border: 1.5px solid #fecaca;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 22px;
+        }
+
+        .emergency-pest-item {
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #fca5a5;
+        }
+        .emergency-pest-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Particles -->
+    <div class="particle" style="width: 12px; height: 12px; left: 10%;"></div>
+    <div class="particle" style="width: 8px; height: 8px; left: 40%; animation-delay: 2s;"></div>
+    <div class="particle" style="width: 15px; height: 15px; left: 70%; animation-delay: 4s;"></div>
+
+    <header>
+        <a href="index.html" class="brand">
+            <span>🌿</span> छाया AI (Chaya AI)
+        </a>
+        <button class="live-rate-btn" onclick="document.getElementById('marketSection').scrollIntoView({behavior:'smooth'})">
+            📊 चालू बाजारभाव ⬇
+        </button>
+    </header>
+
+    <div class="container">
+        <a href="index.html" class="back-link">⬅ माहिती बदला (Change Farm Inputs)</a>
+
+        <!-- Main Glass Card -->
+        <div class="glass-card">
+            
+            <!-- Summary Chips -->
+            <div class="farm-summary" id="summaryChips"></div>
+
+            <!-- Fast-Track Highlight Card (What farmers really want to see) -->
+            <div class="fast-track-card" id="fastTrackCard">
+                <div class="fast-track-header">
+                    <div class="fast-track-title" id="fastCropTitle">
+                        <span>🌱</span> सोयाबीन (Patil Biotech शेड्यूल)
+                    </div>
+                    <span style="background:#f59e0b; color:#78350f; font-size:0.75rem; font-weight:800; padding:3px 10px; border-radius:12px;">
+                        98% अनुकूल
+                    </span>
+                </div>
+
+                <div class="action-highlight-grid">
+                    <div class="highlight-item">
+                        <div class="label">🌾 सर्वोत्तम शिफारसीत वाण:</div>
+                        <div class="value" id="fastVarieties">फुले संगम (KDS-726) / फुले किमया</div>
+                    </div>
+                    <div class="highlight-item">
+                        <div class="label">📦 एकूण अपेक्षित उत्पादन:</div>
+                        <div class="value" id="fastYield">24 ते 32 क्विंटल (2 एकर)</div>
+                    </div>
+                    <div class="highlight-item">
+                        <div class="label">💰 अंदाजे निव्वळ नफा:</div>
+                        <div class="value" id="fastProfit" style="color:#86efac;">₹1,19,000</div>
+                    </div>
+                    <div class="highlight-item">
+                        <div class="label">📐 टोकण फॉर्म्युला:</div>
+                        <div class="value" id="fastFormula">1 kg बियाण्याला 1 क्विंटल उत्पादन (3.5 ft बेड)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Pest & Disease Quick Action -->
+            <div class="emergency-pest-box">
+                <h4 style="color:#991b1b; font-weight:800; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+                    <span>🚨</span> धोक्याच्या किडींवर झटपट फवारणी उपाय (Emergency Pest Spray)
+                </h4>
+                <div id="emergencyPestList">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+
+            <!-- Day-by-Day Spray & Fertilizer Timeline -->
+            <div class="timeline-section-title">
+                <span>📅</span> दिवसनिहाय फवारणी व खत वेळापत्रक (Step-by-Step Schedule)
+            </div>
+            <div class="stage-timeline" id="stageTimeline">
+                <!-- Loaded dynamically -->
+            </div>
+
+        </div>
+
+        <!-- Live Market Rate Card -->
+        <div class="glass-card" id="marketSection">
+            <div style="font-size:1.2rem; font-weight:800; color:var(--primary-dark); margin-bottom:10px;">
+                📊 नांदेड व मराठवाडा APMC चालू बाजारभाव (₹ प्रति क्विंटल)
+            </div>
+            <div class="chart-container">
+                <canvas id="marketChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Engine & Chatbot Widget -->
+    <script src="js/ai-engine.js"></script>
+    <script src="js/chat-assistant.js"></script>
+
+    <script>
+        let farmData = null;
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const rawData = localStorage.getItem("chayaFormData");
+            farmData = rawData ? JSON.parse(rawData) : {
+                taluka: "ardhapur",
+                talukaText: "अर्धापूर (Ardhapur)",
+                season: "kharif",
+                water: "abundant",
+                land: "2"
+            };
+
+            await window.chayaAI.loadKnowledgeBase();
+
+            const talukaProfile = window.chayaAI.getTalukaProfile(farmData.taluka);
+            document.getElementById("summaryChips").innerHTML = `
+                <span class="summary-chip">📍 ${farmData.talukaText || farmData.taluka}</span>
+                <span class="summary-chip">🌱 ${talukaProfile.soil_type ? talukaProfile.soil_type.split('(')[0] : 'काळी माती'}</span>
+                <span class="summary-chip">💧 ${farmData.waterText || farmData.water}</span>
+                <span class="summary-chip">📏 ${farmData.land} एकर</span>
+            `;
+
+            const evaluated = window.chayaAI.evaluateCropsOffline(farmData);
+            const topCrop = evaluated[0] || {};
+            const landSize = parseFloat(farmData.land) || 1;
+
+            // 1. Populate Fast-Track Highlight Card
+            document.getElementById("fastCropTitle").innerHTML = `<span>${topCrop.icon || '🌱'}</span> ${topCrop.name_mr}`;
+            const vars = (topCrop.recommended_varieties || []).map(v => v.name).join(' / ') || 'सुधारित वाण';
+            document.getElementById("fastVarieties").innerText = vars;
+            document.getElementById("fastYield").innerText = `${topCrop.totalYieldRange} (${landSize} एकर)`;
+            document.getElementById("fastProfit").innerText = `₹${topCrop.netProfit?.toLocaleString('en-IN')}`;
+            document.getElementById("fastFormula").innerText = topCrop.yield_formula || "3.5 फूट बेडवर 2 ओळी टोकण पद्धत";
+
+            // 2. Populate Emergency Pest Remedies
+            const pestBox = document.getElementById("emergencyPestList");
+            const remedies = topCrop.critical_pest_remedies || [];
+            pestBox.innerHTML = remedies.map(r => `
+                <div class="emergency-pest-item">
+                    <div style="font-weight:800; color:#b91c1c; font-size:0.95rem;">• ${r.pest}</div>
+                    <div style="font-size:0.9rem; color:#1f2937; margin-top:2px;"><b>उपाय / औषध मात्रा:</b> ${r.remedy}</div>
+                </div>
+            `).join('');
+
+            // 3. Populate Day-by-Day Spray & Fertilizer Timeline
+            const timelineBox = document.getElementById("stageTimeline");
+            const sprays = topCrop.stage_spray_schedule || [];
+            const ferts = topCrop.stage_fertilizer_schedule || [];
+
+            let timelineHtml = '';
+
+            // Combine Basal & Spray stages cleanly
+            ferts.forEach(f => {
+                timelineHtml += `
+                    <div class="stage-card">
+                        <div class="stage-header">
+                            <span class="stage-days">🌱 ${f.stage}</span>
+                            <span class="stage-target">खत व ड्रिप डोस</span>
+                        </div>
+                        <div class="stage-spray-formula"><b>डोस:</b> ${f.dose}</div>
+                    </div>
+                `;
+            });
+
+            sprays.forEach(s => {
+                timelineHtml += `
+                    <div class="stage-card ${s.stage.includes('15') || s.stage.includes('30') ? 'urgent' : ''}">
+                        <div class="stage-header">
+                            <span class="stage-days">🎯 ${s.stage}</span>
+                            <span class="stage-target">${s.target}</span>
+                        </div>
+                        <div class="stage-spray-formula"><b>फवारणी फॉर्म्युला:</b> ${s.spray}</div>
+                    </div>
+                `;
+            });
+
+            timelineBox.innerHTML = timelineHtml;
+
+            // 4. Render Market Graph
+            renderMarketChart();
+        });
+
+        function renderMarketChart() {
+            const ctx = document.getElementById('marketChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['हळद (Turmeric)', 'सोयाबीन (Soybean)', 'कापूस (Cotton)', 'तूर (Arhar)', 'हरभरा (Gram)'],
+                    datasets: [
+                        {
+                            label: 'सरासरी भाव (Modal Rate ₹)',
+                            data: [15100, 4950, 7850, 9650, 6150],
+                            backgroundColor: 'rgba(16, 185, 129, 0.85)',
+                            borderColor: '#059669',
+                            borderWidth: 1.5,
+                            borderRadius: 6
+                        },
+                        {
+                            label: 'कमाल भाव (Max Rate ₹)',
+                            data: [17800, 5300, 8400, 10400, 6600],
+                            backgroundColor: 'rgba(245, 158, 11, 0.85)',
+                            borderColor: '#d97706',
+                            borderWidth: 1.5,
+                            borderRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top', labels: { font: { family: 'Baloo 2', size: 12, weight: 'bold' } } }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(0, 0, 0, 0.06)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

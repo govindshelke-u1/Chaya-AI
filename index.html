@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>छाया AI - कृषी सल्लागार (Chaya AI Smart Farm Advisor)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #064e3b;
+            --accent: #f59e0b;
+            --glass: rgba(255, 255, 255, 0.90);
+            --border: rgba(255, 255, 255, 0.5);
+            --text: #1f2937;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Baloo 2', 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, rgba(6, 78, 59, 0.82), rgba(16, 185, 129, 0.55)), 
+                        url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
+            min-height: 100vh;
+            color: var(--text);
+            position: relative;
+            overflow-x: hidden;
+            padding-bottom: 60px;
+        }
+
+        /* Ambient Floating Particles */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            background: rgba(255, 255, 255, 0.35);
+            border-radius: 50%;
+            animation: floatUp 12s infinite linear;
+            z-index: 1;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(105vh) rotate(0deg) scale(0.8); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
+        }
+
+        /* Header */
+        header {
+            background: rgba(6, 78, 59, 0.88);
+            backdrop-filter: blur(12px);
+            color: white;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .brand {
+            font-size: 1.35rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            font-size: 1.5rem;
+            animation: pulseLeaf 2.5s infinite ease-in-out;
+        }
+
+        @keyframes pulseLeaf {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.15) rotate(10deg); }
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .api-badge {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #d1fae5;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .api-badge:hover {
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+        }
+
+        .live-tag {
+            background: #ef4444;
+            color: white;
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 700;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 28px auto 0;
+            padding: 0 16px;
+            position: relative;
+            z-index: 2;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Glass Card */
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            padding: 28px;
+            border-radius: 22px;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-title {
+            font-size: 1.28rem;
+            color: var(--primary-dark);
+            margin-bottom: 18px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 2px solid rgba(16, 185, 129, 0.2);
+            padding-bottom: 10px;
+        }
+
+        .rag-badge {
+            background: #e0f2fe;
+            color: #0369a1;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-weight: 700;
+            border: 1px solid #bae6fd;
+        }
+
+        /* Form Controls */
+        .form-group { margin-bottom: 18px; }
+        label { display: flex; justify-content: space-between; margin-bottom: 6px; font-weight: 700; font-size: 0.95rem; }
+        .label-hint { font-weight: normal; color: #4b5563; font-size: 0.8rem; }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1.5px solid #d1d5db;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.25s ease;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+        }
+
+        .row-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .row-grid { grid-template-columns: 1fr; }
+        }
+
+        .soil-badge {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: var(--primary-dark);
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            margin-top: 8px;
+            border-left: 4px solid var(--primary);
+            line-height: 1.5;
+        }
+
+        /* Input with Mic button */
+        .input-mic-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-mic-wrapper textarea {
+            padding-right: 48px;
+        }
+
+        .mic-btn-field {
+            position: absolute;
+            right: 10px;
+            bottom: 12px;
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #ef4444;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .mic-btn-field:hover {
+            background: #ef4444;
+            color: white;
+            transform: scale(1.08);
+        }
+
+        .mic-btn-field.recording {
+            background: #ef4444;
+            color: white;
+            animation: pulseRecord 1s infinite alternate;
+        }
+
+        /* Submit Button */
+        .btn {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.15rem;
+            font-weight: 800;
+            border-radius: 14px;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+            transition: all 0.25s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(16, 185, 129, 0.45);
+        }
+
+        .spinner {
+            display: none;
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* API Key Modal */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal-card {
+            background: white;
+            border-radius: 18px;
+            padding: 24px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Background Particles -->
+    <div class="particle" style="width: 12px; height: 12px; left: 10%;"></div>
+    <div class="particle" style="width: 8px; height: 8px; left: 35%; animation-delay: 2s;"></div>
+    <div class="particle" style="width: 15px; height: 15px; left: 65%; animation-delay: 4s;"></div>
+    <div class="particle" style="width: 10px; height: 10px; left: 85%; animation-delay: 1s;"></div>
+
+    <header>
+        <a href="index.html" class="brand">
+            <span class="brand-icon">🌿</span> छाया AI (Chaya AI)
+        </a>
+        <div class="header-actions">
+            <button class="api-badge" onclick="openApiModal()">
+                ⚙️ <span id="apiStatusText">AI सेटिंग</span>
+            </button>
+            <span class="live-tag">LIVE APMC</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="glass-card">
+            <div class="card-title">
+                <span>📍 शेती व माती माहिती नोंदणी</span>
+                <span class="rag-badge">📁 पूर्व-साठवलेले कृषी डेटाबेस</span>
+            </div>
+
+            <form id="farmForm" onsubmit="submitForm(event)">
+                
+                <div class="form-group">
+                    <label for="taluka">
+                        <span>तालुका निवडा (Select Taluka):</span>
+                        <span class="label-hint">नांदेड व मराठवाडा परिसर</span>
+                    </label>
+                    <select id="taluka" onchange="updateSoilData()">
+                        <option value="ardhapur">अर्धापूर (Ardhapur) - केळी व हळद पट्टा</option>
+                        <option value="bhokar">भोकर (Bhokar) - काळी माती व कापूस</option>
+                        <option value="kinwat">किनवट (Kinwat) - तांबडी-काळी माती</option>
+                        <option value="nanded">नांदेड ग्रामीण (Nanded Rural)</option>
+                        <option value="mudkhed">मुदखेड (Mudkhed) - गोदावरी काठ</option>
+                        <option value="loha">लोहा (Loha) - मध्यम काळी जमीन</option>
+                        <option value="hadgaon">हदगाव (Hadgaon) - कयाधू पट्टा</option>
+                        <option value="dharmabad">धर्माबाद (Dharmabad)</option>
+                    </select>
+                    <div id="soilPreview" class="soil-badge">
+                        <b>माती प्रकार:</b> गाळाची व काळी माती | pH: 7.2 | सेंद्रिय कर्ब: 0.62% | (केळी व हळदीसाठी उत्तम)
+                    </div>
+                </div>
+
+                <div class="row-grid">
+                    <div class="form-group">
+                        <label for="season">लागवड हंगाम (Season):</label>
+                        <select id="season">
+                            <option value="kharif">खरीप हंगाम (Kharif - जून ते ऑक्टोबर)</option>
+                            <option value="rabi">रब्बी हंगाम (Rabi - ऑक्टोबर ते मार्च)</option>
+                            <option value="summer">उन्हाळी हंगाम (Summer - जानेवारी ते मे)</option>
+                            <option value="annual">वार्षिक / बारमाही (Annual / Perennial)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="water">पाण्याची उपलब्धता (Water):</label>
+                        <select id="water">
+                            <option value="abundant">मुबलक पाणी (Well / Canal / Borewell)</option>
+                            <option value="moderate">मध्यम पाणी (Drip / ठिबक सिंचन)</option>
+                            <option value="low">कमी पाणी (Rainfed / कोरडवाहू)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="land">
+                        <span>एकूण क्षेत्रफळ (Land Size in Acres):</span>
+                        <span class="label-hint">उत्पादन व खर्च गणित यावर आधारित असेल</span>
+                    </label>
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <input type="number" id="land" value="2" min="0.25" max="100" step="0.25" required>
+                        <span style="font-weight:700; color:var(--primary-dark); font-size:1.05rem;">एकर</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="question">
+                        <span>छाया AI ला विचारा किंवा लक्षणे सांगा (Ask / Problem):</span>
+                        <span class="label-hint">मराठीत बोला 🎤 किंवा लिहा</span>
+                    </label>
+                    <div class="input-mic-wrapper">
+                        <textarea id="question" rows="2" placeholder="उदा. हळदीवर करपा पडला आहे, किंवा सर्वोत्तम खत कोणते?"></textarea>
+                        <button type="button" id="voiceBtn" class="mic-btn-field" title="मराठीत बोला" onclick="recordVoiceQuery()">🎤</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">
+                    <span id="btnText">🤖 छाया AI कडून सखोल सल्ला घ्या (Analyze & Recommend) ➔</span>
+                    <div id="btnSpinner" class="spinner"></div>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- API Key / Settings Modal -->
+    <div id="apiModal" class="modal-backdrop" onclick="closeApiModal(event)">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <h3 style="color:var(--primary-dark); margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                ⚙️ छाया AI - मॉडेल व API सेटिंग
+            </h3>
+            <p style="font-size:0.85rem; color:#4b5563; line-height:1.4; margin-bottom:14px;">
+                छाया AI इनबिल्ट <b>स्मार्ट नॉलेज इंजिन</b> वापरून ऑफलाइनही उत्तम कार्य करते. आपण <b>Google Gemini API Key</b> टाकल्यास अधिक सविस्तर व संवादात्मक मराठी विश्लेषण थेट जनरेट होईल.
+            </p>
+            <div style="margin-bottom:14px;">
+                <label style="font-size:0.85rem; margin-bottom:4px;">Google Gemini API Key (पर्यायी):</label>
+                <input type="password" id="apiKeyInput" placeholder="उदा. AIzaSy..." style="font-family:monospace;">
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" onclick="closeApiModal()" style="padding:8px 16px; border:1px solid #d1d5db; background:white; border-radius:8px; cursor:pointer;">रद्द करा</button>
+                <button type="button" onclick="saveApiKey()" style="padding:8px 18px; border:none; background:var(--primary); color:white; border-radius:8px; font-weight:700; cursor:pointer;">जतन करा</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load AI Engine & Chatbot Widget -->
+    <script src="js/ai-engine.js"></script>
+    <script src="js/chat-assistant.js"></script>
+
+    <script>
+        // Initialize Knowledge Base & Soil Profile on page load
+        document.addEventListener("DOMContentLoaded", async () => {
+            await window.chayaAI.loadKnowledgeBase();
+            updateSoilData();
+            checkApiStatus();
+        });
+
+        function updateSoilData() {
+            const taluka = document.getElementById("taluka").value;
+            const profile = window.chayaAI.getTalukaProfile(taluka);
+            document.getElementById("soilPreview").innerHTML = `
+                <b>माती प्रकार:</b> ${profile.soil_type} | <b>pH:</b> ${profile.ph} | <b>सेंद्रिय कर्ब:</b> ${profile.organic_carbon || '0.58%'} | <i>(${profile.micronutrient_status || 'उत्कृष्ट सुपिकता'})</i>
+            `;
+        }
+
+        function recordVoiceQuery() {
+            const btn = document.getElementById("voiceBtn");
+            const q = document.getElementById("question");
+
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert("तुमच्या ब्राउझरमध्ये व्हॉइस इनपुट सपोर्ट नाही. कृपया टाइप करा.");
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const rec = new SpeechRecognition();
+            rec.lang = 'mr-IN'; // Marathi (India)
+            rec.continuous = false;
+            rec.interimResults = false;
+
+            btn.classList.add("recording");
+
+            rec.onresult = (e) => {
+                q.value = e.results[0][0].transcript;
+                btn.classList.remove("recording");
+            };
+
+            rec.onerror = () => btn.classList.remove("recording");
+            rec.onend = () => btn.classList.remove("recording");
+            rec.start();
+        }
+
+        function openApiModal() {
+            document.getElementById("apiKeyInput").value = localStorage.getItem('gemini_api_key') || '';
+            document.getElementById("apiModal").style.display = "flex";
+        }
+
+        function closeApiModal() {
+            document.getElementById("apiModal").style.display = "none";
+        }
+
+        function saveApiKey() {
+            const key = document.getElementById("apiKeyInput").value.trim();
+            window.chayaAI.setApiKey(key);
+            checkApiStatus();
+            closeApiModal();
+        }
+
+        function checkApiStatus() {
+            const key = localStorage.getItem('gemini_api_key');
+            const statusText = document.getElementById("apiStatusText");
+            if (key) {
+                statusText.innerText = "Gemini AI कनेक्टेड 🟢";
+            } else {
+                statusText.innerText = "ऑफलाइन AI इंजिन ⚡";
+            }
+        }
+
+        function submitForm(e) {
+            e.preventDefault();
+            
+            const btnText = document.getElementById("btnText");
+            const spinner = document.getElementById("btnSpinner");
+
+            btnText.style.display = "none";
+            spinner.style.display = "block";
+
+            // Save form choices to LocalStorage
+            const formData = {
+                taluka: document.getElementById("taluka").value,
+                talukaText: document.getElementById("taluka").options[document.getElementById("taluka").selectedIndex].text,
+                season: document.getElementById("season").value,
+                seasonText: document.getElementById("season").options[document.getElementById("season").selectedIndex].text,
+                water: document.getElementById("water").value,
+                waterText: document.getElementById("water").options[document.getElementById("water").selectedIndex].text,
+                land: document.getElementById("land").value,
+                question: document.getElementById("question").value
+            };
+            
+            localStorage.setItem("chayaFormData", JSON.stringify(formData));
+
+            // Navigate to result.html
+            setTimeout(() => {
+                window.location.href = "result.html";
+            }, 600);
+        }
+    </script>
+</body>
+</html>
