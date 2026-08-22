@@ -185,7 +185,16 @@ async function handleTts(req, res) {
     });
 
     if (!response.ok) {
-      throw new Error(`ElevenLabs status: ${response.status}`);
+      // Surface ElevenLabs' actual error body (invalid key, invalid voice id,
+      // quota exceeded, etc.) instead of a generic message.
+      let detail = '';
+      try { detail = await response.text(); } catch (_) {}
+      console.error(`ElevenLabs error ${response.status}:`, detail);
+      return res.status(502).json({
+        error: 'elevenlabs_request_failed',
+        status: response.status,
+        detail: detail.slice(0, 500)
+      });
     }
 
     const arrayBuffer = await response.arrayBuffer();
@@ -196,6 +205,6 @@ async function handleTts(req, res) {
     return res.status(200).send(buffer);
   } catch (e) {
     console.error('TTS proxy error:', e.message);
-    return res.status(500).json({ error: 'tts_failed' });
+    return res.status(500).json({ error: 'tts_failed', detail: e.message });
   }
 }
