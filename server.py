@@ -19,7 +19,7 @@ PORT = 8000
 DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 
 # Default API configurations
-DEFAULT_ELEVENLABS_KEY = "sk_95a7190e49293e6a937319a122e1f1d0fc1d4662ada867fc"
+DEFAULT_ELEVENLABS_KEY = ""  # removed hardcoded key — set ELEVENLABS_API_KEY env var instead
 DEFAULT_VOICE_ID = "k2intd1ORm0YUH8etnXg"
 
 def load_env_file(filepath):

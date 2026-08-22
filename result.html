@@ -611,7 +611,8 @@
                 onError: () => {
                     btn.classList.remove('speaking');
                     btn.innerText = '🔊 सल्ला ऐका (Listen)';
-                    alert('आवाज तयार करता आला नाही. कृपया Settings मध्ये ElevenLabs API Key तपासा किंवा ब्राउझर व्हॉइस वापरा.');
+                    const detail = window.chayaAI.lastTtsErrorDetail || 'unknown';
+                    alert('आवाज तयार करता आला नाही.\n\nकारण (debug): ' + detail);
                 }
             });
         }
