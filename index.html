@@ -10,7 +10,7 @@
             --primary: #10b981;
             --primary-dark: #064e3b;
             --accent: #f59e0b;
-            --glass: rgba(255, 255, 255, 0.90);
+            --glass: rgba(255, 255, 255, 0.92);
             --border: rgba(255, 255, 255, 0.5);
             --text: #1f2937;
         }
@@ -29,7 +29,7 @@
             color: var(--text);
             position: relative;
             overflow-x: hidden;
-            padding-bottom: 60px;
+            padding-bottom: 80px;
         }
 
         /* Ambient Floating Particles */
@@ -54,7 +54,7 @@
             background: rgba(6, 78, 59, 0.88);
             backdrop-filter: blur(12px);
             color: white;
-            padding: 12px 24px;
+            padding: 14px 28px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -91,11 +91,32 @@
             gap: 12px;
         }
 
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1.5px solid rgba(255, 255, 255, 0.6);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateY(-1px);
+        }
+
         .api-badge {
             background: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.3);
             color: #d1fae5;
-            padding: 5px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 600;
@@ -115,7 +136,7 @@
             background: #ef4444;
             color: white;
             font-size: 0.75rem;
-            padding: 2px 8px;
+            padding: 3px 10px;
             border-radius: 20px;
             font-weight: 700;
             animation: blink 1.5s infinite;
@@ -126,9 +147,11 @@
             50% { opacity: 0.4; }
         }
 
+        /* Container */
         .container {
-            max-width: 720px;
-            margin: 28px auto 0;
+            max-width: 1000px;
+            width: 92%;
+            margin: 36px auto 0;
             padding: 0 16px;
             position: relative;
             z-index: 2;
@@ -140,115 +163,145 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Glass Card */
+        /* Glass Card with Extended Height */
         .glass-card {
             background: var(--glass);
             backdrop-filter: blur(16px);
             border: 1px solid var(--border);
-            padding: 28px;
-            border-radius: 22px;
-            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.15);
+            padding: 44px 40px;
+            min-height: 520px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-radius: 26px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.18);
         }
 
         .card-title {
-            font-size: 1.28rem;
+            font-size: 1.4rem;
             color: var(--primary-dark);
-            margin-bottom: 18px;
+            margin-bottom: 24px;
             font-weight: 800;
             display: flex;
             align-items: center;
             justify-content: space-between;
             border-bottom: 2px solid rgba(16, 185, 129, 0.2);
-            padding-bottom: 10px;
-        }
-
-        .rag-badge {
-            background: #e0f2fe;
-            color: #0369a1;
-            font-size: 0.75rem;
-            padding: 4px 8px;
-            border-radius: 8px;
-            font-weight: 700;
-            border: 1px solid #bae6fd;
+            padding-bottom: 14px;
         }
 
         /* Form Controls */
-        .form-group { margin-bottom: 18px; }
-        label { display: flex; justify-content: space-between; margin-bottom: 6px; font-weight: 700; font-size: 0.95rem; }
-        .label-hint { font-weight: normal; color: #4b5563; font-size: 0.8rem; }
+        .form-group { 
+            margin-bottom: 28px; 
+        }
+        
+        label { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 10px; 
+            font-weight: 700; 
+            font-size: 1.05rem; 
+        }
+        
+        .label-hint { 
+            font-weight: normal; 
+            color: #4b5563; 
+            font-size: 0.85rem; 
+        }
 
         select, input, textarea {
             width: 100%;
-            padding: 12px 16px;
+            padding: 14px 18px;
             background: rgba(255, 255, 255, 0.95);
             border: 1.5px solid #d1d5db;
-            border-radius: 12px;
-            font-size: 0.95rem;
+            border-radius: 14px;
+            font-size: 1rem;
             transition: all 0.25s ease;
         }
 
         select:focus, input:focus, textarea:focus {
             border-color: var(--primary);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.25);
         }
 
         .row-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 14px;
+            gap: 24px;
         }
 
-        /* ===== Responsive breakpoints (Mobile + Laptop friendly) ===== */
+        /* Step by Step UI */
+        .form-step {
+            display: none;
+            animation: fadeInStep 0.4s ease-in-out;
+            padding-top: 10px;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        @keyframes fadeInStep {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #4b5563;
+        }
+        
+        .step-buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        /* Responsive Breakpoints */
         @media (max-width: 600px) {
             .row-grid { grid-template-columns: 1fr; }
-            .container { margin-top: 16px; padding: 0 12px; }
-            .glass-card { padding: 18px; border-radius: 16px; }
-            .card-title { font-size: 1.08rem; flex-wrap: wrap; gap: 6px; }
+            .container { margin-top: 16px; padding: 0 8px; width: 96%; }
+            .glass-card { padding: 24px 18px; min-height: auto; border-radius: 18px; }
+            .card-title { font-size: 1.1rem; flex-wrap: wrap; gap: 6px; }
             header { padding: 10px 14px; }
             .brand { font-size: 1.1rem; }
-            .header-actions { gap: 8px; }
-            .api-badge { font-size: 0.72rem; padding: 4px 9px; }
+            .header-actions { gap: 6px; }
+            .api-badge, .lang-btn { font-size: 0.72rem; padding: 4px 9px; }
             .live-tag { font-size: 0.68rem; }
-            .btn { font-size: 1rem; padding: 13px; }
+            .btn { font-size: 1rem; padding: 14px; }
             .weather-widget { flex-direction: column; align-items: flex-start; gap: 8px; }
             .weather-stats { width: 100%; justify-content: space-between; }
-        }
-
-        @media (max-width: 380px) {
-            .header-actions { flex-wrap: wrap; justify-content: flex-end; }
-            .brand span:last-child { display: inline; }
-        }
-
-        @media (min-width: 601px) and (max-width: 1024px) {
-            .container { max-width: 680px; }
+            .step-buttons { flex-direction: column; }
         }
 
         @media (min-width: 1025px) {
-            .container { max-width: 780px; }
-            .glass-card { padding: 34px; }
+            .glass-card { padding: 48px 44px; min-height: 560px; }
         }
 
-        input, select, textarea, button { font-size: 16px; } /* prevents iOS zoom-on-focus */
+        input, select, textarea, button { font-size: 16px; }
 
-        /* ===== Weather Widget ===== */
+        /* Weather Widget */
         .weather-widget {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 14px;
+            gap: 16px;
             background: linear-gradient(135deg, #e0f2fe, #bae6fd);
             border: 1px solid #7dd3fc;
-            border-radius: 14px;
-            padding: 12px 16px;
-            margin-bottom: 18px;
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
         }
-        .weather-main { display: flex; align-items: center; gap: 10px; }
-        .weather-icon { font-size: 1.8rem; }
-        .weather-temp { font-size: 1.15rem; font-weight: 800; color: #0c4a6e; }
-        .weather-cond { font-size: 0.78rem; color: #075985; font-weight: 600; }
-        .weather-stats { display: flex; gap: 12px; font-size: 0.78rem; color: #0c4a6e; font-weight: 700; }
-        .weather-advice { font-size: 0.78rem; color: #7c2d12; background: #fff7ed; border: 1px solid #fed7aa; padding: 6px 10px; border-radius: 8px; margin-top: 8px; font-weight: 600; }
+        .weather-main { display: flex; align-items: center; gap: 12px; }
+        .weather-icon { font-size: 2rem; }
+        .weather-temp { font-size: 1.25rem; font-weight: 800; color: #0c4a6e; }
+        .weather-cond { font-size: 0.82rem; color: #075985; font-weight: 600; }
+        .weather-stats { display: flex; gap: 16px; font-size: 0.85rem; color: #0c4a6e; font-weight: 700; }
+        .weather-advice { font-size: 0.85rem; color: #7c2d12; background: #fff7ed; border: 1px solid #fed7aa; padding: 10px 14px; border-radius: 10px; margin-top: 10px; font-weight: 600; }
 
         .status-row {
             display: flex;
@@ -257,20 +310,20 @@
             background: #f9fafb;
             border: 1px solid #e5e7eb;
             border-radius: 10px;
-            padding: 8px 12px;
-            font-size: 0.85rem;
+            padding: 10px 14px;
+            font-size: 0.88rem;
             font-weight: 700;
         }
 
         .soil-badge {
             background: linear-gradient(135deg, #d1fae5, #a7f3d0);
             color: var(--primary-dark);
-            padding: 12px 14px;
-            border-radius: 12px;
-            font-size: 0.88rem;
-            margin-top: 8px;
-            border-left: 4px solid var(--primary);
-            line-height: 1.5;
+            padding: 16px 18px;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            margin-top: 14px;
+            border-left: 5px solid var(--primary);
+            line-height: 1.6;
         }
 
         /* Input with Mic button */
@@ -281,24 +334,24 @@
         }
 
         .input-mic-wrapper textarea {
-            padding-right: 48px;
+            padding-right: 52px;
         }
 
         .mic-btn-field {
             position: absolute;
-            right: 10px;
-            bottom: 12px;
+            right: 14px;
+            bottom: 14px;
             background: #fef2f2;
             border: 1px solid #fca5a5;
             color: #ef4444;
-            width: 36px;
-            height: 36px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.15rem;
             transition: all 0.2s ease;
         }
 
@@ -314,13 +367,13 @@
             animation: pulseRecord 1s infinite alternate;
         }
 
-        /* Submit Button */
+        /* Buttons */
         .btn {
             width: 100%;
             background: linear-gradient(135deg, #10b981, #059669);
             color: white;
             border: none;
-            padding: 15px;
+            padding: 16px;
             font-size: 1.15rem;
             font-weight: 800;
             border-radius: 14px;
@@ -331,12 +384,23 @@
             justify-content: center;
             align-items: center;
             gap: 10px;
-            margin-top: 10px;
         }
 
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 24px rgba(16, 185, 129, 0.45);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #4b5563;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+            color: #1f2937;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
         }
 
         .spinner {
@@ -351,7 +415,7 @@
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* API Key Modal */
+        /* Modal */
         .modal-backdrop {
             display: none;
             position: fixed;
@@ -366,9 +430,9 @@
 
         .modal-card {
             background: white;
-            border-radius: 18px;
-            padding: 24px;
-            max-width: 480px;
+            border-radius: 20px;
+            padding: 28px;
+            max-width: 500px;
             width: 100%;
             box-shadow: 0 20px 40px rgba(0,0,0,0.3);
             animation: slideIn 0.3s ease;
@@ -385,9 +449,13 @@
 
     <header>
         <a href="index.html" class="brand">
-            <span class="brand-icon">🌿</span> छाया AI (Chaya AI)
+            <span class="brand-icon">🌿</span> <span id="brandTitle">छाया AI (Chaya AI)</span>
         </a>
         <div class="header-actions">
+            <!-- Language Toggle Button -->
+            <button class="lang-btn" onclick="toggleLanguage()">
+                🌐 <span id="langBtnText">English</span>
+            </button>
             <button class="api-badge" onclick="openApiModal()">
                 ⚙️ <span id="apiStatusText">AI सेटिंग</span>
             </button>
@@ -397,117 +465,157 @@
 
     <div class="container">
         <div class="glass-card">
-            <div class="card-title">
-                <span>📍 शेती व माती माहिती नोंदणी</span>
-                <span class="rag-badge">📁 पूर्व-साठवलेले कृषी डेटाबेस</span>
+            <div>
+                <div class="card-title">
+                    <span id="cardTitleText">📍 शेती व माती माहिती नोंदणी</span>
+                </div>
+
+                <!-- Live Weather Widget -->
+                <div class="weather-widget" id="weatherWidget">
+                    <div class="weather-main">
+                        <span class="weather-icon" id="weatherIcon">⏳</span>
+                        <div>
+                            <div class="weather-temp" id="weatherTemp">हवामान लोड होत आहे...</div>
+                            <div class="weather-cond" id="weatherCond"></div>
+                        </div>
+                    </div>
+                    <div class="weather-stats" id="weatherStats"></div>
+                </div>
+                <div class="weather-advice" id="weatherAdvice" style="display:none;"></div>
+
+                <div class="step-progress" id="stepCounter">
+                    पायरी १ / ४
+                </div>
+
+                <form id="farmForm" onsubmit="submitForm(event)">
+                    
+                    <!-- STEP 1: Taluka -->
+                    <div class="form-step active" id="step1">
+                        <div class="form-group">
+                            <label for="taluka">
+                                <span id="lblStep1">१. तुमचा तालुका निवडा (Select Taluka):</span>
+                                <span class="label-hint" id="lblStep1Hint">नांदेड व मराठवाडा परिसर</span>
+                            </label>
+                            <select id="taluka" onchange="updateSoilData()">
+                                <option value="ardhapur">अर्धापूर (Ardhapur) - केळी व हळद पट्टा</option>
+                                <option value="bhokar">भोकर (Bhokar) - काळी माती व कापूस</option>
+                                <option value="kinwat">किनवट (Kinwat) - तांबडी-काळी माती</option>
+                                <option value="nanded">नांदेड ग्रामीण (Nanded Rural)</option>
+                                <option value="mudkhed">मुदखेड (Mudkhed) - गोदावरी काठ</option>
+                                <option value="loha">लोहा (Loha) - मध्यम काळी जमीन</option>
+                                <option value="hadgaon">हदगाव (Hadgaon) - कयाधू पट्टा</option>
+                                <option value="dharmabad">धर्माबाद (Dharmabad)</option>
+                            </select>
+                            <div id="soilPreview" class="soil-badge">
+                                <b>माती प्रकार:</b> गाळाची व काळी माती | pH: 7.2 | सेंद्रिय कर्ब: 0.62% | (केळी व हळदीसाठी उत्तम)
+                            </div>
+                        </div>
+                        <button type="button" class="btn" onclick="nextStep(2)">
+                            <span class="btn-next-text">पुढे जा (Next) ➔</span>
+                        </button>
+                    </div>
+
+                    <!-- STEP 2: Season & Water -->
+                    <div class="form-step" id="step2">
+                        <label style="font-size: 1.1rem; margin-bottom: 16px;" id="lblStep2Title">२. शेतीची सद्यस्थिती</label>
+                        <div class="row-grid">
+                            <div class="form-group">
+                                <label for="season" id="lblSeason">लागवड हंगाम (Season):</label>
+                                <select id="season">
+                                    <option value="kharif" id="optKharif">खरीप हंगाम (Kharif - जून ते ऑक्टोबर)</option>
+                                    <option value="rabi" id="optRabi">रब्बी हंगाम (Rabi - ऑक्टोबर ते मार्च)</option>
+                                    <option value="summer" id="optSummer">उन्हाळी हंगाम (Summer - जानेवारी ते मे)</option>
+                                    <option value="annual" id="optAnnual">वार्षिक / बारमाही (Annual / Perennial)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="water" id="lblWater">पाण्याची उपलब्धता (Water):</label>
+                                <select id="water">
+                                    <option value="abundant" id="optAbundant">मुबलक पाणी (Well / Canal / Borewell)</option>
+                                    <option value="moderate" id="optModerate">मध्यम पाणी (Drip / ठिबक सिंचन)</option>
+                                    <option value="low" id="optLow">कमी पाणी (Rainfed / कोरडवाहू)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="step-buttons">
+                            <button type="button" class="btn btn-secondary" onclick="prevStep(1)">
+                                <span class="btn-prev-text">⬅️ मागे (Back)</span>
+                            </button>
+                            <button type="button" class="btn" onclick="nextStep(3)">
+                                <span class="btn-next-text">पुढे जा (Next) ➔</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Land Size -->
+                    <div class="form-step" id="step3">
+                        <div class="form-group">
+                            <label for="land">
+                                <span id="lblLand">३. एकूण क्षेत्रफळ (Land Size):</span>
+                                <span class="label-hint" id="lblLandHint">उत्पादन व खर्च गणित यावर आधारित असेल</span>
+                            </label>
+                            <div style="display:flex; gap:12px; align-items:center;">
+                                <input type="number" id="land" value="2" min="0.25" max="100" step="0.25" required>
+                                <span style="font-weight:700; color:var(--primary-dark); font-size:1.1rem;" id="unitAcres">एकर</span>
+                            </div>
+                        </div>
+                        <div class="step-buttons">
+                            <button type="button" class="btn btn-secondary" onclick="prevStep(2)">
+                                <span class="btn-prev-text">⬅️ मागे (Back)</span>
+                            </button>
+                            <button type="button" class="btn" onclick="nextStep(4)">
+                                <span class="btn-next-text">पुढे जा (Next) ➔</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4: Question & Submit -->
+                    <div class="form-step" id="step4">
+                        <div class="form-group">
+                            <label for="question">
+                                <span id="lblQuestion">४. छाया AI ला विचारा किंवा लक्षणे सांगा:</span>
+                                <span class="label-hint" id="lblQuestionHint">बोलण्यासाठी 🎤 आयकॉन दाबा किंवा लिहा</span>
+                            </label>
+                            <div class="input-mic-wrapper">
+                                <textarea id="question" rows="6" placeholder="उदा. हळदीवर करपा पडला आहे, किंवा सर्वोत्तम खत कोणते?"></textarea>
+                                <button type="button" id="voiceBtn" class="mic-btn-field" title="मराठीत बोला" onclick="recordVoiceQuery()">🎤</button>
+                            </div>
+                        </div>
+
+                        <div class="step-buttons">
+                            <button type="button" class="btn btn-secondary" onclick="prevStep(3)">
+                                <span class="btn-prev-text">⬅️ मागे (Back)</span>
+                            </button>
+                            <button type="submit" class="btn">
+                                <span id="btnText">🤖 सल्ला घ्या (Analyze & Recommend) ➔</span>
+                                <div id="btnSpinner" class="spinner"></div>
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
             </div>
-
-            <!-- Live Weather Widget -->
-            <div class="weather-widget" id="weatherWidget">
-                <div class="weather-main">
-                    <span class="weather-icon" id="weatherIcon">⏳</span>
-                    <div>
-                        <div class="weather-temp" id="weatherTemp">हवामान लोड होत आहे...</div>
-                        <div class="weather-cond" id="weatherCond"></div>
-                    </div>
-                </div>
-                <div class="weather-stats" id="weatherStats"></div>
-            </div>
-            <div class="weather-advice" id="weatherAdvice" style="display:none;"></div>
-
-            <form id="farmForm" onsubmit="submitForm(event)">
-                
-                <div class="form-group">
-                    <label for="taluka">
-                        <span>तालुका निवडा (Select Taluka):</span>
-                        <span class="label-hint">नांदेड व मराठवाडा परिसर</span>
-                    </label>
-                    <select id="taluka" onchange="updateSoilData()">
-                        <option value="ardhapur">अर्धापूर (Ardhapur) - केळी व हळद पट्टा</option>
-                        <option value="bhokar">भोकर (Bhokar) - काळी माती व कापूस</option>
-                        <option value="kinwat">किनवट (Kinwat) - तांबडी-काळी माती</option>
-                        <option value="nanded">नांदेड ग्रामीण (Nanded Rural)</option>
-                        <option value="mudkhed">मुदखेड (Mudkhed) - गोदावरी काठ</option>
-                        <option value="loha">लोहा (Loha) - मध्यम काळी जमीन</option>
-                        <option value="hadgaon">हदगाव (Hadgaon) - कयाधू पट्टा</option>
-                        <option value="dharmabad">धर्माबाद (Dharmabad)</option>
-                    </select>
-                    <div id="soilPreview" class="soil-badge">
-                        <b>माती प्रकार:</b> गाळाची व काळी माती | pH: 7.2 | सेंद्रिय कर्ब: 0.62% | (केळी व हळदीसाठी उत्तम)
-                    </div>
-                </div>
-
-                <div class="row-grid">
-                    <div class="form-group">
-                        <label for="season">लागवड हंगाम (Season):</label>
-                        <select id="season">
-                            <option value="kharif">खरीप हंगाम (Kharif - जून ते ऑक्टोबर)</option>
-                            <option value="rabi">रब्बी हंगाम (Rabi - ऑक्टोबर ते मार्च)</option>
-                            <option value="summer">उन्हाळी हंगाम (Summer - जानेवारी ते मे)</option>
-                            <option value="annual">वार्षिक / बारमाही (Annual / Perennial)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="water">पाण्याची उपलब्धता (Water):</label>
-                        <select id="water">
-                            <option value="abundant">मुबलक पाणी (Well / Canal / Borewell)</option>
-                            <option value="moderate">मध्यम पाणी (Drip / ठिबक सिंचन)</option>
-                            <option value="low">कमी पाणी (Rainfed / कोरडवाहू)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="land">
-                        <span>एकूण क्षेत्रफळ (Land Size in Acres):</span>
-                        <span class="label-hint">उत्पादन व खर्च गणित यावर आधारित असेल</span>
-                    </label>
-                    <div style="display:flex; gap:10px; align-items:center;">
-                        <input type="number" id="land" value="2" min="0.25" max="100" step="0.25" required>
-                        <span style="font-weight:700; color:var(--primary-dark); font-size:1.05rem;">एकर</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="question">
-                        <span>छाया AI ला विचारा किंवा लक्षणे सांगा (Ask / Problem):</span>
-                        <span class="label-hint">मराठीत बोला 🎤 किंवा लिहा</span>
-                    </label>
-                    <div class="input-mic-wrapper">
-                        <textarea id="question" rows="2" placeholder="उदा. हळदीवर करपा पडला आहे, किंवा सर्वोत्तम खत कोणते?"></textarea>
-                        <button type="button" id="voiceBtn" class="mic-btn-field" title="मराठीत बोला" onclick="recordVoiceQuery()">🎤</button>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn">
-                    <span id="btnText">🤖 छाया AI कडून सखोल सल्ला घ्या (Analyze & Recommend) ➔</span>
-                    <div id="btnSpinner" class="spinner"></div>
-                </button>
-            </form>
         </div>
     </div>
 
     <!-- API Key / Settings Modal -->
     <div id="apiModal" class="modal-backdrop" onclick="closeApiModal(event)">
         <div class="modal-card" onclick="event.stopPropagation()">
-            <h3 style="color:var(--primary-dark); margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-                ⚙️ छाया AI - मॉडेल व API सेटिंग
+            <h3 style="color:var(--primary-dark); margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+                ⚙️ <span id="modalTitle">छाया AI - मॉडेल व API सेटिंग</span>
             </h3>
-            <p style="font-size:0.85rem; color:#4b5563; line-height:1.4; margin-bottom:14px;">
-                छाया AI इनबिल्ट <b>स्मार्ट नॉलेज इंजिन</b> वापरून ऑफलाइनही उत्तम कार्य करते. AI, Live बाजारभाव व आवाज (Voice) या सेवा आता <b>सुरक्षित बॅकएंडवरून</b> (Vercel Environment Variables) चालतात — त्यामुळे इथे कोणतीही Key टाकण्याची गरज नाही.
+            <p style="font-size:0.88rem; color:#4b5563; line-height:1.5; margin-bottom:16px;" id="modalDesc">
+                छाया AI इनबिल्ट <b>स्मार्ट नॉलेज इंजिन</b> वापरून ऑफलाइनही उत्तम कार्य करते. AI, Live बाजारभाव व आवाज (Voice) या सेवा आता <b>सुरक्षित बॅकएंडवरून</b> चालतात.
             </p>
-            <div id="backendStatusList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+            <div id="backendStatusList" style="display:flex; flex-direction:column; gap:10px; margin-bottom:18px;">
                 <div class="status-row"><span>🧠 Gemini AI</span><span id="statusGemini">तपासत आहे...</span></div>
                 <div class="status-row"><span>💹 Live बाजारभाव</span><span id="statusMarket">तपासत आहे...</span></div>
                 <div class="status-row"><span>🔊 ElevenLabs आवाज</span><span id="statusTts">तपासत आहे...</span></div>
-                <div class="status-row"><span>🌦️ हवामान</span><span style="color:#059669; font-weight:700;">✅ नेहमी सुरू (Open-Meteo)</span></div>
+                <div class="status-row"><span>🌦️ हवामान</span><span style="color:#059669; font-weight:700;" id="statusWeather">✅ नेहमी सुरू (Open-Meteo)</span></div>
             </div>
-            <p style="font-size:0.72rem; color:#9ca3af; margin-bottom:14px;">
-                ℹ️ जे "कॉन्फिगर नाही" दिसते आहे, त्यासाठी developer ला Vercel Project → Settings → Environment Variables मध्ये संबंधित Key टाकावी लागेल (GEMINI_API_KEY / MARKET_API_KEY / ELEVENLABS_API_KEY).
-            </p>
             <div style="display:flex; justify-content:flex-end; gap:10px;">
-                <button type="button" onclick="closeApiModal()" style="padding:8px 18px; border:none; background:var(--primary); color:white; border-radius:8px; font-weight:700; cursor:pointer;">ठीक आहे</button>
+                <button type="button" onclick="closeApiModal()" style="padding:10px 20px; border:none; background:var(--primary); color:white; border-radius:10px; font-weight:700; cursor:pointer;" id="btnCloseModal">ठीक आहे</button>
             </div>
         </div>
     </div>
@@ -517,12 +625,154 @@
     <script src="js/chat-assistant.js"></script>
 
     <script>
+        // LANGUAGE DICTIONARY
+        let currentLang = 'mr'; // Default Marathi
+
+        const translations = {
+            mr: {
+                langBtn: "English",
+                cardTitle: "📍 शेती व माती माहिती नोंदणी",
+                stepPrefix: "पायरी",
+                step1Label: "१. तुमचा तालुका निवडा (Select Taluka):",
+                step1Hint: "नांदेड व मराठवाडा परिसर",
+                step2Title: "२. शेतीची सद्यस्थिती",
+                seasonLabel: "लागवड हंगाम (Season):",
+                optKharif: "खरीप हंगाम (Kharif - जून ते ऑक्टोबर)",
+                optRabi: "रब्बी हंगाम (Rabi - ऑक्टोबर ते मार्च)",
+                optSummer: "उन्हाळी हंगाम (Summer - जानेवारी ते मे)",
+                optAnnual: "वार्षिक / बारमाही (Annual / Perennial)",
+                waterLabel: "पाण्याची उपलब्धता (Water):",
+                optAbundant: "मुबलक पाणी (Well / Canal / Borewell)",
+                optModerate: "मध्यम पाणी (Drip / ठिबक सिंचन)",
+                optLow: "कमी पाणी (Rainfed / कोरडवाहू)",
+                landLabel: "३. एकूण क्षेत्रफळ (Land Size):",
+                landHint: "उत्पादन व खर्च गणित यावर आधारित असेल",
+                unitAcres: "एकर",
+                questionLabel: "४. छाया AI ला विचारा किंवा लक्षणे सांगा:",
+                questionHint: "बोलण्यासाठी 🎤 आयकॉन दाबा किंवा लिहा",
+                qPlaceholder: "उदा. हळदीवर करपा पडला आहे, किंवा सर्वोत्तम खत कोणते?",
+                btnNext: "पुढे जा (Next) ➔",
+                btnPrev: "⬅️ मागे (Back)",
+                btnSubmit: "🤖 सल्ला घ्या (Analyze & Recommend) ➔",
+                weatherLoading: "हवामान लोड होत आहे...",
+                soilPrefix: "माती प्रकार",
+                soilPh: "pH",
+                soilCarbon: "सेंद्रिय कर्ब",
+                modalTitle: "छाया AI - मॉडेल व API सेटिंग",
+                modalDesc: "छाया AI इनबिल्ट <b>स्मार्ट नॉलेज इंजिन</b> वापरून ऑफलाइनही उत्तम कार्य करते. AI, Live बाजारभाव व आवाज (Voice) या सेवा आता <b>सुरक्षित बॅकएंडवरून</b> चालतात.",
+                btnModalClose: "ठीक आहे",
+                apiSettings: "AI सेटिंग"
+            },
+            en: {
+                langBtn: "मराठी",
+                cardTitle: "📍 Farm & Soil Details Registration",
+                stepPrefix: "Step",
+                step1Label: "1. Select Your Taluka:",
+                step1Hint: "Nanded & Marathwada Region",
+                step2Title: "2. Current Farming Conditions",
+                seasonLabel: "Cropping Season:",
+                optKharif: "Kharif Season (June to October)",
+                optRabi: "Rabi Season (October to March)",
+                optSummer: "Summer Season (January to May)",
+                optAnnual: "Annual / Perennial Crops",
+                waterLabel: "Water Availability:",
+                optAbundant: "Abundant Water (Well / Canal / Borewell)",
+                optModerate: "Moderate Water (Drip Irrigation)",
+                optLow: "Low Water (Rainfed / Dryland)",
+                landLabel: "3. Total Land Area:",
+                landHint: "Used for calculating yield & cost estimates",
+                unitAcres: "Acres",
+                questionLabel: "4. Ask Chaya AI or Describe Symptoms:",
+                questionHint: "Tap 🎤 to speak or type your question",
+                qPlaceholder: "e.g., Turmeric leaf spot disease, or best fertilizer recommendation?",
+                btnNext: "Next Step ➔",
+                btnPrev: "⬅️ Back",
+                btnSubmit: "🤖 Get Recommendation ➔",
+                weatherLoading: "Loading Weather...",
+                soilPrefix: "Soil Type",
+                soilPh: "pH",
+                soilCarbon: "Organic Carbon",
+                modalTitle: "Chaya AI - Model & API Settings",
+                modalDesc: "Chaya AI operates smoothly offline using an inbuilt <b>smart knowledge engine</b>. AI, live market rates, and voice services run securely via the server.",
+                btnModalClose: "Got It",
+                apiSettings: "AI Settings"
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'mr' ? 'en' : 'mr';
+            applyLanguage();
+        }
+
+        function applyLanguage() {
+            const t = translations[currentLang];
+            
+            document.getElementById("langBtnText").innerText = t.langBtn;
+            document.getElementById("cardTitleText").innerText = t.cardTitle;
+            document.getElementById("lblStep1").innerText = t.step1Label;
+            document.getElementById("lblStep1Hint").innerText = t.step1Hint;
+            document.getElementById("lblStep2Title").innerText = t.step2Title;
+            document.getElementById("lblSeason").innerText = t.seasonLabel;
+            document.getElementById("optKharif").innerText = t.optKharif;
+            document.getElementById("optRabi").innerText = t.optRabi;
+            document.getElementById("optSummer").innerText = t.optSummer;
+            document.getElementById("optAnnual").innerText = t.optAnnual;
+            document.getElementById("lblWater").innerText = t.waterLabel;
+            document.getElementById("optAbundant").innerText = t.optAbundant;
+            document.getElementById("optModerate").innerText = t.optModerate;
+            document.getElementById("optLow").innerText = t.optLow;
+            document.getElementById("lblLand").innerText = t.landLabel;
+            document.getElementById("lblLandHint").innerText = t.landHint;
+            document.getElementById("unitAcres").innerText = t.unitAcres;
+            document.getElementById("lblQuestion").innerText = t.questionLabel;
+            document.getElementById("lblQuestionHint").innerText = t.questionHint;
+            document.getElementById("question").placeholder = t.qPlaceholder;
+            document.getElementById("btnText").innerText = t.btnSubmit;
+            document.getElementById("apiStatusText").innerText = t.apiSettings;
+            
+            document.querySelectorAll(".btn-next-text").forEach(el => el.innerText = t.btnNext);
+            document.querySelectorAll(".btn-prev-text").forEach(el => el.innerText = t.btnPrev);
+
+            document.getElementById("modalTitle").innerText = t.modalTitle;
+            document.getElementById("modalDesc").innerHTML = t.modalDesc;
+            document.getElementById("btnCloseModal").innerText = t.btnModalClose;
+
+            updateStepCounter();
+            updateSoilData();
+        }
+
+        // STEP-BY-STEP LOGIC
+        let currentStep = 1;
+        const totalSteps = 4;
+
+        function nextStep(step) {
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            currentStep = step;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            updateStepCounter();
+        }
+
+        function prevStep(step) {
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            currentStep = step;
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            updateStepCounter();
+        }
+
+        function updateStepCounter() {
+            const prefix = translations[currentLang].stepPrefix;
+            document.getElementById("stepCounter").innerText = `${prefix} ${currentStep} / ${totalSteps}`;
+        }
+
         // Initialize Knowledge Base & Soil Profile on page load
         document.addEventListener("DOMContentLoaded", async () => {
-            await window.chayaAI.loadKnowledgeBase();
+            if (window.chayaAI) {
+                await window.chayaAI.loadKnowledgeBase();
+                checkApiStatus();
+                loadWeatherWidget();
+            }
             updateSoilData();
-            checkApiStatus();
-            loadWeatherWidget();
+            updateStepCounter();
         });
 
         function loadWeatherWidget() {
@@ -547,7 +797,6 @@
                         applyWeather(w);
                     },
                     async () => {
-                        // Permission denied -> fallback to Nanded district default coordinates
                         const w = await window.chayaAI.fetchLiveWeather();
                         applyWeather(w);
                     },
@@ -560,10 +809,13 @@
 
         function updateSoilData() {
             const taluka = document.getElementById("taluka").value;
-            const profile = window.chayaAI.getTalukaProfile(taluka);
-            document.getElementById("soilPreview").innerHTML = `
-                <b>माती प्रकार:</b> ${profile.soil_type} | <b>pH:</b> ${profile.ph} | <b>सेंद्रिय कर्ब:</b> ${profile.organic_carbon || '0.58%'} | <i>(${profile.micronutrient_status || 'उत्कृष्ट सुपिकता'})</i>
-            `;
+            if(window.chayaAI) {
+                const profile = window.chayaAI.getTalukaProfile(taluka);
+                const t = translations[currentLang];
+                document.getElementById("soilPreview").innerHTML = `
+                    <b>${t.soilPrefix}:</b> ${profile.soil_type} | <b>${t.soilPh}:</b> ${profile.ph} | <b>${t.soilCarbon}:</b> ${profile.organic_carbon || '0.58%'} | <i>(${profile.micronutrient_status || 'उत्कृष्ट सुपिकता'})</i>
+                `;
+            }
         }
 
         function recordVoiceQuery() {
@@ -571,13 +823,13 @@
             const q = document.getElementById("question");
 
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert("तुमच्या ब्राउझरमध्ये व्हॉइस इनपुट सपोर्ट नाही. कृपया टाइप करा.");
+                alert("Speech recognition is not supported in your browser.");
                 return;
             }
 
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             const rec = new SpeechRecognition();
-            rec.lang = 'mr-IN'; // Marathi (India)
+            rec.lang = currentLang === 'mr' ? 'mr-IN' : 'en-US'; 
             rec.continuous = false;
             rec.interimResults = false;
 
@@ -598,7 +850,8 @@
             refreshBackendStatusPanel();
         }
 
-        function closeApiModal() {
+        function closeApiModal(e) {
+            if (e && e.target !== e.currentTarget) return;
             document.getElementById("apiModal").style.display = "none";
         }
 
@@ -632,8 +885,8 @@
             btnText.style.display = "none";
             spinner.style.display = "block";
 
-            // Save form choices to LocalStorage
             const formData = {
+                lang: currentLang,
                 taluka: document.getElementById("taluka").value,
                 talukaText: document.getElementById("taluka").options[document.getElementById("taluka").selectedIndex].text,
                 season: document.getElementById("season").value,
@@ -646,7 +899,6 @@
             
             localStorage.setItem("chayaFormData", JSON.stringify(formData));
 
-            // Navigate to result.html
             setTimeout(() => {
                 window.location.href = "result.html";
             }, 600);
