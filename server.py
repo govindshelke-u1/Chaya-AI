@@ -66,7 +66,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             if action == 'status':
                 api_key = os.environ.get('ELEVENLABS_API_KEY', DEFAULT_ELEVENLABS_KEY)
                 resp_data = {
-                    'gemini': bool(os.environ.get('GEMINI_API_KEY')),
+                    'groq': bool(os.environ.get('GROQ_API_KEY')),
                     'market': bool(os.environ.get('MARKET_API_KEY')),
                     'tts': bool(api_key)
                 }
@@ -138,8 +138,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 self._handle_tts()
                 return
 
-            if action == 'gemini':
-                self._handle_gemini()
+            if action == 'groq':
+                self._handle_groq()
                 return
 
         self.send_response(404)
@@ -205,13 +205,14 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self._send_json(500, {'error': 'tts_failed', 'detail': str(e)})
 
     # -------------------------------------------------------------
-    # GEMINI — mirrors api/index.js handleGemini (Google Gemini proxy)
+    # GROQ — mirrors api/index.js handleGroq (Groq AI proxy, OpenAI-
+    # compatible chat completions endpoint)
     # -------------------------------------------------------------
-    def _handle_gemini(self):
+    def _handle_groq(self):
         content_length = int(self.headers.get('Content-Length', 0))
         body = self.rfile.read(content_length).decode('utf-8') if content_length > 0 else '{}'
 
-        api_key = os.environ.get('GEMINI_API_KEY', '')
+        api_key = os.environ.get('GROQ_API_KEY', '')
         if not api_key:
             self._send_json(200, {'error': 'not_configured'})
             return
@@ -226,32 +227,36 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 self._send_json(400, {'error': 'missing_context'})
                 return
 
-            prompt_text = (
-                f"{system_prompt}\n\nडेटा:\n{grounded_context}\n\n"
+            user_text = (
+                f"डेटा:\n{grounded_context}\n\n"
                 f"शेतकऱ्याचा प्रश्न: {user_question}\n\nथेट संक्षिप्त मराठी सल्ला:"
             )
 
-            endpoint = (
-                "https://generativelanguage.googleapis.com/v1beta/models/"
-                f"gemini-1.5-flash:generateContent?key={urllib.parse.quote(api_key)}"
-            )
+            endpoint = "https://api.groq.com/openai/v1/chat/completions"
             payload = {
-                'contents': [{'role': 'user', 'parts': [{'text': prompt_text}]}],
-                'generationConfig': {'temperature': 0.3, 'maxOutputTokens': 800}
+                'model': 'openai/gpt-oss-120b',
+                'messages': [
+                    {'role': 'system', 'content': system_prompt},
+                    {'role': 'user', 'content': user_text}
+                ],
+                'temperature': 0.3,
+                'max_completion_tokens': 800
             }
             req = urllib.request.Request(
                 endpoint,
                 data=json.dumps(payload).encode('utf-8'),
-                headers={'Content-Type': 'application/json'}
+                headers={
+                    'Content-Type': 'application/json',
+                    'Authorization': f'Bearer {api_key}'
+                }
             )
             with urllib.request.urlopen(req, timeout=25) as resp:
                 result = json.loads(resp.read().decode('utf-8'))
 
             text = (
-                result.get('candidates', [{}])[0]
-                .get('content', {})
-                .get('parts', [{}])[0]
-                .get('text')
+                result.get('choices', [{}])[0]
+                .get('message', {})
+                .get('content')
             )
             if not text:
                 raise ValueError('empty_response')
@@ -259,11 +264,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self._send_json(200, {'text': text})
         except urllib.error.HTTPError as e:
             err_body = e.read().decode('utf-8', errors='ignore')
-            print(f"Gemini proxy HTTP error ({e.code}): {err_body}")
-            self._send_json(200, {'error': 'gemini_failed'})
+            print(f"Groq proxy HTTP error ({e.code}): {err_body}")
+            self._send_json(200, {'error': 'groq_failed'})
         except Exception as e:
-            print(f"Gemini proxy error: {e}")
-            self._send_json(200, {'error': 'gemini_failed'})
+            print(f"Groq proxy error: {e}")
+            self._send_json(200, {'error': 'groq_failed'})
 
 def run_server():
     os.chdir(DIRECTORY)

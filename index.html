@@ -609,7 +609,7 @@
                 छाया AI इनबिल्ट <b>स्मार्ट नॉलेज इंजिन</b> वापरून ऑफलाइनही उत्तम कार्य करते. AI, Live बाजारभाव व आवाज (Voice) या सेवा आता <b>सुरक्षित बॅकएंडवरून</b> चालतात.
             </p>
             <div id="backendStatusList" style="display:flex; flex-direction:column; gap:10px; margin-bottom:18px;">
-                <div class="status-row"><span>🧠 Gemini AI</span><span id="statusGemini">तपासत आहे...</span></div>
+                <div class="status-row"><span>🧠 Groq AI</span><span id="statusGroq">तपासत आहे...</span></div>
                 <div class="status-row"><span>💹 Live बाजारभाव</span><span id="statusMarket">तपासत आहे...</span></div>
                 <div class="status-row"><span>🔊 ElevenLabs आवाज</span><span id="statusTts">तपासत आहे...</span></div>
                 <div class="status-row"><span>🌦️ हवामान</span><span style="color:#059669; font-weight:700;" id="statusWeather">✅ नेहमी सुरू (Open-Meteo)</span></div>
@@ -862,7 +862,7 @@
                     ? '<span style="color:#059669;">✅ कनेक्टेड</span>'
                     : '<span style="color:#b91c1c;">⚪ कॉन्फिगर नाही</span>';
             };
-            render('statusGemini', status.gemini);
+            render('statusGroq', status.groq);
             render('statusMarket', status.market);
             render('statusTts', status.tts);
         }
@@ -870,7 +870,7 @@
         function checkApiStatus() {
             window.chayaAI.checkBackendStatus().then((status) => {
                 const statusText = document.getElementById("apiStatusText");
-                let label = status.gemini ? "Gemini AI कनेक्टेड 🟢" : "ऑफलाइन AI इंजिन ⚡";
+                let label = status.groq ? "Groq AI कनेक्टेड 🟢" : "ऑफलाइन AI इंजिन ⚡";
                 if (status.tts) label += " 🔊";
                 statusText.innerText = label;
             });
