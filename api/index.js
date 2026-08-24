@@ -3,14 +3,14 @@
 //
 // WHY COMBINED: Vercel's free (Hobby) plan allows a limited number of
 // serverless functions per project. Instead of one file per integration
-// (gemini.js, market.js, tts.js, status.js = 4 functions), everything is
+// (groq.js, market.js, tts.js, status.js = 4 functions), everything is
 // routed through ONE function using a `?action=` query parameter. This
 // keeps the project at 1 function total, leaving room to add many more
 // features later without hitting the limit.
 //
 // Frontend calls:
 //   GET  /api/index?action=status
-//   POST /api/index?action=gemini   body: { systemPrompt, groundedContext, userQuestion }
+//   POST /api/index?action=groq     body: { systemPrompt, groundedContext, userQuestion }
 //   GET  /api/index?action=market   query: district, state
 //   POST /api/index?action=tts      body: { text }
 //
@@ -23,14 +23,14 @@ module.exports = async (req, res) => {
   switch (action) {
     case 'status':
       return handleStatus(req, res);
-    case 'gemini':
-      return handleGemini(req, res);
+    case 'groq':
+      return handleGroq(req, res);
     case 'market':
       return handleMarket(req, res);
     case 'tts':
       return handleTts(req, res);
     default:
-      return res.status(400).json({ error: 'unknown_action', hint: 'use ?action=status|gemini|market|tts' });
+      return res.status(400).json({ error: 'unknown_action', hint: 'use ?action=status|groq|market|tts' });
   }
 };
 
@@ -40,21 +40,21 @@ module.exports = async (req, res) => {
 // ---------------------------------------------------------------------
 async function handleStatus(req, res) {
   return res.status(200).json({
-    gemini: !!process.env.GEMINI_API_KEY,
+    groq: !!process.env.GROQ_API_KEY,
     market: !!process.env.MARKET_API_KEY,
     tts: !!process.env.ELEVENLABS_API_KEY
   });
 }
 
 // ---------------------------------------------------------------------
-// GEMINI — Google Gemini proxy.
+// GROQ — Groq AI proxy (OpenAI-compatible chat completions endpoint).
 // ---------------------------------------------------------------------
-async function handleGemini(req, res) {
+async function handleGroq(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'method_not_allowed' });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     return res.status(200).json({ error: 'not_configured' });
   }
@@ -66,31 +66,35 @@ async function handleGemini(req, res) {
       return res.status(400).json({ error: 'missing_context' });
     }
 
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const endpoint = 'https://api.groq.com/openai/v1/chat/completions';
     const payload = {
-      contents: [
+      model: 'openai/gpt-oss-120b',
+      messages: [
+        { role: 'system', content: systemPrompt || '' },
         {
           role: 'user',
-          parts: [{
-            text: `${systemPrompt || ''}\n\nडेटा:\n${groundedContext}\n\nशेतकऱ्याचा प्रश्न: ${userQuestion || ''}\n\nथेट संक्षिप्त मराठी सल्ला:`
-          }]
+          content: `डेटा:\n${groundedContext}\n\nशेतकऱ्याचा प्रश्न: ${userQuestion || ''}\n\nथेट संक्षिप्त मराठी सल्ला:`
         }
       ],
-      generationConfig: { temperature: 0.3, maxOutputTokens: 800 }
+      temperature: 0.3,
+      max_completion_tokens: 800
     };
 
     const response = await fetch(endpoint, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
       body: JSON.stringify(payload)
     });
 
     if (!response.ok) {
-      throw new Error(`Gemini status: ${response.status}`);
+      throw new Error(`Groq status: ${response.status}`);
     }
 
     const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    const text = data.choices?.[0]?.message?.content;
 
     if (!text) {
       throw new Error('empty_response');
@@ -98,8 +102,8 @@ async function handleGemini(req, res) {
 
     return res.status(200).json({ text });
   } catch (e) {
-    console.error('Gemini proxy error:', e.message);
-    return res.status(200).json({ error: 'gemini_failed' });
+    console.error('Groq proxy error:', e.message);
+    return res.status(200).json({ error: 'groq_failed' });
   }
 }
 
