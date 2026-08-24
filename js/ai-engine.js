@@ -21,7 +21,7 @@ class ChayaAIEngine {
     this.elevenLabsApiKey = null;
     this.elevenLabsVoiceId = null;
     this.lastTtsErrorDetail = null;
-    this.backendStatus = { gemini: false, market: false, tts: false, checked: false };
+    this.backendStatus = { groq: false, market: false, tts: false, checked: false };
   }
 
   async checkBackendStatus() {
@@ -33,7 +33,7 @@ class ChayaAIEngine {
       }
     } catch (e) {
       console.warn('Backend status check failed (running without /api backend?):', e);
-      this.backendStatus = { gemini: false, market: false, tts: false, checked: true };
+      this.backendStatus = { groq: false, market: false, tts: false, checked: true };
     }
     return this.backendStatus;
   }
@@ -359,22 +359,22 @@ class ChayaAIEngine {
 4. 🚨 **धोक्याची कीड व झटपट फवारणी औषध**
 `;
 
-      const response = await fetch('/api/index?action=gemini', {
+      const response = await fetch('/api/index?action=groq', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ systemPrompt, groundedContext, userQuestion })
       });
 
-      if (!response.ok) throw new Error(`Gemini proxy status: ${response.status}`);
+      if (!response.ok) throw new Error(`Groq proxy status: ${response.status}`);
       const result = await response.json();
 
       if (result.text) {
-        return { source: 'gemini_grounded', text: result.text, rankedCrops: offlineEvaluation };
+        return { source: 'groq_grounded', text: result.text, rankedCrops: offlineEvaluation };
       } else {
         throw new Error(result.error || 'empty_response');
       }
     } catch (e) {
-      console.warn('Gemini backend unavailable, using offline engine:', e);
+      console.warn('Groq backend unavailable, using offline engine:', e);
       return this.generateOfflineAIResponse(userInput, offlineEvaluation);
     }
   }
