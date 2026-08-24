@@ -149,6 +149,14 @@ async function handleMarket(req, res) {
 
 // ---------------------------------------------------------------------
 // TTS — ElevenLabs Text-to-Speech proxy.
+//
+// भाषा (Language) टीप:
+//   eleven_multilingual_v2 अधिकृतपणे हिंदी सपोर्ट करतो, पण मराठी नाही
+//   (ElevenLabs च्या 29-भाषा यादीत मराठीचा समावेश नाही) — म्हणूनच मराठी
+//   मजकूर वाचताना उच्चार "हिंदी सारखा" / चुकीचा वाटतो. eleven_v3 मॉडेल
+//   मराठीला (mar) अधिकृत सपोर्ट करतो, त्यामुळे आधी v3 वापरून बघतो आणि
+//   जर ते account वर उपलब्ध नसेल (Free tier वर बंद असू शकते) तर आपोआप
+//   multilingual_v2 वर परत जातो, जेणेकरून आवाज पूर्ण बंद पडणार नाही.
 // ---------------------------------------------------------------------
 async function handleTts(req, res) {
   if (req.method !== 'POST') {
@@ -162,15 +170,16 @@ async function handleTts(req, res) {
     return res.status(200).json({ error: 'not_configured', detail: 'ELEVENLABS_API_KEY Vercel Environment Variables मध्ये set नाही (किंवा redeploy बाकी आहे)' });
   }
 
-  try {
-    const { text } = req.body || {};
-    const cleanText = (text || '').replace(/[*_#`]/g, '').replace(/\s+/g, ' ').trim().slice(0, 2000);
+  const { text } = req.body || {};
+  const cleanText = (text || '').replace(/[*_#`]/g, '').replace(/\s+/g, ' ').trim().slice(0, 2000);
 
-    if (!cleanText) {
-      return res.status(400).json({ error: 'missing_text' });
-    }
+  if (!cleanText) {
+    return res.status(400).json({ error: 'missing_text' });
+  }
 
-    const endpoint = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
+  const endpoint = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
+
+  async function callElevenLabs(modelId) {
     const response = await fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -179,20 +188,33 @@ async function handleTts(req, res) {
       },
       body: JSON.stringify({
         text: cleanText,
-        model_id: 'eleven_multilingual_v2',
-        voice_settings: { stability: 0.5, similarity_boost: 0.75 }
+        model_id: modelId,
+        voice_settings: { stability: 0.65, similarity_boost: 0.8, style: 0.25, use_speaker_boost: true }
       })
     });
+    return response;
+  }
+
+  try {
+    // 1st try: eleven_v3 — supports Marathi (mar) + Hindi (hin) properly.
+    let response = await callElevenLabs('eleven_v3');
+    let usedModel = 'eleven_v3';
+
+    // eleven_v3 not on this account/plan (free tier often 403/400s it) ->
+    // fall back to multilingual_v2 (proper Hindi, best-effort Marathi).
+    if (!response.ok && (response.status === 400 || response.status === 401 || response.status === 403)) {
+      response = await callElevenLabs('eleven_multilingual_v2');
+      usedModel = 'eleven_multilingual_v2';
+    }
 
     if (!response.ok) {
-      // Surface ElevenLabs' actual error body (invalid key, invalid voice id,
-      // quota exceeded, etc.) instead of a generic message.
       let detail = '';
       try { detail = await response.text(); } catch (_) {}
-      console.error(`ElevenLabs error ${response.status}:`, detail);
+      console.error(`ElevenLabs error ${response.status} (model: ${usedModel}):`, detail);
       return res.status(502).json({
         error: 'elevenlabs_request_failed',
         status: response.status,
+        model: usedModel,
         detail: detail.slice(0, 500)
       });
     }
@@ -202,6 +224,7 @@ async function handleTts(req, res) {
 
     res.setHeader('Content-Type', 'audio/mpeg');
     res.setHeader('Cache-Control', 'no-store');
+    res.setHeader('X-Chaya-TTS-Model', usedModel);
     return res.status(200).send(buffer);
   } catch (e) {
     console.error('TTS proxy error:', e.message);
