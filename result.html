@@ -259,25 +259,104 @@
             line-height: 1.45;
         }
 
-        /* Emergency Pest Action Box */
-        .emergency-pest-box {
-            background: #fef2f2;
-            border: 1.5px solid #fecaca;
-            border-radius: 16px;
-            padding: 18px;
+        /* Info Action Buttons Row */
+        .info-btn-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
             margin-bottom: 22px;
         }
 
-        .emergency-pest-item {
-            margin-bottom: 10px;
-            padding-bottom: 8px;
-            border-bottom: 1px dashed #fca5a5;
+        .info-btn {
+            background: white;
+            border: 1.5px solid #a7f3d0;
+            color: var(--primary-dark);
+            border-radius: 14px;
+            padding: 14px 10px;
+            font-size: 0.92rem;
+            font-weight: 800;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
-        .emergency-pest-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
+        .info-btn span.icon { font-size: 1.5rem; }
+        .info-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(6,78,59,0.15); }
+
+        /* Info Overlay Modal */
+        .info-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(6, 20, 15, 0.55);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
         }
+        .info-overlay.open { display: flex; }
+
+        .info-modal {
+            background: #fdfdfb;
+            border-radius: 20px;
+            max-width: 640px;
+            width: 100%;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .info-modal-header {
+            background: linear-gradient(135deg, #064e3b, #047857);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-modal-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-modal-close {
+            background: rgba(255,255,255,0.18);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .info-modal-body {
+            padding: 18px 20px;
+            overflow-y: auto;
+        }
+
+        .info-item {
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #d1d5db;
+        }
+        .info-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .info-item-title { font-weight: 800; color: #b91c1c; font-size: 0.95rem; margin-bottom: 3px; }
+        .info-item-sub { font-size: 0.9rem; color: #1f2937; margin-top: 2px; line-height: 1.4; }
 
         .chart-container {
             position: relative;
@@ -393,22 +472,20 @@
                 </div>
             </div>
 
-            <!-- Emergency Pest & Disease Quick Action -->
-            <div class="emergency-pest-box">
-                <h4 style="color:#991b1b; font-weight:800; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
-                    <span>🚨</span> धोक्याच्या किडींवर झटपट फवारणी उपाय (Emergency Pest Spray)
-                </h4>
-                <div id="emergencyPestList">
-                    <!-- Loaded dynamically -->
-                </div>
-            </div>
-
-            <!-- Day-by-Day Spray & Fertilizer Timeline -->
-            <div class="timeline-section-title">
-                <span>📅</span> दिवसनिहाय फवारणी व खत वेळापत्रक (Step-by-Step Schedule)
-            </div>
-            <div class="stage-timeline" id="stageTimeline">
-                <!-- Loaded dynamically -->
+            <!-- Quick Info Action Buttons -->
+            <div class="info-btn-grid">
+                <button class="info-btn" onclick="openInfoModal('scheme')">
+                    <span class="icon">🏛️</span> सरकारी योजना<br>(Gov Scheme)
+                </button>
+                <button class="info-btn" onclick="openInfoModal('fertilizer')">
+                    <span class="icon">🌾</span> खत माहिती<br>(Fertilizer)
+                </button>
+                <button class="info-btn" onclick="openInfoModal('disease')">
+                    <span class="icon">🐛</span> रोग व किडी<br>(Diseases)
+                </button>
+                <button class="info-btn" onclick="openInfoModal('steps')">
+                    <span class="icon">📅</span> टप्प्याटप्प्याने माहिती<br>(Step-by-Step)
+                </button>
             </div>
 
         </div>
@@ -423,6 +500,19 @@
             </div>
             <div class="chart-container">
                 <canvas id="marketChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shared Info Overlay Modal -->
+    <div class="info-overlay" id="infoOverlay" onclick="if(event.target===this) closeInfoModal()">
+        <div class="info-modal">
+            <div class="info-modal-header">
+                <div class="info-modal-title" id="infoModalTitle"><span>ℹ️</span> माहिती</div>
+                <button class="info-modal-close" onclick="closeInfoModal()">✕</button>
+            </div>
+            <div class="info-modal-body" id="infoModalBody">
+                <!-- Loaded dynamically -->
             </div>
         </div>
     </div>
@@ -472,53 +562,113 @@
                 `${landSize} एकरासाठी अपेक्षित उत्पादन ${topCrop.totalYieldRange}, अंदाजे निव्वळ नफा ₹${topCrop.netProfit?.toLocaleString('en-IN')}. ` +
                 `टोकण फॉर्म्युला: ${topCrop.yield_formula || 'गादी वाफ्यावर टोकण पद्धत'}.`;
 
-            // 2. Populate Emergency Pest Remedies
-            const pestBox = document.getElementById("emergencyPestList");
-            const remedies = topCrop.critical_pest_remedies || [];
-            pestBox.innerHTML = remedies.map(r => `
-                <div class="emergency-pest-item">
-                    <div style="font-weight:800; color:#b91c1c; font-size:0.95rem;">• ${r.pest}</div>
-                    <div style="font-size:0.9rem; color:#1f2937; margin-top:2px;"><b>उपाय / औषध मात्रा:</b> ${r.remedy}</div>
-                </div>
-            `).join('');
+            // 2. Prepare info-overlay content (rendered on demand when a button is clicked)
+            window.chayaCropData = topCrop;
 
-            // 3. Populate Day-by-Day Spray & Fertilizer Timeline
-            const timelineBox = document.getElementById("stageTimeline");
-            const sprays = topCrop.stage_spray_schedule || [];
-            const ferts = topCrop.stage_fertilizer_schedule || [];
-
-            let timelineHtml = '';
-
-            // Combine Basal & Spray stages cleanly
-            ferts.forEach(f => {
-                timelineHtml += `
-                    <div class="stage-card">
-                        <div class="stage-header">
-                            <span class="stage-days">🌱 ${f.stage}</span>
-                            <span class="stage-target">खत व ड्रिप डोस</span>
-                        </div>
-                        <div class="stage-spray-formula"><b>डोस:</b> ${f.dose}</div>
-                    </div>
-                `;
-            });
-
-            sprays.forEach(s => {
-                timelineHtml += `
-                    <div class="stage-card ${s.stage.includes('15') || s.stage.includes('30') ? 'urgent' : ''}">
-                        <div class="stage-header">
-                            <span class="stage-days">🎯 ${s.stage}</span>
-                            <span class="stage-target">${s.target}</span>
-                        </div>
-                        <div class="stage-spray-formula"><b>फवारणी फॉर्म्युला:</b> ${s.spray}</div>
-                    </div>
-                `;
-            });
-
-            timelineBox.innerHTML = timelineHtml;
-
-            // 4. Render Market Graph
+            // 3. Render Market Graph
             renderMarketChart();
         });
+
+        // ===== Info Overlay Modal Logic =====
+        function openInfoModal(type) {
+            const topCrop = window.chayaCropData || {};
+            const kb = (window.chayaAI && window.chayaAI.knowledgeBase) || {};
+            const titleEl = document.getElementById("infoModalTitle");
+            const bodyEl = document.getElementById("infoModalBody");
+            let title = '';
+            let html = '';
+
+            if (type === 'scheme') {
+                title = '🏛️ सरकारी योजना (Gov Schemes)';
+                const schemes = (kb.fertilizersAndSchemes && kb.fertilizersAndSchemes.schemes) || [];
+                html = schemes.length ? schemes.map(s => `
+                    <div class="info-item">
+                        <div class="info-item-title">${s.icon || '🏛️'} ${s.name_mr}</div>
+                        <div class="info-item-sub"><b>लाभ:</b> ${s.benefit}</div>
+                        <div class="info-item-sub"><b>पात्रता:</b> ${s.eligibility}</div>
+                        <div class="info-item-sub"><b>पोर्टल:</b> ${s.portal}</div>
+                    </div>
+                `).join('') : '<div class="info-item-sub">सध्या योजनांची माहिती उपलब्ध नाही.</div>';
+
+            } else if (type === 'fertilizer') {
+                title = '🌾 खत माहिती (Fertilizer Guide)';
+                const ferts = topCrop.stage_fertilizer_schedule || [];
+                const guide = (kb.fertilizersAndSchemes && kb.fertilizersAndSchemes.fertilizer_guidelines) || {};
+                let stageHtml = ferts.map(f => `
+                    <div class="info-item">
+                        <div class="info-item-title" style="color:#065f46;">🌱 ${f.stage}</div>
+                        <div class="info-item-sub"><b>डोस:</b> ${f.dose}</div>
+                    </div>
+                `).join('');
+                let organicHtml = (guide.organic_practices || []).map(o => `<div class="info-item-sub">• ${o}</div>`).join('');
+                let dripHtml = (guide.drip_fertigation_rules || []).map(o => `<div class="info-item-sub">• ${o}</div>`).join('');
+                html = `
+                    ${stageHtml}
+                    ${organicHtml ? `<div class="info-item-title" style="color:#065f46; margin-top:6px;">🌿 सेंद्रिय पद्धती</div>${organicHtml}` : ''}
+                    ${dripHtml ? `<div class="info-item-title" style="color:#065f46; margin-top:10px;">💧 ठिबक खत नियम</div>${dripHtml}` : ''}
+                `;
+
+            } else if (type === 'disease') {
+                title = '🐛 रोग व किडी (Pests & Diseases)';
+                const remedies = topCrop.critical_pest_remedies || [];
+                const guide = kb.pestsAndDiseases || [];
+                const cropName = (topCrop.name_en || topCrop.name_mr || '').toLowerCase();
+                let matched = guide.filter(g => cropName && g.crop && cropName.includes(g.crop.split('(')[0].trim().toLowerCase()));
+                if (!matched.length) matched = guide;
+
+                let pestHtml = remedies.map(r => `
+                    <div class="info-item">
+                        <div class="info-item-title">🚨 ${r.pest}</div>
+                        <div class="info-item-sub"><b>उपाय / औषध मात्रा:</b> ${r.remedy}</div>
+                    </div>
+                `).join('');
+                let diseaseHtml = matched.map(d => `
+                    <div class="info-item">
+                        <div class="info-item-title">🍃 ${d.problem}</div>
+                        <div class="info-item-sub"><b>कारण:</b> ${d.cause}</div>
+                        <div class="info-item-sub"><b>लक्षणे:</b> ${d.symptoms}</div>
+                        <div class="info-item-sub"><b>सेंद्रिय उपाय:</b> ${d.organic_solution}</div>
+                        <div class="info-item-sub"><b>रासायनिक उपाय:</b> ${d.chemical_solution}</div>
+                    </div>
+                `).join('');
+                html = `
+                    ${pestHtml ? `<div class="info-item-title" style="margin-bottom:8px;">⚡ तातडीच्या किडींवर उपाय</div>${pestHtml}` : ''}
+                    ${diseaseHtml ? `<div class="info-item-title" style="margin-top:${pestHtml ? '12px' : '0'};">🍃 सामान्य रोग व उपाय</div>${diseaseHtml}` : ''}
+                    ${(!pestHtml && !diseaseHtml) ? '<div class="info-item-sub">या पिकासाठी सध्या रोग/किडींची माहिती उपलब्ध नाही.</div>' : ''}
+                `;
+
+            } else if (type === 'steps') {
+                title = '📅 टप्प्याटप्प्याने माहिती (Step-by-Step Schedule)';
+                const sprays = topCrop.stage_spray_schedule || [];
+                const ferts = topCrop.stage_fertilizer_schedule || [];
+                let stepsHtml = '';
+                ferts.forEach(f => {
+                    stepsHtml += `
+                        <div class="info-item">
+                            <div class="info-item-title" style="color:#065f46;">🌱 ${f.stage} <span style="font-weight:600; color:#334155;">— खत व ड्रिप डोस</span></div>
+                            <div class="info-item-sub"><b>डोस:</b> ${f.dose}</div>
+                        </div>
+                    `;
+                });
+                sprays.forEach(s => {
+                    stepsHtml += `
+                        <div class="info-item">
+                            <div class="info-item-title" style="color:${s.stage.includes('15') || s.stage.includes('30') ? '#b91c1c' : '#065f46'};">🎯 ${s.stage} <span style="font-weight:600; color:#334155;">— ${s.target}</span></div>
+                            <div class="info-item-sub"><b>फवारणी फॉर्म्युला:</b> ${s.spray}</div>
+                        </div>
+                    `;
+                });
+                html = stepsHtml || '<div class="info-item-sub">वेळापत्रक उपलब्ध नाही.</div>';
+            }
+
+            titleEl.innerHTML = `<span></span> ${title}`;
+            bodyEl.innerHTML = html;
+            document.getElementById("infoOverlay").classList.add("open");
+        }
+
+        function closeInfoModal() {
+            document.getElementById("infoOverlay").classList.remove("open");
+        }
 
         let marketChartInstance = null;
 
