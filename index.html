@@ -497,14 +497,22 @@
                                 <span class="label-hint" id="lblStep1Hint">नांदेड व मराठवाडा परिसर</span>
                             </label>
                             <select id="taluka" onchange="updateSoilData()">
-                                <option value="ardhapur">अर्धापूर (Ardhapur) - केळी व हळद पट्टा</option>
-                                <option value="bhokar">भोकर (Bhokar) - काळी माती व कापूस</option>
-                                <option value="kinwat">किनवट (Kinwat) - तांबडी-काळी माती</option>
-                                <option value="nanded">नांदेड ग्रामीण (Nanded Rural)</option>
-                                <option value="mudkhed">मुदखेड (Mudkhed) - गोदावरी काठ</option>
-                                <option value="loha">लोहा (Loha) - मध्यम काळी जमीन</option>
-                                <option value="hadgaon">हदगाव (Hadgaon) - कयाधू पट्टा</option>
+                                <option value="ardhapur">अर्धापूर (Ardhapur)</option>
+                                <option value="bhokar">भोकर (Bhokar)</option>
+                                <option value="biloli">बिलोली (Biloli)</option>
+                                <option value="degloor">देगलूर (Degloor)</option>
                                 <option value="dharmabad">धर्माबाद (Dharmabad)</option>
+                                <option value="hadgaon">हदगाव (Hadgaon)</option>
+                                <option value="himayatnagar">हिमायतनगर (Himayatnagar)</option>
+                                <option value="kandhar">कंधार (Kandhar)</option>
+                                <option value="kinwat">किनवट (Kinwat)</option>
+                                <option value="loha">लोहा (Loha)</option>
+                                <option value="mahur">माहूर (Mahur)</option>
+                                <option value="mudkhed">मुदखेड (Mudkhed)</option>
+                                <option value="mukhed">मुखेड (Mukhed)</option>
+                                <option value="naigaon">नायगाव (Naigaon)</option>
+                                <option value="nanded">नांदेड (Nanded)</option>
+                                <option value="umri">उमरी (Umri)</option>
                             </select>
                             <div id="soilPreview" class="soil-badge">
                                 <b>माती प्रकार:</b> गाळाची व काळी माती | pH: 7.2 | सेंद्रिय कर्ब: 0.62% | (केळी व हळदीसाठी उत्तम)
@@ -637,14 +645,22 @@
                 step1Label: "१. तुमचा तालुका निवडा (Select Taluka):",
                 step1Hint: "नांदेड व मराठवाडा परिसर",
                 talukaOptions: {
-                    ardhapur: "अर्धापूर (Ardhapur) - केळी व हळद पट्टा",
-                    bhokar: "भोकर (Bhokar) - काळी माती व कापूस",
-                    kinwat: "किनवट (Kinwat) - तांबडी-काळी माती",
-                    nanded: "नांदेड ग्रामीण (Nanded Rural)",
-                    mudkhed: "मुदखेड (Mudkhed) - गोदावरी काठ",
-                    loha: "लोहा (Loha) - मध्यम काळी जमीन",
-                    hadgaon: "हदगाव (Hadgaon) - कयाधू पट्टा",
-                    dharmabad: "धर्माबाद (Dharmabad)"
+                    ardhapur: "अर्धापूर",
+                    bhokar: "भोकर",
+                    biloli: "बिलोली",
+                    degloor: "देगलूर",
+                    dharmabad: "धर्माबाद",
+                    hadgaon: "हदगाव",
+                    himayatnagar: "हिमायतनगर",
+                    kandhar: "कंधार",
+                    kinwat: "किनवट",
+                    loha: "लोहा",
+                    mahur: "माहूर",
+                    mudkhed: "मुदखेड",
+                    mukhed: "मुखेड",
+                    naigaon: "नायगाव",
+                    nanded: "नांदेड",
+                    umri: "उमरी"
                 },
                 step2Title: "२. शेतीची सद्यस्थिती",
                 seasonLabel: "लागवड हंगाम (Season):",
@@ -684,14 +700,22 @@
                 step1Label: "1. Select Your Taluka:",
                 step1Hint: "Nanded & Marathwada Region",
                 talukaOptions: {
-                    ardhapur: "Ardhapur - Banana & Turmeric Belt",
-                    bhokar: "Bhokar - Black Soil & Cotton",
-                    kinwat: "Kinwat - Red-Black Soil & Forests",
-                    nanded: "Nanded Rural - Clay Loam Soil",
-                    mudkhed: "Mudkhed - Godavari River Basin",
-                    loha: "Loha - Medium Black Soil",
-                    hadgaon: "Hadgaon - Kayadhu River Basin",
-                    dharmabad: "Dharmabad - Fertile Black Soil"
+                    ardhapur: "Ardhapur",
+                    bhokar: "Bhokar",
+                    biloli: "Biloli",
+                    degloor: "Degloor",
+                    dharmabad: "Dharmabad",
+                    hadgaon: "Hadgaon",
+                    himayatnagar: "Himayatnagar",
+                    kandhar: "Kandhar",
+                    kinwat: "Kinwat",
+                    loha: "Loha",
+                    mahur: "Mahur",
+                    mudkhed: "Mudkhed",
+                    mukhed: "Mukhed",
+                    naigaon: "Naigaon",
+                    nanded: "Nanded",
+                    umri: "Umri"
                 },
                 step2Title: "2. Current Farming Conditions",
                 seasonLabel: "Cropping Season:",
@@ -865,8 +889,8 @@
                 const profile = window.chayaAI.getTalukaProfile(taluka);
                 const t = translations[currentLang];
                 const soilTypeDisplay = currentLang === 'en' 
-                    ? (profile.soil_type.replace(/.*\((.*?)\).*/, '$1') || profile.soil_type)
-                    : profile.soil_type;
+                    ? (profile.soil_type_en || (profile.soil_type ? profile.soil_type.replace(/.*\((.*?)\).*/, '$1') : 'Medium Black Soil'))
+                    : (profile.soil_type_mr || profile.soil_type || 'काळी माती');
                 const statusDisplay = currentLang === 'en'
                     ? (profile.micronutrient_status ? 'Micro-nutrients balanced' : t.soilFertilityGood)
                     : (profile.micronutrient_status || t.soilFertilityGood);
