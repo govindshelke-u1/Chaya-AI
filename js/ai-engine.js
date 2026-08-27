@@ -300,10 +300,101 @@ class ChayaAIEngine {
       name_mr: talukaId || 'नांदेड परिसर',
       soil_type: 'काळी व मध्यम जमीन',
       soil_category: 'black_medium',
-      ph: 7.2,
+      ph: 7.3,
+      n_default: 220,
+      p_default: 17,
+      k_default: 320,
+      ph_default: 7.3,
+      oc_default: 0.58,
       organic_carbon: '0.58%',
-      available_nitrogen: 'मध्यम',
+      available_nitrogen: 'मध्यम (220 kg/ha)',
+      available_phosphorus: 'मध्यम (17 kg/ha)',
+      available_potassium: 'उत्तम (320 kg/ha)',
       water_table: 'मध्यम'
+    };
+  }
+
+  getPrecisionSoilHealthAnalysis(userInput) {
+    const talukaProfile = this.getTalukaProfile(userInput.taluka);
+    
+    // Parse user inputs or fall back to taluka defaults
+    const hasCustomN = Boolean(userInput.nutrientN && !isNaN(parseFloat(userInput.nutrientN)));
+    const hasCustomP = Boolean(userInput.nutrientP && !isNaN(parseFloat(userInput.nutrientP)));
+    const hasCustomK = Boolean(userInput.nutrientK && !isNaN(parseFloat(userInput.nutrientK)));
+    const hasCustomPh = Boolean(userInput.soilPh && !isNaN(parseFloat(userInput.soilPh)));
+    const hasCustomOc = Boolean(userInput.organicCarbon && !isNaN(parseFloat(userInput.organicCarbon)));
+
+    const userN = hasCustomN ? parseFloat(userInput.nutrientN) : (talukaProfile.n_default || 220);
+    const userP = hasCustomP ? parseFloat(userInput.nutrientP) : (talukaProfile.p_default || 17);
+    const userK = hasCustomK ? parseFloat(userInput.nutrientK) : (talukaProfile.k_default || 320);
+    const userPh = hasCustomPh ? parseFloat(userInput.soilPh) : (talukaProfile.ph_default || talukaProfile.ph || 7.3);
+    const userOc = hasCustomOc ? parseFloat(userInput.organicCarbon) : (talukaProfile.oc_default || 0.58);
+    const isCustomInput = hasCustomN || hasCustomP || hasCustomK || hasCustomPh || hasCustomOc;
+
+    // Benchmarking (ICAR / MPKV Rahuri standard ratings)
+    // N: <140 Low, 140-280 Medium, >280 High (kg/ha)
+    const nRating = userN < 140 ? 'low' : (userN <= 280 ? 'medium' : 'high');
+    // P: <14 Low, 14-28 Medium, >28 High (kg/ha)
+    const pRating = userP < 14 ? 'low' : (userP <= 28 ? 'medium' : 'high');
+    // K: <150 Low, 150-300 Medium, >300 High (kg/ha)
+    const kRating = userK < 150 ? 'low' : (userK <= 300 ? 'medium' : 'high');
+    // pH: <6.5 Acidic, 6.5-7.8 Optimal, >7.8 Alkaline
+    const phRating = userPh < 6.5 ? 'acidic' : (userPh <= 7.8 ? 'optimal' : 'alkaline');
+
+    return {
+      isCustomInput,
+      hasCustomN,
+      hasCustomP,
+      hasCustomK,
+      hasCustomPh,
+      hasCustomOc,
+      n: { val: userN, rating: nRating, unit: 'kg/ha' },
+      p: { val: userP, rating: pRating, unit: 'kg/ha' },
+      k: { val: userK, rating: kRating, unit: 'kg/ha' },
+      ph: { val: userPh, rating: phRating },
+      oc: { val: userOc, unit: '%' },
+      fertilizerAdjustments: {
+        n_mr: nRating === 'low' 
+          ? 'नत्र (N) कमतरता: बेसल डोसमध्ये 25 kg युरिया किंवा 50 kg DAP वाढवा व पेरणीवेळी अझोटोबॅक्टर जिवाणू वापरा.'
+          : (nRating === 'high' 
+              ? 'नत्र (N) मुबलक: रासायनिक युरियाचा मारा 25% कमी करा, अन्यथा रसशोषक कीड व पानावरील बुरशी वाढू शकते.' 
+              : 'नत्र (N) संतुलित: शिफारशीनुसार विभागून (Split Doses) खत द्या.'),
+        n_en: nRating === 'low'
+          ? 'Nitrogen Deficit: Increase basal DAP/Urea by 20% and inoculate seeds with Azotobacter biofertilizer.'
+          : (nRating === 'high'
+              ? 'Nitrogen Surplus: Reduce synthetic Urea by 25% to prevent succulent vegetative growth and sucking pest surges.'
+              : 'Nitrogen Balanced: Apply standard nitrogen doses in 2-3 split stages.'),
+        p_mr: pRating === 'low'
+          ? 'स्फुरद (P) कमतरता: बेसल डोसमध्ये 50-100 kg सिंगल सुपर फॉस्फेट (SSP) + 2 kg PSB जिवाणू संवर्धक वापरा.'
+          : (pRating === 'high'
+              ? 'स्फुरद (P) पुरेसे: अतिरिक्त 12:61:00 चा अनावश्यक खर्च टाळून बचत करा.'
+              : 'स्फुरद (P) समाधानकारक: मुळांची जोमदार वाढ व फुटवे फुटण्यासाठी अनुकूल.'),
+        p_en: pRating === 'low'
+          ? 'Phosphorus Deficit: Apply Single Super Phosphate (SSP 100 kg/acre) + PSB biofertilizer during seedbed preparation.'
+          : (pRating === 'high'
+              ? 'Phosphorus Rich: Avoid redundant water-soluble 12:61:00 applications to save input expenses.'
+              : 'Phosphorus Optimal: Ensures vigorous early root establishment and strong tiller growth.'),
+        k_mr: kRating === 'high'
+          ? 'पालाश (K) मुबलक: जमिनीत नैसर्गिक पालाश भरपूर असल्याने अतिरिक्त 00:00:50 वर होणारा ₹1,200/एकर खर्च वाचवा!'
+          : (kRating === 'low'
+              ? 'पालाश (K) कमतरता: फळ/कंद फुगवणीच्या काळात MOP (म्युरेट ऑफ पोटॅश) किंवा 00:00:50 ची आळवणी अवश्य करा.'
+              : 'पालाश (K) मध्यम: पिकाची रोगप्रतिकारशक्ती व दाण्यांच्या वजनासाठी ठिबकद्वारे नियमित मात्रा द्या.'),
+        k_en: kRating === 'high'
+          ? 'Potassium Rich: High native soil Potash saves ~₹1,200/acre by eliminating unnecessary 00:00:50 foliar sprays!'
+          : (kRating === 'low'
+              ? 'Potassium Deficit: Supply Muriate of Potash (MOP) or drip 00:00:50 during fruit/tuber bulking stage.'
+              : 'Potassium Medium: Maintain steady potassium fertigation for optimal grain filling and disease resistance.'),
+        ph_mr: phRating === 'alkaline'
+          ? 'जमीन चुनखडीयुक्त/अल्कलाईन (pH > 7.8): एकरी 50 kg सल्फर (गंधक) वापरा आणि सूक्ष्म अन्नद्रव्ये चिलेटेड स्वरूपात फवारा.'
+          : (phRating === 'acidic'
+              ? 'जमीन आम्लधर्मी (pH < 6.5): पेरणीपूर्व शेतात एकरी 100 kg कृषी चुना (Agricultural Lime) मिसळा.'
+              : 'सामू (pH) आदर्श (6.5 - 7.8): अन्नद्रव्यांचे शोषण मुळांद्वारे वेगाने होते.'),
+        ph_en: phRating === 'alkaline'
+          ? 'Alkaline/Calcareous Soil (pH > 7.8): Apply 50 kg agricultural Sulphur/acre and spray chelated micronutrients.'
+          : (phRating === 'acidic'
+              ? 'Acidic Soil (pH < 6.5): Incorporate 100 kg Agricultural Lime per acre before sowing.'
+              : 'Optimal Soil pH (6.5 - 7.8): Peak bioavailability for all essential micro & macronutrients.')
+      }
     };
   }
 
@@ -328,6 +419,13 @@ class ChayaAIEngine {
     const landSize = parseFloat(land) || 1;
     const talukaProfile = this.getTalukaProfile(taluka);
     const userSeason = (season || 'kharif').toLowerCase();
+
+    // Check custom NPK inputs
+    const soilHealth = this.getPrecisionSoilHealthAnalysis(userInput);
+    const userN = soilHealth.n.val;
+    const userP = soilHealth.p.val;
+    const userK = soilHealth.k.val;
+    const userPh = soilHealth.ph.val;
 
     const scoredCrops = (this.knowledgeBase.crops || []).map(crop => {
       let score = 50; // base score
@@ -406,6 +504,44 @@ class ChayaAIEngine {
         }
       }
 
+      // 4. Precision Nutrients (N, P, K & pH) Ground Match
+      // Potassium Affinity: heavy feeders like Turmeric, Banana, Cabbage thrive in high K
+      if (userK >= 300 && ['turmeric', 'banana', 'cabbage_cauliflower', 'sugarcane', 'onion'].includes(crop.id)) {
+        score += 10;
+        reasons_mr.push(`जमिनीत पालाश (K: ${userK} kg/ha) मुबलक असल्याने कंद/फळ फुगवणीसाठी अतिशय अनुकूल`);
+        reasons_en.push(`High soil Potassium (${userK} kg/ha) provides superior bulb & fruit development`);
+      }
+
+      // Nitrogen Dynamics: Legumes (Soybean, Tur, Chickpea) fix atmospheric nitrogen
+      if (userN < 210 && ['soybean', 'pigeon_pea', 'chickpea'].includes(crop.id)) {
+        score += 10;
+        reasons_mr.push(`कमी नत्र (N: ${userN} kg/ha) स्थितीतही मुळांवरील गाठींद्वारे हवेतील नत्र शोषून खताचा खर्च वाचवते`);
+        reasons_en.push(`Biological nitrogen fixation saves input costs under low soil Nitrogen (${userN} kg/ha)`);
+      } else if (userN >= 220 && ['banana', 'sugarcane', 'cabbage_cauliflower'].includes(crop.id)) {
+        score += 8;
+        reasons_mr.push(`उपलब्ध नत्र (N: ${userN} kg/ha) पिकाच्या जोमदार शाकीय वाढीसाठी उत्तम`);
+        reasons_en.push(`Good available Nitrogen (${userN} kg/ha) accelerates vegetative biomass growth`);
+      }
+
+      // Phosphorus responsiveness for root development & pod filling
+      if (userP >= 16 && ['soybean', 'cotton', 'turmeric', 'chickpea'].includes(crop.id)) {
+        score += 6;
+        reasons_mr.push(`उपलब्ध स्फुरद (P: ${userP} kg/ha) मुळांची जोमदार वाढ व फुलोऱ्यासाठी पोषक`);
+        reasons_en.push(`Optimal available Phosphorus (${userP} kg/ha) promotes prolific flowering & pod set`);
+      }
+
+      // Soil pH Range Check
+      if (crop.soil_ph_range && Array.isArray(crop.soil_ph_range)) {
+        const [minPh, maxPh] = crop.soil_ph_range;
+        if (userPh >= minPh && userPh <= maxPh) {
+          score += 5;
+          reasons_mr.push(`मातीचा सामू (pH ${userPh}) पिकाच्या आदर्श मर्यादेत (${minPh}-${maxPh})`);
+          reasons_en.push(`Soil pH (${userPh}) matches optimal range (${minPh}-${maxPh})`);
+        } else if (userPh > maxPh + 0.4 || userPh < minPh - 0.4) {
+          score -= 6;
+        }
+      }
+
       // Financial calculations scaled to acreage
       const yieldMin = crop.yield_per_acre_qtl ? (crop.yield_per_acre_qtl.min * landSize).toFixed(1) : '10';
       const yieldMax = crop.yield_per_acre_qtl ? (crop.yield_per_acre_qtl.max * landSize).toFixed(1) : '15';
@@ -435,17 +571,22 @@ class ChayaAIEngine {
 
   buildGroundedContext(userInput, topCrops, lang = 'en') {
     const surveyInfo = this.getNandedSurveyData(userInput.taluka);
+    const soilHealth = this.getPrecisionSoilHealthAnalysis(userInput);
     const topCrop = topCrops[0] || {};
     const cropName = lang === 'en' ? (topCrop.name_en || topCrop.name_mr) : topCrop.name_mr;
 
+    const npkContext = `N: ${soilHealth.n.val} kg/ha (${soilHealth.n.rating}), P: ${soilHealth.p.val} kg/ha (${soilHealth.p.rating}), K: ${soilHealth.k.val} kg/ha (${soilHealth.k.rating}), pH: ${soilHealth.ph.val}`;
+
     return `
 【📍 Farm Background】: Taluka: ${surveyInfo.taluka_name}, Land: ${userInput.land} Acres, Water: ${userInput.waterText || userInput.water}.
+【🧪 Soil Health & NPK Values】: ${npkContext} (Custom Report: ${soilHealth.isCustomInput ? 'YES' : 'Taluka Regional Baseline'}).
 【🎯 Top Recommended Crop】: ${cropName} (Duration: ${topCrop.duration_days})
 - Expected Yield (${userInput.land} Acres): ${lang === 'en' ? topCrop.totalYieldRange_en : topCrop.totalYieldRange_mr}
 - Estimated Cost: ₹${topCrop.totalCost?.toLocaleString('en-IN')}, Net Profit: ₹${topCrop.netProfit?.toLocaleString('en-IN')}
 - Varieties: ${(topCrop.recommended_varieties || []).map(v => v.name).join(', ')}
 - Fertilizer & Spray: ${(topCrop.stage_spray_schedule || []).map(s => s.stage + ': ' + s.spray).join(' | ')}
 - Critical Pest Remedy: ${(topCrop.critical_pest_remedies || []).map(p => p.pest + ' -> ' + p.remedy).join('; ')}
+- Precision NPK Advice: ${lang === 'en' ? (soilHealth.fertilizerAdjustments.n_en + ' ' + soilHealth.fertilizerAdjustments.p_en + ' ' + soilHealth.fertilizerAdjustments.k_en) : (soilHealth.fertilizerAdjustments.n_mr + ' ' + soilHealth.fertilizerAdjustments.p_mr + ' ' + soilHealth.fertilizerAdjustments.k_mr)}
 `;
   }
 

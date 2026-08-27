@@ -326,6 +326,219 @@
             line-height: 1.6;
         }
 
+        /* NPK Precision Section */
+        .npk-toggle-card {
+            background: #ffffff;
+            border: 1.5px solid #d1fae5;
+            border-radius: 14px;
+            margin-top: 14px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(5, 150, 105, 0.06);
+            transition: all 0.25s ease;
+        }
+
+        .npk-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            background: #f0fdf4;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s ease;
+        }
+
+        .npk-header:hover {
+            background: #dcfce7;
+        }
+
+        .npk-title-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .npk-badge-icon {
+            font-size: 1.3rem;
+            background: #ffffff;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #bbf7d0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .npk-title {
+            font-weight: 700;
+            font-size: 0.92rem;
+            color: #065f46;
+        }
+
+        .npk-subtitle {
+            font-size: 0.76rem;
+            color: #047857;
+            margin-top: 2px;
+        }
+
+        .npk-toggle-btn {
+            background: #ffffff;
+            border: 1px solid #a7f3d0;
+            color: #059669;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .npk-body {
+            padding: 14px;
+            border-top: 1px dashed #bbf7d0;
+            background: #ffffff;
+        }
+
+        .npk-quick-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .npk-bench-note {
+            font-size: 0.78rem;
+            color: #4b5563;
+        }
+
+        .npk-action-btns {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.15s ease;
+        }
+
+        .btn-npk-fill {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+        }
+
+        .btn-npk-fill:hover {
+            background: #059669;
+            color: #ffffff;
+        }
+
+        .btn-npk-clear {
+            background: #f9fafb;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+        }
+
+        .btn-npk-clear:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .npk-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        @media (min-width: 640px) {
+            .npk-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .npk-input-box {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .npk-input-box label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 0;
+        }
+
+        .npk-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .dot-n { background: #3b82f6; }
+        .dot-p { background: #f59e0b; }
+        .dot-k { background: #10b981; }
+        .dot-ph { background: #8b5cf6; }
+
+        .npk-input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .npk-input-wrapper input {
+            width: 100%;
+            padding: 8px 36px 8px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #111827;
+            outline: none;
+            background: #ffffff;
+        }
+
+        .npk-input-wrapper input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15);
+        }
+
+        .npk-unit {
+            position: absolute;
+            right: 8px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #9ca3af;
+            pointer-events: none;
+        }
+
+        .npk-hint {
+            font-size: 0.7rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
         /* Input with Mic button */
         .input-mic-wrapper {
             position: relative;
@@ -517,6 +730,82 @@
                             <div id="soilPreview" class="soil-badge">
                                 <b>माती प्रकार:</b> गाळाची व काळी माती | pH: 7.2 | सेंद्रिय कर्ब: 0.62% | (केळी व हळदीसाठी उत्तम)
                             </div>
+
+                            <!-- Optional N, P, K Nutrients Section -->
+                            <div class="npk-toggle-card">
+                                <div class="npk-header" onclick="toggleNpkSection()">
+                                    <div class="npk-title-group">
+                                        <span class="npk-badge-icon">🧪</span>
+                                        <div>
+                                            <div class="npk-title" id="lblNpkTitle">प्राथमिक अन्नद्रव्ये (N, P, K) व सामू (ऐच्छिक)</div>
+                                            <div class="npk-subtitle" id="lblNpkSubtitle">माती परीक्षणातील घटक भरल्यास १००% अचूक खत व पीक नियोजन मिळते</div>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="npk-toggle-btn" id="npkToggleBtn" aria-label="Toggle NPK Inputs">
+                                        <span id="npkToggleIcon">➕</span>
+                                    </button>
+                                </div>
+
+                                <div class="npk-body" id="npkBody" style="display: none;">
+                                    <div class="npk-quick-bar">
+                                        <span class="npk-bench-note" id="lblNpkBenchNote">💡 माती अहवाल (Soil Health Card) नसल्यास तालुक्याची सरासरी मूल्ये वापरा:</span>
+                                        <div class="npk-action-btns">
+                                            <button type="button" class="btn-sm btn-npk-fill" onclick="autofillTalukaNpk()" id="btnAutoFillNpk">⚡ सरासरी मूल्ये भरा</button>
+                                            <button type="button" class="btn-sm btn-npk-clear" onclick="clearNpkFields()" id="btnClearNpk">पुसा (Clear)</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="npk-grid">
+                                        <div class="npk-input-box">
+                                            <label for="nutrientN">
+                                                <span class="npk-dot dot-n"></span>
+                                                <span id="lblN">नत्र (Nitrogen - N)</span>
+                                            </label>
+                                            <div class="npk-input-wrapper">
+                                                <input type="number" id="nutrientN" placeholder="उदा. 210" min="0" max="600" step="1">
+                                                <span class="npk-unit">kg/ha</span>
+                                            </div>
+                                            <span class="npk-hint" id="hintN">मध्यम: १४०-२८०</span>
+                                        </div>
+
+                                        <div class="npk-input-box">
+                                            <label for="nutrientP">
+                                                <span class="npk-dot dot-p"></span>
+                                                <span id="lblP">स्फुरद (Phosphorus - P)</span>
+                                            </label>
+                                            <div class="npk-input-wrapper">
+                                                <input type="number" id="nutrientP" placeholder="उदा. 18" min="0" max="150" step="0.5">
+                                                <span class="npk-unit">kg/ha</span>
+                                            </div>
+                                            <span class="npk-hint" id="hintP">मध्यम: १४-२८</span>
+                                        </div>
+
+                                        <div class="npk-input-box">
+                                            <label for="nutrientK">
+                                                <span class="npk-dot dot-k"></span>
+                                                <span id="lblK">पालाश (Potassium - K)</span>
+                                            </label>
+                                            <div class="npk-input-wrapper">
+                                                <input type="number" id="nutrientK" placeholder="उदा. 340" min="0" max="900" step="1">
+                                                <span class="npk-unit">kg/ha</span>
+                                            </div>
+                                            <span class="npk-hint" id="hintK">उत्तम: > ३००</span>
+                                        </div>
+
+                                        <div class="npk-input-box">
+                                            <label for="soilPh">
+                                                <span class="npk-dot dot-ph"></span>
+                                                <span id="lblPh">माती सामू (pH)</span>
+                                            </label>
+                                            <div class="npk-input-wrapper">
+                                                <input type="number" id="soilPh" placeholder="उदा. 7.3" min="4" max="10" step="0.1">
+                                                <span class="npk-unit">pH</span>
+                                            </div>
+                                            <span class="npk-hint" id="hintPh">आदर्श: ६.५-७.८</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <button type="button" class="btn" onclick="nextStep(2)">
                             <span class="btn-next-text">पुढे जा (Next) ➔</span>
@@ -686,6 +975,23 @@
                 soilPh: "pH",
                 soilCarbon: "सेंद्रिय कर्ब",
                 soilFertilityGood: "उत्कृष्ट सुपिकता",
+                npkTitle: "प्राथमिक अन्नद्रव्ये (N, P, K) व सामू (ऐच्छिक)",
+                npkSubtitle: "माती परीक्षणातील घटक भरल्यास १००% अचूक खत व पीक नियोजन मिळते",
+                npkBenchNote: "💡 माती अहवाल (Soil Health Card) नसल्यास तालुक्याची सरासरी मूल्ये वापरा:",
+                btnAutoFillNpk: "⚡ सरासरी मूल्ये भरा",
+                btnClearNpk: "पुसा (Clear)",
+                lblN: "नत्र (Nitrogen - N)",
+                lblP: "स्फुरद (Phosphorus - P)",
+                lblK: "पालाश (Potassium - K)",
+                lblPh: "माती सामू (pH)",
+                hintN: "मध्यम: १४०-२८०",
+                hintP: "मध्यम: १४-२८",
+                hintK: "उत्तम: > ३००",
+                hintPh: "आदर्श: ६.५-७.८",
+                placeholderN: "उदा. 210",
+                placeholderP: "उदा. 18",
+                placeholderK: "उदा. 340",
+                placeholderPh: "उदा. 7.3",
                 modalTitle: "छाया AI - मॉडेल व API सेटिंग",
                 modalDesc: "छाया AI इनबिल्ट <b>स्मार्ट नॉलेज इंजिन</b> वापरून ऑफलाइनही उत्तम कार्य करते. AI, Live बाजारभाव व आवाज (Voice) या सेवा आता <b>सुरक्षित बॅकएंडवरून</b> चालतात.",
                 btnModalClose: "ठीक आहे",
@@ -741,6 +1047,23 @@
                 soilPh: "pH",
                 soilCarbon: "Organic Carbon",
                 soilFertilityGood: "High Fertility Soil",
+                npkTitle: "Primary Soil Nutrients (N, P, K) & pH (Optional)",
+                npkSubtitle: "Enter soil test lab values for ultra-precise crop & fertilizer dosage",
+                npkBenchNote: "💡 Don't have a Soil Health Card? Auto-fill regional taluka averages:",
+                btnAutoFillNpk: "⚡ Auto-fill Taluka Avg",
+                btnClearNpk: "Clear",
+                lblN: "Nitrogen (N)",
+                lblP: "Phosphorus (P)",
+                lblK: "Potassium (K)",
+                lblPh: "Soil Reaction (pH)",
+                hintN: "Medium: 140-280",
+                hintP: "Medium: 14-28",
+                hintK: "Optimal: > 300",
+                hintPh: "Optimal: 6.5-7.8",
+                placeholderN: "e.g. 210",
+                placeholderP: "e.g. 18",
+                placeholderK: "e.g. 340",
+                placeholderPh: "e.g. 7.3",
                 modalTitle: "Chaya AI - Model & API Settings",
                 modalDesc: "Chaya AI operates smoothly offline using an inbuilt <b>smart agricultural engine</b>. AI, live market rates, and voice services run securely via the server.",
                 btnModalClose: "Got It",
@@ -779,6 +1102,25 @@
                 });
             }
 
+            // NPK Translations
+            if (document.getElementById("lblNpkTitle")) document.getElementById("lblNpkTitle").innerText = t.npkTitle;
+            if (document.getElementById("lblNpkSubtitle")) document.getElementById("lblNpkSubtitle").innerText = t.npkSubtitle;
+            if (document.getElementById("lblNpkBenchNote")) document.getElementById("lblNpkBenchNote").innerText = t.npkBenchNote;
+            if (document.getElementById("btnAutoFillNpk")) document.getElementById("btnAutoFillNpk").innerText = t.btnAutoFillNpk;
+            if (document.getElementById("btnClearNpk")) document.getElementById("btnClearNpk").innerText = t.btnClearNpk;
+            if (document.getElementById("lblN")) document.getElementById("lblN").innerText = t.lblN;
+            if (document.getElementById("lblP")) document.getElementById("lblP").innerText = t.lblP;
+            if (document.getElementById("lblK")) document.getElementById("lblK").innerText = t.lblK;
+            if (document.getElementById("lblPh")) document.getElementById("lblPh").innerText = t.lblPh;
+            if (document.getElementById("hintN")) document.getElementById("hintN").innerText = t.hintN;
+            if (document.getElementById("hintP")) document.getElementById("hintP").innerText = t.hintP;
+            if (document.getElementById("hintK")) document.getElementById("hintK").innerText = t.hintK;
+            if (document.getElementById("hintPh")) document.getElementById("hintPh").innerText = t.hintPh;
+            if (document.getElementById("nutrientN")) document.getElementById("nutrientN").placeholder = t.placeholderN;
+            if (document.getElementById("nutrientP")) document.getElementById("nutrientP").placeholder = t.placeholderP;
+            if (document.getElementById("nutrientK")) document.getElementById("nutrientK").placeholder = t.placeholderK;
+            if (document.getElementById("soilPh")) document.getElementById("soilPh").placeholder = t.placeholderPh;
+
             document.getElementById("lblStep2Title").innerText = t.step2Title;
             document.getElementById("lblSeason").innerText = t.seasonLabel;
             document.getElementById("optKharif").innerText = t.optKharif;
@@ -808,6 +1150,44 @@
 
             updateStepCounter();
             updateSoilData();
+        }
+
+        // NPK TOGGLE & AUTO-FILL HANDLERS
+        function toggleNpkSection() {
+            const body = document.getElementById("npkBody");
+            const icon = document.getElementById("npkToggleIcon");
+            if (!body) return;
+            if (body.style.display === "none" || body.style.display === "") {
+                body.style.display = "block";
+                if (icon) icon.innerText = "➖";
+            } else {
+                body.style.display = "none";
+                if (icon) icon.innerText = "➕";
+            }
+        }
+
+        function autofillTalukaNpk() {
+            const taluka = document.getElementById("taluka").value;
+            if (window.chayaAI) {
+                const profile = window.chayaAI.getTalukaProfile(taluka);
+                document.getElementById("nutrientN").value = profile.n_default || 220;
+                document.getElementById("nutrientP").value = profile.p_default || 17;
+                document.getElementById("nutrientK").value = profile.k_default || 320;
+                document.getElementById("soilPh").value = profile.ph_default || profile.ph || 7.3;
+                
+                // Ensure section is open
+                const body = document.getElementById("npkBody");
+                const icon = document.getElementById("npkToggleIcon");
+                if (body) body.style.display = "block";
+                if (icon) icon.innerText = "➖";
+            }
+        }
+
+        function clearNpkFields() {
+            document.getElementById("nutrientN").value = "";
+            document.getElementById("nutrientP").value = "";
+            document.getElementById("nutrientK").value = "";
+            document.getElementById("soilPh").value = "";
         }
 
         // STEP-BY-STEP LOGIC
@@ -972,10 +1352,19 @@
             btnText.style.display = "none";
             spinner.style.display = "block";
 
+            const nVal = document.getElementById("nutrientN") ? document.getElementById("nutrientN").value.trim() : "";
+            const pVal = document.getElementById("nutrientP") ? document.getElementById("nutrientP").value.trim() : "";
+            const kVal = document.getElementById("nutrientK") ? document.getElementById("nutrientK").value.trim() : "";
+            const phVal = document.getElementById("soilPh") ? document.getElementById("soilPh").value.trim() : "";
+
             const formData = {
                 lang: currentLang,
                 taluka: document.getElementById("taluka").value,
                 talukaText: document.getElementById("taluka").options[document.getElementById("taluka").selectedIndex].text,
+                nutrientN: nVal !== "" ? parseFloat(nVal) : null,
+                nutrientP: pVal !== "" ? parseFloat(pVal) : null,
+                nutrientK: kVal !== "" ? parseFloat(kVal) : null,
+                soilPh: phVal !== "" ? parseFloat(phVal) : null,
                 season: document.getElementById("season").value,
                 seasonText: document.getElementById("season").options[document.getElementById("season").selectedIndex].text,
                 water: document.getElementById("water").value,

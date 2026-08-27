@@ -915,9 +915,19 @@
                 ? (talukaProfile.name_mr || farmData.talukaText || farmData.taluka)
                 : (talukaProfile.name_en || (farmData.taluka ? farmData.taluka.charAt(0).toUpperCase() + farmData.taluka.slice(1) : 'Ardhapur'));
 
+            let npkChip = '';
+            if (farmData.nutrientN !== null && farmData.nutrientN !== undefined || farmData.nutrientP !== null && farmData.nutrientP !== undefined || farmData.nutrientK !== null && farmData.nutrientK !== undefined) {
+                const nVal = farmData.nutrientN ?? '--';
+                const pVal = farmData.nutrientP ?? '--';
+                const kVal = farmData.nutrientK ?? '--';
+                const phVal = farmData.soilPh ? ` | pH: ${farmData.soilPh}` : '';
+                npkChip = `<span class="summary-chip" style="background:#f0fdf4; border-color:#86efac; color:#166534; font-weight:700;">🧪 N:${nVal} P:${pVal} K:${kVal}${phVal}</span>`;
+            }
+
             document.getElementById("summaryChips").innerHTML = `
                 <span class="summary-chip">📍 ${talukaDisplay}</span>
                 <span class="summary-chip">🌱 ${soilDisplay}</span>
+                ${npkChip}
                 <span class="summary-chip">💧 ${waterDisplay}</span>
                 <span class="summary-chip">📏 ${farmData.land} ${t.unitAcres}</span>
                 <span class="summary-chip">🗓️ ${seasonName} ${isMr ? 'हंगाम' : 'Season'}</span>
@@ -1124,6 +1134,33 @@
                 const ferts = crop.stage_fertilizer_schedule || [];
                 const guide = (kb.fertilizersAndSchemes && kb.fertilizersAndSchemes.fertilizer_guidelines) || {};
                 
+                // Precision Soil Analysis Box
+                let soilHealthHtml = '';
+                if (window.chayaAI && typeof window.chayaAI.getPrecisionSoilHealthAnalysis === 'function') {
+                    const health = window.chayaAI.getPrecisionSoilHealthAnalysis(farmData);
+                    const nRating = isMr ? health.ratings.n.mr : health.ratings.n.en;
+                    const pRating = isMr ? health.ratings.p.mr : health.ratings.p.en;
+                    const kRating = isMr ? health.ratings.k.mr : health.ratings.k.en;
+                    const phRating = isMr ? health.ratings.ph.mr : health.ratings.ph.en;
+                    
+                    const adviceList = isMr ? health.actionableAdvice_mr : health.actionableAdvice_en;
+                    const adviceItems = adviceList.map(a => `<div class="info-item-sub" style="margin-bottom:4px;">• ${a}</div>`).join('');
+
+                    soilHealthHtml = `
+                    <div class="info-item" style="background:#f0fdf4; border:1px solid #bbf7d0;">
+                        <div class="info-item-title" style="color:#065f46;">🧪 ${isMr ? 'माती परीक्षण अचूक विश्लेषण (Precision Soil Health)' : 'Precision Soil Health Analysis'}</div>
+                        <div class="info-item-sub" style="display:flex; flex-wrap:wrap; gap:8px; margin:8px 0;">
+                            <span style="background:white; padding:3px 8px; border-radius:6px; border:1px solid #d1fae5;"><b>N:</b> ${health.n} kg/ha (${nRating})</span>
+                            <span style="background:white; padding:3px 8px; border-radius:6px; border:1px solid #d1fae5;"><b>P:</b> ${health.p} kg/ha (${pRating})</span>
+                            <span style="background:white; padding:3px 8px; border-radius:6px; border:1px solid #d1fae5;"><b>K:</b> ${health.k} kg/ha (${kRating})</span>
+                            <span style="background:white; padding:3px 8px; border-radius:6px; border:1px solid #d1fae5;"><b>pH:</b> ${health.ph} (${phRating})</span>
+                        </div>
+                        <div style="font-size:0.84rem; font-weight:700; color:#047857; margin-bottom:4px;">💡 ${isMr ? 'खतांचे तज्ज्ञ ॲडजस्टमेंट:' : 'Custom Fertilizer Adjustment:'}</div>
+                        ${adviceItems}
+                    </div>
+                    `;
+                }
+
                 let stageHtml = ferts.map(f => {
                     const stage = isMr ? (f.stage_mr || f.stage) : (f.stage_en || f.stage || f.stage_mr);
                     const dose = isMr ? (f.dose_mr || f.dose) : (f.dose_en || f.dose || f.dose_mr);
@@ -1142,6 +1179,7 @@
                 let dripHtml = dripList.map(o => `<div class="info-item-sub" style="margin-bottom:6px;">• ${o}</div>`).join('');
 
                 html = `
+                    ${soilHealthHtml}
                     ${stageHtml || `<div class="info-item-sub">${t.noData}</div>`}
                     ${organicHtml ? `<div class="info-item-title" style="margin-top:16px; margin-bottom:8px; color:#065f46;">🌿 ${isMr ? 'सेंद्रिय पद्धती व जिवाणू खते (Organic Practices)' : 'Organic Practices & Bio-Fertilizers'}</div>${organicHtml}` : ''}
                     ${dripHtml ? `<div class="info-item-title" style="margin-top:16px; margin-bottom:8px; color:#0284c7;">💧 ${isMr ? 'ठिबक सिंचन खत व्यवस्थापन नियम (Drip Rules)' : 'Drip Fertigation Guidelines & Rules'}</div>${dripHtml}` : ''}
