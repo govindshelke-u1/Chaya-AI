@@ -127,14 +127,42 @@ class ChayaAIEngine {
       if (!res.ok) throw new Error(`Market proxy status: ${res.status}`);
       const data = await res.json();
 
-      if (data.source === 'live' && data.rates && data.rates.length) {
-        return { source: 'data_gov_in_live', rates: data.rates };
+      if (data.rates && data.rates.length) {
+        const normalized = data.rates.map(r => ({
+          commodity: r.commodity || r.crop_name_mr || r.crop || 'कृषी पीक',
+          market: r.market || 'APMC Nanded',
+          modal_price: Number(r.modal_price ?? r.modal_rate ?? r.avg_price ?? 0),
+          max_price: Number(r.max_price ?? r.max_rate ?? 0),
+          min_price: Number(r.min_price ?? r.min_rate ?? 0),
+          trend: r.trend || 'stable',
+          date: r.date || new Date().toISOString().slice(0, 10)
+        }));
+        return { source: data.source || 'live', rates: normalized };
       }
-      // Backend not configured, or fetch failed there -> use locally bundled JSON
-      return { source: 'local_cache', rates: this.knowledgeBase.marketPrices?.rates || null };
+
+      // Backend not configured or empty -> use locally bundled JSON
+      const localRates = (this.knowledgeBase.marketPrices?.rates || []).map(r => ({
+        commodity: r.commodity || r.crop_name_mr,
+        market: r.market || 'नांदेड मोंढा',
+        modal_price: Number(r.modal_price || r.modal_rate || 0),
+        max_price: Number(r.max_price || r.max_rate || 0),
+        min_price: Number(r.min_price || r.min_rate || 0),
+        trend: r.trend || 'stable',
+        date: this.knowledgeBase.marketPrices?.last_updated || new Date().toISOString().slice(0, 10)
+      }));
+      return { source: 'local_cache', rates: localRates };
     } catch (e) {
       console.warn('Live market price fetch failed, falling back to local data:', e);
-      return { source: 'local_cache_fallback', rates: this.knowledgeBase.marketPrices?.rates || null };
+      const localRates = (this.knowledgeBase.marketPrices?.rates || []).map(r => ({
+        commodity: r.commodity || r.crop_name_mr,
+        market: r.market || 'नांदेड मोंढा',
+        modal_price: Number(r.modal_price || r.modal_rate || 0),
+        max_price: Number(r.max_price || r.max_rate || 0),
+        min_price: Number(r.min_price || r.min_rate || 0),
+        trend: r.trend || 'stable',
+        date: this.knowledgeBase.marketPrices?.last_updated || new Date().toISOString().slice(0, 10)
+      }));
+      return { source: 'local_cache_fallback', rates: localRates };
     }
   }
 
@@ -266,40 +294,72 @@ class ChayaAIEngine {
     const { taluka, soilType, water, land, season } = userInput;
     const landSize = parseFloat(land) || 1;
     const talukaProfile = this.getTalukaProfile(taluka);
+    const userSeason = (season || 'kharif').toLowerCase();
 
     const scoredCrops = (this.knowledgeBase.crops || []).map(crop => {
-      let score = 0;
+      let score = 50; // base score
       const reasons = [];
 
-      // Water Match
+      // 1. Season Match
+      const cropSeasons = (crop.season || []).map(s => s.toLowerCase());
+      if (cropSeasons.includes(userSeason) || cropSeasons.includes('annual')) {
+        score += 25;
+        const sName = userSeason === 'kharif' ? 'खरीप' : userSeason === 'rabi' ? 'रब्बी' : userSeason === 'summer' ? 'उन्हाळी' : 'वार्षिक';
+        reasons.push(`${sName} हंगामासाठी अत्यंत अनुकूल`);
+      } else {
+        score -= 20;
+      }
+
+      // 2. Water Match
       if (water === 'abundant') {
         if (crop.water_requirement === 'abundant') {
-          score += 35;
-          reasons.push('मुबलक पाण्यासाठी सर्वोत्तम (High Yield)');
-        } else {
-          score += 25;
-        }
-      } else if (water === 'moderate') {
-        if (crop.water_requirement === 'moderate') {
-          score += 35;
-          reasons.push('मध्यम पाणी व ठिबकवर उत्तम उत्पादन');
-        } else {
           score += 20;
-        }
-      } else {
-        if (crop.water_requirement === 'low') {
-          score += 35;
-          reasons.push('कमी पाण्यात हमखास उत्पन्न (कोरडवाहू)');
+          reasons.push('मुबलक पाण्यासाठी सर्वोत्तम नफा देणारे पीक');
+        } else if (crop.water_requirement === 'moderate') {
+          score += 15;
+          reasons.push('ठिबक सिंचनावर भरघोस उत्पादन');
         } else {
           score += 10;
         }
+      } else if (water === 'moderate') {
+        if (crop.water_requirement === 'moderate') {
+          score += 20;
+          reasons.push('मध्यम पाणी व ठिबकवर आदर्श उत्पादन');
+        } else if (crop.water_requirement === 'low') {
+          score += 15;
+          reasons.push('कमी पाण्याचा योग्य वापर');
+        } else {
+          score -= 5;
+        }
+      } else {
+        // low water
+        if (crop.water_requirement === 'low') {
+          score += 25;
+          reasons.push('कमी पाण्यात हमखास उत्पन्न (कोरडवाहूसाठी उत्तम)');
+        } else if (crop.water_requirement === 'moderate') {
+          score += 10;
+        } else {
+          score -= 20;
+        }
       }
 
-      // Taluka Match
-      if (taluka === 'ardhapur' || taluka === 'mudkhed' || taluka === 'nanded') {
-        if (crop.id === 'turmeric' || crop.id === 'soybean') score += 30;
+      // 3. Taluka / Soil Match
+      const t = (taluka || '').toLowerCase();
+      if (['ardhapur', 'mudkhed', 'nanded', 'biloli'].includes(t)) {
+        if (['turmeric', 'banana', 'cabbage_cauliflower', 'soybean', 'jowar'].includes(crop.id)) {
+          score += 15;
+          reasons.push('तालुक्यातील काळ्या सुपीक जमिनीसाठी शिफारसीत');
+        }
+      } else if (['bhokar', 'kinwat', 'mahur', 'himayatnagar'].includes(t)) {
+        if (['cotton', 'soybean', 'jowar', 'pigeon_pea', 'turmeric'].includes(crop.id)) {
+          score += 15;
+          reasons.push('परिसरातील माती व हवामानास अत्यंत पोषक');
+        }
       } else {
-        if (crop.id === 'soybean' || crop.id === 'cotton') score += 30;
+        if (['soybean', 'jowar', 'chickpea', 'cabbage_cauliflower', 'cotton', 'onion'].includes(crop.id)) {
+          score += 15;
+          reasons.push('स्थानिक मोंढ्यात उत्तम मागणी असलेले पीक');
+        }
       }
 
       // Financial calculations scaled to acreage
@@ -311,7 +371,7 @@ class ChayaAIEngine {
 
       return {
         ...crop,
-        matchScore: Math.min(score + 30, 99),
+        matchScore: Math.min(Math.max(score, 60), 99),
         reasons,
         landSize,
         totalYieldRange: `${yieldMin} ते ${yieldMax} क्विंटल`,
@@ -322,7 +382,7 @@ class ChayaAIEngine {
     });
 
     scoredCrops.sort((a, b) => b.matchScore - a.matchScore || b.netProfit - a.netProfit);
-    return scoredCrops;
+    return scoredCrops.slice(0, 4);
   }
 
   buildGroundedContext(userInput, topCrops) {
