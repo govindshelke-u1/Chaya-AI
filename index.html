@@ -625,16 +625,27 @@
     <script src="js/chat-assistant.js"></script>
 
     <script>
-        // LANGUAGE DICTIONARY
-        let currentLang = 'mr'; // Default Marathi
+        // LANGUAGE DICTIONARY - DEFAULT ENGLISH, SWITCH TO MARATHI WHEN USER CHOOSES
+        let currentLang = localStorage.getItem('chaya_lang') || 'en';
 
         const translations = {
             mr: {
+                brandTitle: "छाया AI (Chaya AI)",
                 langBtn: "English",
                 cardTitle: "📍 शेती व माती माहिती नोंदणी",
                 stepPrefix: "पायरी",
                 step1Label: "१. तुमचा तालुका निवडा (Select Taluka):",
                 step1Hint: "नांदेड व मराठवाडा परिसर",
+                talukaOptions: {
+                    ardhapur: "अर्धापूर (Ardhapur) - केळी व हळद पट्टा",
+                    bhokar: "भोकर (Bhokar) - काळी माती व कापूस",
+                    kinwat: "किनवट (Kinwat) - तांबडी-काळी माती",
+                    nanded: "नांदेड ग्रामीण (Nanded Rural)",
+                    mudkhed: "मुदखेड (Mudkhed) - गोदावरी काठ",
+                    loha: "लोहा (Loha) - मध्यम काळी जमीन",
+                    hadgaon: "हदगाव (Hadgaon) - कयाधू पट्टा",
+                    dharmabad: "धर्माबाद (Dharmabad)"
+                },
                 step2Title: "२. शेतीची सद्यस्थिती",
                 seasonLabel: "लागवड हंगाम (Season):",
                 optKharif: "खरीप हंगाम (Kharif - जून ते ऑक्टोबर)",
@@ -658,17 +669,30 @@
                 soilPrefix: "माती प्रकार",
                 soilPh: "pH",
                 soilCarbon: "सेंद्रिय कर्ब",
+                soilFertilityGood: "उत्कृष्ट सुपिकता",
                 modalTitle: "छाया AI - मॉडेल व API सेटिंग",
                 modalDesc: "छाया AI इनबिल्ट <b>स्मार्ट नॉलेज इंजिन</b> वापरून ऑफलाइनही उत्तम कार्य करते. AI, Live बाजारभाव व आवाज (Voice) या सेवा आता <b>सुरक्षित बॅकएंडवरून</b> चालतात.",
                 btnModalClose: "ठीक आहे",
-                apiSettings: "AI सेटिंग"
+                apiSettings: "AI सेटिंग",
+                micPrompt: "मराठीत बोला"
             },
             en: {
+                brandTitle: "Chaya AI - Smart Farm Advisor",
                 langBtn: "मराठी",
                 cardTitle: "📍 Farm & Soil Details Registration",
                 stepPrefix: "Step",
                 step1Label: "1. Select Your Taluka:",
                 step1Hint: "Nanded & Marathwada Region",
+                talukaOptions: {
+                    ardhapur: "Ardhapur - Banana & Turmeric Belt",
+                    bhokar: "Bhokar - Black Soil & Cotton",
+                    kinwat: "Kinwat - Red-Black Soil & Forests",
+                    nanded: "Nanded Rural - Clay Loam Soil",
+                    mudkhed: "Mudkhed - Godavari River Basin",
+                    loha: "Loha - Medium Black Soil",
+                    hadgaon: "Hadgaon - Kayadhu River Basin",
+                    dharmabad: "Dharmabad - Fertile Black Soil"
+                },
                 step2Title: "2. Current Farming Conditions",
                 seasonLabel: "Cropping Season:",
                 optKharif: "Kharif Season (June to October)",
@@ -684,33 +708,53 @@
                 unitAcres: "Acres",
                 questionLabel: "4. Ask Chaya AI or Describe Symptoms:",
                 questionHint: "Tap 🎤 to speak or type your question",
-                qPlaceholder: "e.g., Turmeric leaf spot disease, or best fertilizer recommendation?",
+                qPlaceholder: "e.g., Turmeric leaf spot disease, or best fertilizer dosage?",
                 btnNext: "Next Step ➔",
                 btnPrev: "⬅️ Back",
                 btnSubmit: "🤖 Get Recommendation ➔",
-                weatherLoading: "Loading Weather...",
+                weatherLoading: "Loading live weather...",
                 soilPrefix: "Soil Type",
                 soilPh: "pH",
                 soilCarbon: "Organic Carbon",
+                soilFertilityGood: "High Fertility Soil",
                 modalTitle: "Chaya AI - Model & API Settings",
-                modalDesc: "Chaya AI operates smoothly offline using an inbuilt <b>smart knowledge engine</b>. AI, live market rates, and voice services run securely via the server.",
+                modalDesc: "Chaya AI operates smoothly offline using an inbuilt <b>smart agricultural engine</b>. AI, live market rates, and voice services run securely via the server.",
                 btnModalClose: "Got It",
-                apiSettings: "AI Settings"
+                apiSettings: "AI Settings",
+                micPrompt: "Tap to speak in English"
             }
         };
 
         function toggleLanguage() {
             currentLang = currentLang === 'mr' ? 'en' : 'mr';
+            localStorage.setItem('chaya_lang', currentLang);
             applyLanguage();
+            if (window.chayaChat && typeof window.chayaChat.setLanguage === 'function') {
+                window.chayaChat.setLanguage(currentLang);
+            }
+            loadWeatherWidget();
         }
 
         function applyLanguage() {
             const t = translations[currentLang];
             
+            const brandEl = document.getElementById("brandTitle");
+            if (brandEl) brandEl.innerText = t.brandTitle;
             document.getElementById("langBtnText").innerText = t.langBtn;
             document.getElementById("cardTitleText").innerText = t.cardTitle;
             document.getElementById("lblStep1").innerText = t.step1Label;
             document.getElementById("lblStep1Hint").innerText = t.step1Hint;
+            
+            // Update Taluka Options text
+            const talukaSelect = document.getElementById("taluka");
+            if (talukaSelect && t.talukaOptions) {
+                Array.from(talukaSelect.options).forEach(opt => {
+                    if (t.talukaOptions[opt.value]) {
+                        opt.text = t.talukaOptions[opt.value];
+                    }
+                });
+            }
+
             document.getElementById("lblStep2Title").innerText = t.step2Title;
             document.getElementById("lblSeason").innerText = t.seasonLabel;
             document.getElementById("optKharif").innerText = t.optKharif;
@@ -727,6 +771,7 @@
             document.getElementById("lblQuestion").innerText = t.questionLabel;
             document.getElementById("lblQuestionHint").innerText = t.questionHint;
             document.getElementById("question").placeholder = t.qPlaceholder;
+            document.getElementById("voiceBtn").title = t.micPrompt;
             document.getElementById("btnText").innerText = t.btnSubmit;
             document.getElementById("apiStatusText").innerText = t.apiSettings;
             
@@ -766,6 +811,7 @@
 
         // Initialize Knowledge Base & Soil Profile on page load
         document.addEventListener("DOMContentLoaded", async () => {
+            applyLanguage();
             if (window.chayaAI) {
                 await window.chayaAI.loadKnowledgeBase();
                 checkApiStatus();
@@ -776,34 +822,40 @@
         });
 
         function loadWeatherWidget() {
+            const t = translations[currentLang];
+            const tempEl = document.getElementById("weatherTemp");
+            if (tempEl && tempEl.innerText.includes("...")) {
+                tempEl.innerText = t.weatherLoading;
+            }
+
             const applyWeather = (w) => {
                 document.getElementById("weatherIcon").innerText = w.icon;
                 document.getElementById("weatherTemp").innerText = `${Math.round(w.temperature)}°C`;
-                document.getElementById("weatherCond").innerText = w.condition_mr;
+                document.getElementById("weatherCond").innerText = currentLang === 'mr' ? w.condition_mr : (w.condition_en || w.condition);
                 document.getElementById("weatherStats").innerHTML = `
                     <span>💧 ${w.humidity ?? '--'}%</span>
                     <span>🌬️ ${Math.round(w.wind_kmh || 0)} km/h</span>
                     ${w.rain_chance_today !== null ? `<span>🌧️ ${w.rain_chance_today}%</span>` : ''}
                 `;
                 const adviceBox = document.getElementById("weatherAdvice");
-                adviceBox.innerText = w.sprayAdvice;
+                adviceBox.innerText = currentLang === 'mr' ? (w.sprayAdvice_mr || w.sprayAdvice) : (w.sprayAdvice_en || w.sprayAdvice);
                 adviceBox.style.display = "block";
             };
 
             if ('geolocation' in navigator) {
                 navigator.geolocation.getCurrentPosition(
                     async (pos) => {
-                        const w = await window.chayaAI.fetchLiveWeather(pos.coords.latitude, pos.coords.longitude);
+                        const w = await window.chayaAI.fetchLiveWeather(pos.coords.latitude, pos.coords.longitude, currentLang);
                         applyWeather(w);
                     },
                     async () => {
-                        const w = await window.chayaAI.fetchLiveWeather();
+                        const w = await window.chayaAI.fetchLiveWeather(null, null, currentLang);
                         applyWeather(w);
                     },
                     { timeout: 6000 }
                 );
             } else {
-                window.chayaAI.fetchLiveWeather().then(applyWeather);
+                window.chayaAI.fetchLiveWeather(null, null, currentLang).then(applyWeather);
             }
         }
 
@@ -812,8 +864,15 @@
             if(window.chayaAI) {
                 const profile = window.chayaAI.getTalukaProfile(taluka);
                 const t = translations[currentLang];
+                const soilTypeDisplay = currentLang === 'en' 
+                    ? (profile.soil_type.replace(/.*\((.*?)\).*/, '$1') || profile.soil_type)
+                    : profile.soil_type;
+                const statusDisplay = currentLang === 'en'
+                    ? (profile.micronutrient_status ? 'Micro-nutrients balanced' : t.soilFertilityGood)
+                    : (profile.micronutrient_status || t.soilFertilityGood);
+
                 document.getElementById("soilPreview").innerHTML = `
-                    <b>${t.soilPrefix}:</b> ${profile.soil_type} | <b>${t.soilPh}:</b> ${profile.ph} | <b>${t.soilCarbon}:</b> ${profile.organic_carbon || '0.58%'} | <i>(${profile.micronutrient_status || 'उत्कृष्ट सुपिकता'})</i>
+                    <b>${t.soilPrefix}:</b> ${soilTypeDisplay} | <b>${t.soilPh}:</b> ${profile.ph} | <b>${t.soilCarbon}:</b> ${profile.organic_carbon || '0.58%'} | <i>(${statusDisplay})</i>
                 `;
             }
         }
@@ -823,13 +882,13 @@
             const q = document.getElementById("question");
 
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert("Speech recognition is not supported in your browser.");
+                alert(currentLang === 'mr' ? "आपल्या ब्राउझरमध्ये व्हॉइस ओळख उपलब्ध नाही." : "Speech recognition is not supported in your browser.");
                 return;
             }
 
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             const rec = new SpeechRecognition();
-            rec.lang = currentLang === 'mr' ? 'mr-IN' : 'en-US'; 
+            rec.lang = currentLang === 'mr' ? 'mr-IN' : 'en-IN'; 
             rec.continuous = false;
             rec.interimResults = false;
 
@@ -857,10 +916,11 @@
 
         async function refreshBackendStatusPanel() {
             const status = await window.chayaAI.checkBackendStatus();
+            const isMr = currentLang === 'mr';
             const render = (id, ok) => {
                 document.getElementById(id).innerHTML = ok
-                    ? '<span style="color:#059669;">✅ कनेक्टेड</span>'
-                    : '<span style="color:#b91c1c;">⚪ कॉन्फिगर नाही</span>';
+                    ? `<span style="color:#059669;">${isMr ? '✅ कनेक्टेड' : '✅ Connected'}</span>`
+                    : `<span style="color:#b91c1c;">${isMr ? '⚪ कॉन्फिगर नाही' : '⚪ Not Configured'}</span>`;
             };
             render('statusGroq', status.groq);
             render('statusMarket', status.market);
@@ -870,7 +930,10 @@
         function checkApiStatus() {
             window.chayaAI.checkBackendStatus().then((status) => {
                 const statusText = document.getElementById("apiStatusText");
-                let label = status.groq ? "Groq AI कनेक्टेड 🟢" : "ऑफलाइन AI इंजिन ⚡";
+                const isMr = currentLang === 'mr';
+                let label = status.groq 
+                    ? (isMr ? "Groq AI कनेक्टेड 🟢" : "Groq AI Connected 🟢") 
+                    : (isMr ? "ऑफलाइन AI इंजिन ⚡" : "Smart Offline Engine ⚡");
                 if (status.tts) label += " 🔊";
                 statusText.innerText = label;
             });
@@ -897,6 +960,7 @@
                 question: document.getElementById("question").value
             };
             
+            localStorage.setItem("chaya_lang", currentLang);
             localStorage.setItem("chayaFormData", JSON.stringify(formData));
 
             setTimeout(() => {

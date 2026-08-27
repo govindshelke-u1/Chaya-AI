@@ -6,15 +6,89 @@ class ChayaChatWidget {
   constructor() {
     this.isOpen = false;
     this.messages = [];
+    this.lang = localStorage.getItem('chaya_lang') || 'en';
     this.init();
   }
 
+  getTranslations() {
+    return {
+      en: {
+        launcher: "Chat with Chaya AI",
+        headerTitle: "Chaya AI Farm Assistant",
+        headerSub: "Online Agro Expert (Knowledge-Grounded)",
+        presets: [
+          { label: "🌿 Turmeric Leaf Spot", query: "How to control leaf spot disease in turmeric?" },
+          { label: "🍌 Banana Drip Schedule", query: "How to schedule drip fertilizer for banana crop?" },
+          { label: "🌱 Soybean Pests", query: "What is the best pesticide for soybean pests?" },
+          { label: "🏛️ Drip Subsidy", query: "Give details about government drip irrigation scheme" }
+        ],
+        welcome: "<b>Hello Farmer Friend! 🙏</b><br>I am <b>Chaya AI</b> - your smart agricultural advisor. Feel free to ask any question regarding crop selection, fertilizer scheduling, disease management, or mandi market prices.",
+        placeholder: "Ask your question or tap mic to speak...",
+        micTitle: "Tap to speak in English",
+        thinking: "🌱 Chaya AI is thinking...",
+        voiceUnsupported: "Voice input is not supported in your browser. Please type your query."
+      },
+      mr: {
+        launcher: "छाया AI शी बोला",
+        headerTitle: "छाया AI संवाद सहाय्यक",
+        headerSub: "ऑनलाइन कृषी तज्ज्ञ (Knowledge-Grounded)",
+        presets: [
+          { label: "🌿 हळद करपा", query: "हळदीवरील करपा रोगावर काय फवारावे?" },
+          { label: "🍌 केळी खत नियोजन", query: "केळीला ठिबक सिंचनाने खते कशी द्यावीत?" },
+          { label: "🌱 सोयाबीन कीड", query: "सोयाबीनसाठी सर्वोत्तम कीडनाशक कोणते?" },
+          { label: "🏛️ ठिबक अनुदान", query: "मागेल त्याला ठिबक योजनेची माहिती द्या" }
+        ],
+        welcome: "<b>नमस्कार शेतकरी मित्रहो! 🙏</b><br>मी <b>छाया AI</b> - तुमचा डिजिटल कृषी मित्र. आपण आपल्या शेतातील पीक, खते, रोग-कीड किंवा बाजारभावाबद्दल कोणताही प्रश्न मराठीत विचारू शकता.",
+        placeholder: "येथे प्रश्न विचारा किंवा बोला...",
+        micTitle: "मराठीत बोला (Voice)",
+        thinking: "🌱 छाया AI विचार करत आहे...",
+        voiceUnsupported: "तुमच्या ब्राउझरमध्ये व्हॉइस इनपुट सपोर्ट उपलब्ध नाही. कृपया टाइप करा."
+      }
+    };
+  }
+
+  setLanguage(lang) {
+    this.lang = lang || 'en';
+    const t = this.getTranslations()[this.lang];
+    
+    const launcherLabel = document.querySelector('.chat-launcher .chat-label');
+    if (launcherLabel) launcherLabel.innerText = t.launcher;
+
+    const headerTitle = document.querySelector('.chat-header-title');
+    if (headerTitle) headerTitle.innerText = t.headerTitle;
+
+    const headerSub = document.querySelector('.chat-header-sub');
+    if (headerSub) headerSub.innerText = t.headerSub;
+
+    const input = document.getElementById('chat-user-input');
+    if (input) input.placeholder = t.placeholder;
+
+    const micBtn = document.getElementById('chat-mic-btn');
+    if (micBtn) micBtn.title = t.micTitle;
+
+    const quickTags = document.querySelector('.chat-quick-tags');
+    if (quickTags) {
+      quickTags.innerHTML = t.presets.map(p => `
+        <button class="quick-chip" onclick="window.chayaChat.sendPreset('${p.query.replace(/'/g, "\\'")}')">${p.label}</button>
+      `).join('');
+    }
+
+    if (this.messages.length === 0) {
+      const welcomeBubble = document.querySelector('#chat-messages .chat-msg.bot .msg-bubble');
+      if (welcomeBubble) {
+        welcomeBubble.innerHTML = t.welcome;
+      }
+    }
+  }
+
   init() {
+    const t = this.getTranslations()[this.lang];
+
     // Inject Chat Widget HTML into the document
     const widgetHtml = `
       <div id="chaya-chat-launcher" class="chat-launcher" onclick="window.chayaChat.toggle()">
         <span class="chat-icon">💬</span>
-        <span class="chat-label">छाया AI शी बोला</span>
+        <span class="chat-label">${t.launcher}</span>
       </div>
 
       <div id="chaya-chat-drawer" class="chat-drawer">
@@ -22,32 +96,30 @@ class ChayaChatWidget {
           <div style="display:flex; align-items:center; gap:8px;">
             <span style="font-size:1.4rem;">🌿</span>
             <div>
-              <div style="font-weight:800; font-size:1rem;">छाया AI संवाद सहाय्यक</div>
-              <div style="font-size:0.75rem; color:#d1fae5;">ऑनलाइन कृषी तज्ज्ञ (Knowledge-Grounded)</div>
+              <div class="chat-header-title" style="font-weight:800; font-size:1rem;">${t.headerTitle}</div>
+              <div class="chat-header-sub" style="font-size:0.75rem; color:#d1fae5;">${t.headerSub}</div>
             </div>
           </div>
           <button class="chat-close-btn" onclick="window.chayaChat.toggle()">✕</button>
         </div>
 
         <div class="chat-quick-tags">
-          <button class="quick-chip" onclick="window.chayaChat.sendPreset('हळदीवरील करपा रोगावर काय फवारावे?')">🌿 हळद करपा</button>
-          <button class="quick-chip" onclick="window.chayaChat.sendPreset('केळीला ठिबक सिंचनाने खते कशी द्यावीत?')">🍌 केळी खत नियोजन</button>
-          <button class="quick-chip" onclick="window.chayaChat.sendPreset('सोयाबीनसाठी सर्वोत्तम कीडनाशक कोणते?')">🌱 सोयाबीन कीड</button>
-          <button class="quick-chip" onclick="window.chayaChat.sendPreset('मागेल त्याला ठिबक योजनेची माहिती द्या')">🏛️ ठिबक अनुदान</button>
+          ${t.presets.map(p => `
+            <button class="quick-chip" onclick="window.chayaChat.sendPreset('${p.query.replace(/'/g, "\\'")}')">${p.label}</button>
+          `).join('')}
         </div>
 
         <div id="chat-messages" class="chat-messages">
           <div class="chat-msg bot">
             <div class="msg-bubble">
-              <b>नमस्कार शेतकरी मित्रहो! 🙏</b><br>
-              मी <b>छाया AI</b> - तुमचा डिजिटल कृषी मित्र. आपण आपल्या शेतातील पीक, खते, रोग-कीड किंवा बाजारभावाबद्दल कोणताही प्रश्न मराठीत विचारू शकता.
+              ${t.welcome}
             </div>
           </div>
         </div>
 
         <div class="chat-input-area">
-          <input type="text" id="chat-user-input" placeholder="येथे प्रश्न विचारा किंवा बोला..." onkeypress="window.chayaChat.handleKey(event)" />
-          <button id="chat-mic-btn" class="chat-action-btn mic-btn" title="मराठीत बोला (Voice)" onclick="window.chayaChat.startVoiceInput()">🎤</button>
+          <input type="text" id="chat-user-input" placeholder="${t.placeholder}" onkeypress="window.chayaChat.handleKey(event)" />
+          <button id="chat-mic-btn" class="chat-action-btn mic-btn" title="${t.micTitle}" onclick="window.chayaChat.startVoiceInput()">🎤</button>
           <button id="chat-send-btn" class="chat-action-btn send-btn" onclick="window.chayaChat.sendMessage()">➔</button>
         </div>
       </div>
@@ -310,11 +382,12 @@ class ChayaChatWidget {
     input.value = '';
 
     const messagesBox = document.getElementById('chat-messages');
+    const t = this.getTranslations()[this.lang];
     
     // Add typing indicator
     const typingElem = document.createElement('div');
     typingElem.className = 'chat-msg bot typing-ind';
-    typingElem.innerHTML = '<div class="msg-bubble" style="font-style:italic; color:#6b7280;">🌱 छाया AI विचार करत आहे...</div>';
+    typingElem.innerHTML = `<div class="msg-bubble" style="font-style:italic; color:#6b7280;">${t.thinking}</div>`;
     messagesBox.appendChild(typingElem);
     messagesBox.scrollTop = messagesBox.scrollHeight;
 
@@ -330,7 +403,7 @@ class ChayaChatWidget {
       await window.chayaAI.loadKnowledgeBase();
     }
 
-    const reply = await window.chayaAI.handleChatMessage(text, farmContext);
+    const reply = await window.chayaAI.handleChatMessage(text, farmContext, this.lang);
     
     typingElem.remove();
     this.appendMessage('bot', reply);
@@ -359,6 +432,7 @@ class ChayaChatWidget {
   speakMessage(btnEl, text) {
     btnEl.classList.add('listening');
     window.chayaAI.speak(text, {
+      lang: this.lang,
       onEnd: () => btnEl.classList.remove('listening'),
       onError: () => btnEl.classList.remove('listening')
     });
@@ -367,15 +441,16 @@ class ChayaChatWidget {
   startVoiceInput() {
     const micBtn = document.getElementById('chat-mic-btn');
     const input = document.getElementById('chat-user-input');
+    const t = this.getTranslations()[this.lang];
 
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      alert('तुमच्या ब्राउझरमध्ये व्हॉइस इनपुट सपोर्ट उपलब्ध नाही. कृपया टाइप करा.');
+      alert(t.voiceUnsupported);
       return;
     }
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
-    recognition.lang = 'mr-IN'; // Marathi (India)
+    recognition.lang = this.lang === 'mr' ? 'mr-IN' : 'en-IN';
     recognition.continuous = false;
     recognition.interimResults = false;
 

@@ -48,11 +48,20 @@ async function handleGroq(req, res) {
   }
 
   try {
-    const { systemPrompt, groundedContext, userQuestion } = req.body || {};
+    const { systemPrompt, groundedContext, userQuestion, language } = req.body || {};
+    const isEn = language === 'en';
 
     if (!groundedContext) {
       return res.status(400).json({ error: 'missing_context' });
     }
+
+    const defaultSystemPrompt = isEn
+      ? 'You are Chaya AI, an expert agricultural advisor for Maharashtra farmers. Provide crisp, structured, practical advice in English.'
+      : 'तुम्ही छाया AI आहात, महाराष्ट्रातील शेतकऱ्यांचे कृषी सल्लागार. संक्षिप्त, ठळक, थेट कृती करता येणारा मराठी सल्ला द्या.';
+
+    const userPromptContent = isEn
+      ? `Data & Context:\n${groundedContext}\n\nFarmer's Question: ${userQuestion || 'Provide key recommendations'}\n\nDirect, concise, and actionable English advice:`
+      : `डेटा:\n${groundedContext}\n\nशेतकऱ्याचा प्रश्न: ${userQuestion || ''}\n\nथेट संक्षिप्त मराठी सल्ला:`;
 
     // Try Groq if configured
     if (groqApiKey) {
@@ -61,11 +70,8 @@ async function handleGroq(req, res) {
         const payload = {
           model: 'openai/gpt-oss-120b',
           messages: [
-            { role: 'system', content: systemPrompt || '' },
-            {
-              role: 'user',
-              content: `डेटा:\n${groundedContext}\n\nशेतकऱ्याचा प्रश्न: ${userQuestion || ''}\n\nथेट संक्षिप्त मराठी सल्ला:`
-            }
+            { role: 'system', content: systemPrompt || defaultSystemPrompt },
+            { role: 'user', content: userPromptContent }
           ],
           temperature: 0.3,
           max_completion_tokens: 800
@@ -96,7 +102,7 @@ async function handleGroq(req, res) {
     if (geminiApiKey) {
       try {
         const ai = new GoogleGenAI({ apiKey: geminiApiKey });
-        const prompt = `${systemPrompt || 'तुम्ही छाया AI आहात, महाराष्ट्रातील शेतकऱ्यांचे कृषी सल्लागार.'}\n\nडेटा:\n${groundedContext}\n\nशेतकऱ्याचा प्रश्न: ${userQuestion || ''}\n\nथेट संक्षिप्त मराठी सल्ला:`;
+        const prompt = `${systemPrompt || defaultSystemPrompt}\n\n${userPromptContent}`;
         
         const response = await ai.models.generateContent({
           model: 'gemini-2.5-flash',

@@ -1,54 +1,84 @@
 {
   "fertilizer_guidelines": {
-    "organic_practices": [
+    "organic_practices_mr": [
       "शेणखत (FYM): प्रति एकर किमान 8 ते 10 टन चांगले कुजलेले शेणखत शेवटच्या वखराच्या पाळीत मिसळावे.",
       "जिवामृत: 200 लिटर पाण्यात 10 kg देशी गायीचे शेण + 10 लिटर गोमूत्र + 2 kg गूळ + 2 kg डाळीचे पीठ + मूठभर बांधावरील माती 48 तास आंबवून ठिबकद्वारे द्यावे.",
       "ट्रायकोडर्मा व्हिरीडी: 2.5 kg प्रति एकर 100 kg शेणखतात मिसळून दिल्यास कंदकुज व मर रोगाचा नायनाट होतो.",
       "निंबोळी पेंड: एकरी 150-200 kg दिल्यास हुमणी आणि वाळवीचा प्रादुर्भाव टळतो."
     ],
-    "drip_fertigation_rules": [
+    "organic_practices_en": [
+      "Farm Yard Manure (FYM): Incorporate 8-10 tonnes of well-decomposed FYM per acre during the final ploughing.",
+      "Jeevamrit: Ferment 10 kg native cow dung + 10L cow urine + 2 kg jaggery + 2 kg pulse flour + a handful of live farm soil in 200L water for 48 hours and apply via drip.",
+      "Trichoderma viride: Mix 2.5 kg per acre with 100 kg FYM to eliminate fungal root rot, rhizome rot, and damping off.",
+      "Neem Cake: Apply 150-200 kg per acre to prevent white grub and subterranean termites."
+    ],
+    "drip_fertigation_rules_mr": [
       "विद्राव्य खते (19:19:19, 12:61:00, 0:52:34, 0:0:50) देताना पाण्याचा pH 6.0 ते 6.5 असावा.",
       "कधीही कॅल्शियम नायट्रेट आणि सल्फेट खते एकत्र मिसळून ड्रिपने सोडू नयेत (पाईप चोक होतात)."
+    ],
+    "drip_fertigation_rules_en": [
+      "Maintain water pH between 6.0 and 6.5 when applying water-soluble fertilizers (19:19:19, 12:61:00, 00:52:34, 00:00:50).",
+      "Never mix Calcium Nitrate with Sulphate/Phosphate fertilizers in the same venturi tank (causes precipitate clogging in drippers)."
     ]
   },
   "schemes": [
     {
       "name_mr": "मागेल त्याला ठिबक व तुषार सिंचन (Drip Subsidy)",
-      "category": "सिंचन (Irrigation)",
-      "benefit": "अल्प व अत्यल्प भूधारक शेतकऱ्यांना 80% पर्यंत आणि इतर शेतकऱ्यांना 75% अनुदान थेट महाडीबीटीवर.",
-      "eligibility": "7/12 उतारा व आधार संलग्न बँक खाते. पाणी स्त्रोत उपलब्ध असणे आवश्यक.",
+      "name_en": "Drip & Sprinkler Micro-Irrigation Subsidy",
+      "category_mr": "सिंचन",
+      "category_en": "Irrigation",
+      "benefit_mr": "अल्प व अत्यल्प भूधारक शेतकऱ्यांना 80% पर्यंत आणि इतर शेतकऱ्यांना 75% अनुदान थेट महाडीबीटीवर.",
+      "benefit_en": "Up to 80% subsidy for small & marginal farmers and 75% for other farmers credited directly via MahaDBT.",
+      "eligibility_mr": "7/12 उतारा व आधार संलग्न बँक खाते. पाणी स्त्रोत उपलब्ध असणे आवश्यक.",
+      "eligibility_en": "7/12 land record, Aadhaar linked bank account, and a verified irrigation water source.",
       "portal": "mahadbt.maharashtra.gov.in",
       "icon": "💧"
     },
     {
       "name_mr": "पंतप्रधान शेतकरी सन्मान निधी (PM-KISAN + नमो शेतकरी)",
-      "category": "आर्थिक मदत (Direct Benefit)",
-      "benefit": "वर्षाला ₹12,000 (केंद्र शासन ₹6,000 + महाराष्ट्र शासन नमो योजना ₹6,000) थेट खात्यात.",
-      "eligibility": "सर्व शेतकरी कुटुंबे ज्यांच्या नावे शेतजमीन आहे (e-KYC आवश्यक).",
+      "name_en": "PM-KISAN & Namo Shetkari Mahasanman Yojana",
+      "category_mr": "आर्थिक मदत",
+      "category_en": "Direct Income Support",
+      "benefit_mr": "वर्षाला ₹12,000 (केंद्र शासन ₹6,000 + महाराष्ट्र शासन नमो योजना ₹6,000) थेट खात्यात.",
+      "benefit_en": "₹12,000 per year (₹6,000 Central PM-KISAN + ₹6,000 Maharashtra Namo Yojana) directly in bank accounts.",
+      "eligibility_mr": "सर्व शेतकरी कुटुंबे ज्यांच्या नावे शेतजमीन आहे (e-KYC आवश्यक).",
+      "eligibility_en": "All landholding farmer families with completed Aadhaar e-KYC.",
       "portal": "pmkisan.gov.in",
       "icon": "🏛️"
     },
     {
       "name_mr": "मागेल त्याला सौर कृषी पंप योजना (KUSUM / Solar Pump)",
-      "category": "ऊर्जा (Solar Power)",
-      "benefit": "3 HP, 5 HP आणि 7.5 HP सौर कृषी पंपासाठी 90% ते 95% शासकीय अनुदान.",
-      "eligibility": "विजेचे पारंपरिक जोडणी नसलेले शेतकरी, पाण्याचा शाश्वत स्त्रोत आवश्यक.",
+      "name_en": "PM-KUSUM & MahaVitaran Solar Agri-Pump Scheme",
+      "category_mr": "ऊर्जा",
+      "category_en": "Solar Energy",
+      "benefit_mr": "3 HP, 5 HP आणि 7.5 HP सौर कृषी पंपासाठी 90% ते 95% शासकीय अनुदान.",
+      "benefit_en": "90% to 95% government subsidy for 3 HP, 5 HP, and 7.5 HP solar DC agriculture pumps.",
+      "eligibility_mr": "विजेचे पारंपरिक जोडणी नसलेले शेतकरी, पाण्याचा शाश्वत स्त्रोत आवश्यक.",
+      "eligibility_en": "Farmers without conventional grid connection having verified sustainable water source.",
       "portal": "mahadiscom.in/solar",
       "icon": "☀️"
     },
     {
       "name_mr": "पंतप्रधान पीक विमा योजना (PMFBY ₹1 रुपयात विमा)",
-      "category": "विमा संरक्षण (Crop Insurance)",
-      "benefit": "फक्त ₹1 भरून नैसर्गिक आपत्ती, दुष्काळ किंवा अतिवृष्टीत संपूर्ण पिकाचे आर्थिक संरक्षण.",
-      "eligibility": "खरीप व रब्बी हंगामात नोंदणी केलेले सर्व शेतकरी.",
+      "name_en": "Pradhan Mantri Fasal Bima Yojana (PMFBY ₹1 Scheme)",
+      "category_mr": "विमा संरक्षण",
+      "category_en": "Crop Insurance",
+      "benefit_mr": "फक्त ₹1 भरून नैसर्गिक आपत्ती, दुष्काळ किंवा अतिवृष्टीत संपूर्ण पिकाचे आर्थिक संरक्षण.",
+      "benefit_en": "Comprehensive financial protection against drought, flood, pests, and unseasonal rains for just ₹1 premium token.",
+      "eligibility_mr": "खरीप व रब्बी हंगामात नोंदणी केलेले सर्व शेतकरी.",
+      "eligibility_en": "All notified crop cultivators in Kharif and Rabi seasons.",
       "portal": "pmfby.gov.in",
       "icon": "🛡️"
     },
     {
       "name_mr": "भाऊसाहेब फुंडकर फळबाग लागवड योजना",
-      "category": "फळबाग (Horticulture)",
-      "benefit": "केळी, आंबा, पेरू, मोसंबी लागवडीसाठी खते, रोपे व मजुरीवर 3 वर्षांत 100% अनुदान.",
-      "eligibility": "कमीत कमी 0.20 हेक्टर ते 6 हेक्टर शेतजमीन असलेले शेतकरी.",
+      "name_en": "Bhausaheb Fundkar Horticulture Plantation Scheme",
+      "category_mr": "फळबाग",
+      "category_en": "Horticulture",
+      "benefit_mr": "केळी, आंबा, पेरू, मोसंबी लागवडीसाठी खते, रोपे व मजुरीवर 3 वर्षांत 100% अनुदान.",
+      "benefit_en": "100% staggered financial subsidy across 3 years covering planting materials, fertilizers, and labor for orchards.",
+      "eligibility_mr": "कमीत कमी 0.20 हेक्टर ते 6 हेक्टर शेतजमीन असलेले शेतकरी.",
+      "eligibility_en": "Farmers owning between 0.20 hectare and 6 hectares of cultivable land.",
       "portal": "mahadbt.maharashtra.gov.in",
       "icon": "🍌"
     }
