@@ -8,6 +8,8 @@ module.exports = async (req, res) => {
   switch (action) {
     case 'status':
       return handleStatus(req, res);
+    case 'chat':
+      return handleChat(req, res);
     case 'groq':
       return handleGroq(req, res);
     case 'market':
@@ -15,7 +17,7 @@ module.exports = async (req, res) => {
     case 'tts':
       return handleTts(req, res);
     default:
-      return res.status(400).json({ error: 'unknown_action', hint: 'use ?action=status|groq|market|tts' });
+      return res.status(400).json({ error: 'unknown_action', hint: 'use ?action=status|chat|groq|market|tts' });
   }
 };
 
@@ -33,7 +35,134 @@ async function handleStatus(req, res) {
 }
 
 // ---------------------------------------------------------------------
-// GROQ / GEMINI — AI proxy (Groq with Gemini fallback)
+// CHAT — Direct conversational AI assistant for farmers with Gemini & Groq
+// ---------------------------------------------------------------------
+async function handleChat(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'method_not_allowed' });
+  }
+
+  const { message, language = 'mr', farmContext, conversationHistory = [] } = req.body || {};
+  if (!message || !message.trim()) {
+    return res.status(400).json({ error: 'missing_message' });
+  }
+
+  const groqApiKey = process.env.GROQ_API_KEY;
+  const geminiApiKey = process.env.GEMINI_API_KEY;
+  const isEn = language === 'en';
+
+  const systemPrompt = isEn
+    ? `You are "Chaya" (छाया), a trusted, friendly, and expert smart agricultural assistant for farmers in Maharashtra (specifically Nanded district).
+Your name is simply "Chaya" (छाया). Always introduce and refer to yourself as "Chaya" (छाया) — never use "Chaya AI" or "Chaya Aai".
+
+LANGUAGE REQUIREMENT:
+- The user has chosen English. You MUST respond 100% in English. Do not reply in Marathi or Devanagari script.
+- Translate all local farming terms, crop diseases, fertilizer recommendations, and remedies into clear, plain English.
+
+Your goals:
+1. Explain agricultural topics simply, clearly, and accurately in English.
+2. Provide specific, actionable solutions (e.g., exact medicine/fertilizer dosage per 15L water spray pump, best seed varieties, drip irrigation timings, disease diagnosis, organic alternatives).
+3. Keep the tone respectful, direct, and farmer-friendly.
+4. Structure the answer with short, readable bullet points so it is easy to read on mobile and natural to listen to via text-to-speech.`
+    : `तुमचे नाव "छाया" (Chaya) आहे — महाराष्ट्रातील (विशेषतः नांदेड व मराठवाडा) शेतकऱ्यांचे अत्यंत विश्वासू, अनुभवी आणि सोप्या भाषेत मार्गदर्शन करणारे डिजिटल कृषी मित्र.
+महत्त्वाचे: स्वतःचा उल्लेख नेहमी फक्त "छाया" असाच करा ("छाया AI" किंवा "छाया आई" असा उल्लेख अजिबात करू नका).
+
+भाषेचा नियम:
+- शेतकऱ्याला संपूर्ण उत्तर स्पष्ट, साध्या आणि समजण्यास सुलभ मराठी भाषेत द्या.
+
+तुमची उद्दिष्टे:
+१. शेतकऱ्यांच्या प्रश्नांना अत्यंत सोप्या, साध्या आणि अचूक मराठीत उत्तरे द्या.
+२. थेट कृती करता येणारे उपाय सांगा (उदा. प्रति १५ लिटर पंपासाठी औषधाची/खताची अचूक मात्रा, सर्वोत्तम वाण, कीड-रोग नियंत्रण, ठिबकचे वेळापत्रक, चालू बाजारभाव).
+३. भाषा आदरयुक्त, नम्र आणि शेतकरी बंधूंना सहज समजेल अशी असावी.
+४. उत्तर मुद्देसूद व सुटसुटीत ठेवा, जेणेकरून मोबाईलवर वाचायला आणि ऑडिओ ऐकायला सोपे जाईल.
+५. बुरशीनाशके, कीटकनाशके आणि टॉनिक यांची योग्य नावे व प्रमाण मराठीत स्पष्ट सांगा.`;
+
+  const contextStr = farmContext
+    ? `Farm Context: Taluka: ${farmContext.taluka || 'Nanded'}, Land: ${farmContext.land || '2'} Acres, Water: ${farmContext.water || 'Normal'}, Soil NPK/pH: N:${farmContext.n || 'Medium'} P:${farmContext.p || 'Medium'} K:${farmContext.k || 'Medium'}`
+    : `General Maharashtra Agro Profile`;
+
+  const formattedPrompt = isEn
+    ? `${systemPrompt}\n\n${contextStr}\n\nFarmer Question (in English): ${message}\n\nCRITICAL: Answer entirely in English now:`
+    : `${systemPrompt}\n\n${contextStr}\n\nशेतकऱ्याचा प्रश्न: ${message}\n\nमराठीत उत्तर द्या:`;
+
+  // 1. Try Gemini API first with resilient multi-model failover
+  if (geminiApiKey) {
+    const geminiModels = [
+      'gemini-3.5-flash-lite',
+      'gemini-3.5-flash',
+      'gemini-3.6-flash',
+      'gemini-3.7-flash',
+      'gemini-flash-lite-latest',
+      'gemini-flash-latest'
+    ];
+    for (const model of geminiModels) {
+      try {
+        const ai = new GoogleGenAI({ apiKey: geminiApiKey });
+        const response = await ai.models.generateContent({
+          model,
+          contents: formattedPrompt,
+        });
+
+        if (response && response.text) {
+          return res.status(200).json({ text: response.text, provider: 'gemini', model });
+        }
+      } catch (geminiErr) {
+        console.warn(`Gemini (${model}) status notice:`, geminiErr.message || geminiErr);
+      }
+    }
+  }
+
+  // 2. Try Groq API
+  if (groqApiKey) {
+    try {
+      const endpoint = 'https://api.groq.com/openai/v1/chat/completions';
+      const messages = [
+        { role: 'system', content: systemPrompt },
+        ...conversationHistory.slice(-4).map(h => ({
+          role: h.sender === 'bot' ? 'assistant' : 'user',
+          content: h.text
+        })),
+        { role: 'user', content: isEn ? `${contextStr}\n\nFarmer Question: ${message}\n(Respond strictly and entirely in English)` : `${contextStr}\n\nशेतकऱ्याचा प्रश्न: ${message}\n(मराठीत उत्तर द्या)` }
+      ];
+
+      const groqModels = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'mixtral-8x7b-32768'];
+      for (const model of groqModels) {
+        try {
+          const resp = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${groqApiKey}`
+            },
+            body: JSON.stringify({
+              model,
+              messages,
+              temperature: 0.4,
+              max_completion_tokens: 800
+            })
+          });
+
+          if (resp.ok) {
+            const data = await resp.json();
+            const text = data.choices?.[0]?.message?.content;
+            if (text) {
+              return res.status(200).json({ text, provider: 'groq', model });
+            }
+          }
+        } catch (e) {
+          // try next model
+        }
+      }
+    } catch (groqErr) {
+      console.warn('Groq chat error:', groqErr.message);
+    }
+  }
+
+  return res.status(200).json({ fallback: true, error: 'ai_backend_offline' });
+}
+
+// ---------------------------------------------------------------------
+// GROQ / GEMINI — AI proxy for grounded crop evaluations
 // ---------------------------------------------------------------------
 async function handleGroq(req, res) {
   if (req.method !== 'POST') {
@@ -63,12 +192,41 @@ async function handleGroq(req, res) {
       ? `Data & Context:\n${groundedContext}\n\nFarmer's Question: ${userQuestion || 'Provide key recommendations'}\n\nDirect, concise, and actionable English advice:`
       : `डेटा:\n${groundedContext}\n\nशेतकऱ्याचा प्रश्न: ${userQuestion || ''}\n\nथेट संक्षिप्त मराठी सल्ला:`;
 
+    // Try Gemini first with resilient multi-model failover
+    if (geminiApiKey) {
+      const geminiModels = [
+        'gemini-3.5-flash-lite',
+        'gemini-3.5-flash',
+        'gemini-3.6-flash',
+        'gemini-3.7-flash',
+        'gemini-flash-lite-latest',
+        'gemini-flash-latest'
+      ];
+      for (const model of geminiModels) {
+        try {
+          const ai = new GoogleGenAI({ apiKey: geminiApiKey });
+          const prompt = `${systemPrompt || defaultSystemPrompt}\n\n${userPromptContent}`;
+          
+          const response = await ai.models.generateContent({
+            model,
+            contents: prompt,
+          });
+
+          if (response && response.text) {
+            return res.status(200).json({ text: response.text, model });
+          }
+        } catch (geminiErr) {
+          console.warn(`Gemini (${model}) status notice:`, geminiErr.message || geminiErr);
+        }
+      }
+    }
+
     // Try Groq if configured
     if (groqApiKey) {
       try {
         const endpoint = 'https://api.groq.com/openai/v1/chat/completions';
         const payload = {
-          model: 'openai/gpt-oss-120b',
+          model: 'llama-3.3-70b-versatile',
           messages: [
             { role: 'system', content: systemPrompt || defaultSystemPrompt },
             { role: 'user', content: userPromptContent }
@@ -94,26 +252,7 @@ async function handleGroq(req, res) {
           }
         }
       } catch (e) {
-        console.warn('Groq fetch failed, attempting Gemini fallback if available:', e.message);
-      }
-    }
-
-    // Fallback to Gemini if configured
-    if (geminiApiKey) {
-      try {
-        const ai = new GoogleGenAI({ apiKey: geminiApiKey });
-        const prompt = `${systemPrompt || defaultSystemPrompt}\n\n${userPromptContent}`;
-        
-        const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
-          contents: prompt,
-        });
-
-        if (response && response.text) {
-          return res.status(200).json({ text: response.text });
-        }
-      } catch (geminiErr) {
-        console.error('Gemini fallback error:', geminiErr.message);
+        console.warn('Groq fetch failed:', e.message);
       }
     }
 

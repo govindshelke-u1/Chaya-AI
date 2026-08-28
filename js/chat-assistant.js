@@ -1,11 +1,17 @@
 /**
- * Chaya AI - Floating Interactive Agricultural Chatbot Widget
+ * Chaya AI - Floating Interactive Agricultural Chatbot & Voice Assistant Widget
+ * Farmer-friendly, bilingual (Marathi / English), voice input (STT) and spoken responses (TTS).
  */
 
 class ChayaChatWidget {
   constructor() {
     this.isOpen = false;
     this.messages = [];
+    this.autoSpeak = localStorage.getItem('chaya_auto_speak') === 'true';
+    this.isListening = false;
+    this.isSpeaking = false;
+    this.currentSpeakingBtn = null;
+    this.recognition = null;
     this.lang = localStorage.getItem('chaya_lang') || 'en';
     this.init();
   }
@@ -13,44 +19,56 @@ class ChayaChatWidget {
   getTranslations() {
     return {
       en: {
-        launcher: "Chat with Chaya AI",
-        headerTitle: "Chaya AI Farm Assistant",
-        headerSub: "Online Agro Expert (Knowledge-Grounded)",
+        launcher: "Chat with Chaya 🎤",
+        headerTitle: "Chaya — Farm Assistant",
+        headerSub: "24/7 Smart Agro Voice Advisor",
+        autoSpeakLabel: "Auto-Speak",
+        stopVoiceLabel: "Stop Audio",
         presets: [
-          { label: "🌿 Turmeric Leaf Spot", query: "How to control leaf spot disease in turmeric?" },
-          { label: "🍌 Banana Drip Schedule", query: "How to schedule drip fertilizer for banana crop?" },
-          { label: "🌱 Soybean Pests", query: "What is the best pesticide for soybean pests?" },
-          { label: "🏛️ Drip Subsidy", query: "Give details about government drip irrigation scheme" }
+          { label: "🌿 Turmeric Leaf Spot & Rot", query: "How to control leaf spot and rhizome rot in turmeric crop?" },
+          { label: "🍌 Banana Drip Schedule", query: "How to schedule drip fertilizer and irrigation for banana crop?" },
+          { label: "🌱 Soybean Pests", query: "What is the best pesticide remedy for soybean girdle beetle and stem fly?" },
+          { label: "☁️ Cotton Bollworm", query: "How to control pink bollworm in cotton?" },
+          { label: "🏛️ Drip 80% Subsidy", query: "Give details and documents for government drip irrigation subsidy scheme" },
+          { label: "📊 Mandi Prices", query: "What are today's APMC mandi market rates in Nanded?" }
         ],
-        welcome: "<b>Hello Farmer Friend! 🙏</b><br>I am <b>Chaya AI</b> - your smart agricultural advisor. Feel free to ask any question regarding crop selection, fertilizer scheduling, disease management, or mandi market prices.",
-        placeholder: "Ask your question or tap mic to speak...",
-        micTitle: "Tap to speak in English",
-        thinking: "🌱 Chaya AI is thinking...",
-        voiceUnsupported: "Voice input is not supported in your browser. Please type your query."
+        welcome: "<b>Namaste Farmer Friend! 🙏</b><br>I am <b>Chaya</b> — your trusted agricultural companion. You can type your query in English or tap the microphone 🎤 to speak.",
+        placeholder: "Type your query or tap mic to speak...",
+        micTitle: "Tap to speak (Voice Input)",
+        micListening: "🎤 Listening... Speak now",
+        thinking: "🌱 Chaya is preparing your solution in English...",
+        voiceUnsupported: "Voice input is not supported in this browser. Please type your query.",
+        clearChat: "Clear Chat"
       },
       mr: {
-        launcher: "छाया AI शी बोला",
-        headerTitle: "छाया AI संवाद सहाय्यक",
-        headerSub: "ऑनलाइन कृषी तज्ज्ञ (Knowledge-Grounded)",
+        launcher: "छाया सोबत बोला 🎤",
+        headerTitle: "छाया — कृषी मार्गदर्शक",
+        headerSub: "२४/७ डिजिटल शेती व व्हॉइस सल्लागार",
+        autoSpeakLabel: "आपोआप ऑडिओ",
+        stopVoiceLabel: "बोलणे थांबवा",
         presets: [
-          { label: "🌿 हळद करपा", query: "हळदीवरील करपा रोगावर काय फवारावे?" },
+          { label: "🌿 हळद करपा व कंदकुज", query: "हळदीवरील करपा व कंदकुज रोगावर काय फवारावे?" },
           { label: "🍌 केळी खत नियोजन", query: "केळीला ठिबक सिंचनाने खते कशी द्यावीत?" },
-          { label: "🌱 सोयाबीन कीड", query: "सोयाबीनसाठी सर्वोत्तम कीडनाशक कोणते?" },
-          { label: "🏛️ ठिबक अनुदान", query: "मागेल त्याला ठिबक योजनेची माहिती द्या" }
+          { label: "🌱 सोयाबीन चक्रीभुंगा", query: "सोयाबीनवरील चक्रीभुंगा व खोडमाशीवर काय उपाय करावा?" },
+          { label: "☁️ कापूस बोंडअळी", query: "कापसावरील गुलाबी बोंडअळी नियंत्रण उपाय" },
+          { label: "🏛️ ठिबक ८०% अनुदान", query: "मागेल त्याला ठिबक योजनेची माहिती व अनुदान" },
+          { label: "📊 चालू बाजारभाव", query: "नांदेड व मराठवाड्यातील चालू बाजारभाव काय आहेत?" }
         ],
-        welcome: "<b>नमस्कार शेतकरी मित्रहो! 🙏</b><br>मी <b>छाया AI</b> - तुमचा डिजिटल कृषी मित्र. आपण आपल्या शेतातील पीक, खते, रोग-कीड किंवा बाजारभावाबद्दल कोणताही प्रश्न मराठीत विचारू शकता.",
-        placeholder: "येथे प्रश्न विचारा किंवा बोला...",
-        micTitle: "मराठीत बोला (Voice)",
-        thinking: "🌱 छाया AI विचार करत आहे...",
-        voiceUnsupported: "तुमच्या ब्राउझरमध्ये व्हॉइस इनपुट सपोर्ट उपलब्ध नाही. कृपया टाइप करा."
+        welcome: "<b>नमस्कार शेतकरी मित्रहो! 🙏</b><br>मी <b>छाया</b> — तुमची डिजिटल कृषी मार्गदर्शक. आपण खाली टाईप करू शकता किंवा <b>माईक (🎤)</b> वर क्लिक करून थेट मराठीत बोलून प्रश्न विचारू शकता.",
+        placeholder: "येथे प्रश्न विचारा किंवा माईक दाबून बोला...",
+        micTitle: "मराठीत बोला (व्हॉइस इनपुट)",
+        micListening: "🎤 ऐकत आहे... मराठीत बोला",
+        thinking: "🌱 छाया सल्ला तयार करत आहे...",
+        voiceUnsupported: "तुमच्या ब्राउझरमध्ये व्हॉइस इनपुट उपलब्ध नाही. कृपया लिहून प्रश्न विचारा.",
+        clearChat: "चॅट साफ करा"
       }
     };
   }
 
   setLanguage(lang) {
-    this.lang = lang || 'en';
-    const t = this.getTranslations()[this.lang];
-    
+    this.lang = lang || localStorage.getItem('chaya_lang') || 'en';
+    const t = this.getTranslations()[this.lang] || this.getTranslations().en;
+
     const launcherLabel = document.querySelector('.chat-launcher .chat-label');
     if (launcherLabel) launcherLabel.innerText = t.launcher;
 
@@ -60,11 +78,20 @@ class ChayaChatWidget {
     const headerSub = document.querySelector('.chat-header-sub');
     if (headerSub) headerSub.innerText = t.headerSub;
 
+    const autoSpeakText = document.getElementById('chat-auto-speak-text');
+    if (autoSpeakText) autoSpeakText.innerText = t.autoSpeakLabel;
+
+    const stopAudioBtn = document.getElementById('chat-stop-audio-btn');
+    if (stopAudioBtn) stopAudioBtn.title = t.stopVoiceLabel;
+
     const input = document.getElementById('chat-user-input');
-    if (input) input.placeholder = t.placeholder;
+    if (input && !this.isListening) input.placeholder = t.placeholder;
 
     const micBtn = document.getElementById('chat-mic-btn');
     if (micBtn) micBtn.title = t.micTitle;
+
+    const clearBtn = document.getElementById('chat-clear-btn');
+    if (clearBtn) clearBtn.title = t.clearChat;
 
     const quickTags = document.querySelector('.chat-quick-tags');
     if (quickTags) {
@@ -84,23 +111,45 @@ class ChayaChatWidget {
   init() {
     const t = this.getTranslations()[this.lang];
 
-    // Inject Chat Widget HTML into the document
     const widgetHtml = `
       <div id="chaya-chat-launcher" class="chat-launcher" onclick="window.chayaChat.toggle()">
-        <span class="chat-icon">💬</span>
+        <span class="chat-icon">🌿</span>
         <span class="chat-label">${t.launcher}</span>
+        <span class="chat-badge-pulse"></span>
       </div>
 
       <div id="chaya-chat-drawer" class="chat-drawer">
         <div class="chat-header">
-          <div style="display:flex; align-items:center; gap:8px;">
-            <span style="font-size:1.4rem;">🌿</span>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div class="chat-avatar-ring">
+              <span style="font-size:1.3rem;">👨‍🌾</span>
+            </div>
             <div>
-              <div class="chat-header-title" style="font-weight:800; font-size:1rem;">${t.headerTitle}</div>
-              <div class="chat-header-sub" style="font-size:0.75rem; color:#d1fae5;">${t.headerSub}</div>
+              <div class="chat-header-title" style="font-weight:800; font-size:0.95rem; color:#ffffff; line-height:1.2;">${t.headerTitle}</div>
+              <div class="chat-header-sub" style="font-size:0.72rem; color:#a7f3d0; margin-top:2px;">${t.headerSub}</div>
             </div>
           </div>
-          <button class="chat-close-btn" onclick="window.chayaChat.toggle()">✕</button>
+          
+          <div style="display:flex; align-items:center; gap:6px;">
+            <!-- Auto-Speak toggle -->
+            <button id="chat-auto-speak-toggle" class="chat-ctrl-btn ${this.autoSpeak ? 'active' : ''}" onclick="window.chayaChat.toggleAutoSpeak()" title="${t.autoSpeakLabel}">
+              <span id="chat-auto-speak-icon">🔊</span>
+              <span id="chat-auto-speak-text" style="font-size:0.68rem; font-weight:700;">${t.autoSpeakLabel}</span>
+            </button>
+
+            <!-- Stop audio button (visible when speaking) -->
+            <button id="chat-stop-audio-btn" class="chat-ctrl-btn stop-audio-btn" style="display:none;" onclick="window.chayaChat.stopAllSpeech()" title="${t.stopVoiceLabel}">
+              ⏹️
+            </button>
+
+            <!-- Clear history -->
+            <button id="chat-clear-btn" class="chat-ctrl-btn" onclick="window.chayaChat.clearHistory()" title="${t.clearChat}">
+              🗑️
+            </button>
+
+            <!-- Close drawer -->
+            <button class="chat-close-btn" onclick="window.chayaChat.toggle()" title="Close">✕</button>
+          </div>
         </div>
 
         <div class="chat-quick-tags">
@@ -117,10 +166,22 @@ class ChayaChatWidget {
           </div>
         </div>
 
+        <!-- Live Listening Indicator -->
+        <div id="chat-voice-status-bar" class="voice-status-bar" style="display:none;">
+          <span class="voice-wave-dot"></span>
+          <span class="voice-wave-dot"></span>
+          <span class="voice-wave-dot"></span>
+          <span id="chat-voice-status-text" style="font-size:0.8rem; font-weight:600; color:#065f46;">${t.micListening}</span>
+        </div>
+
         <div class="chat-input-area">
           <input type="text" id="chat-user-input" placeholder="${t.placeholder}" onkeypress="window.chayaChat.handleKey(event)" />
-          <button id="chat-mic-btn" class="chat-action-btn mic-btn" title="${t.micTitle}" onclick="window.chayaChat.startVoiceInput()">🎤</button>
-          <button id="chat-send-btn" class="chat-action-btn send-btn" onclick="window.chayaChat.sendMessage()">➔</button>
+          <button id="chat-mic-btn" class="chat-action-btn mic-btn" title="${t.micTitle}" onclick="window.chayaChat.startVoiceInput()">
+            <span class="mic-icon">🎤</span>
+          </button>
+          <button id="chat-send-btn" class="chat-action-btn send-btn" onclick="window.chayaChat.sendMessage()" title="Send">
+            <span>➔</span>
+          </button>
         </div>
       </div>
     `;
@@ -140,94 +201,167 @@ class ChayaChatWidget {
         position: fixed;
         bottom: 24px;
         right: 24px;
-        background: linear-gradient(135deg, #10b981, #065f46);
-        color: white;
+        background: linear-gradient(135deg, #059669, #047857);
+        color: #ffffff;
         padding: 12px 20px;
-        border-radius: 30px;
-        box-shadow: 0 8px 24px rgba(6, 78, 59, 0.4);
+        border-radius: 9999px;
+        box-shadow: 0 10px 25px -5px rgba(5, 150, 105, 0.5), 0 8px 10px -6px rgba(5, 150, 105, 0.4);
         display: flex;
         align-items: center;
         gap: 10px;
         cursor: pointer;
-        z-index: 1000;
+        z-index: 999;
         font-weight: 700;
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        border: 2px solid rgba(255,255,255,0.4);
+        font-size: 0.95rem;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        border: 2px solid rgba(255, 255, 255, 0.3);
       }
       .chat-launcher:hover {
-        transform: scale(1.05) translateY(-2px);
-        box-shadow: 0 12px 28px rgba(6, 78, 59, 0.5);
+        transform: translateY(-3px) scale(1.03);
+        box-shadow: 0 16px 30px -5px rgba(5, 150, 105, 0.6);
+        background: linear-gradient(135deg, #10b981, #059669);
       }
       .chat-launcher .chat-icon {
-        font-size: 1.3rem;
+        font-size: 1.35rem;
       }
+      .chat-badge-pulse {
+        width: 10px;
+        height: 10px;
+        background-color: #34d399;
+        border-radius: 50%;
+        box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7);
+        animation: pulse-ring 2s infinite;
+      }
+      @keyframes pulse-ring {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+      }
+
       .chat-drawer {
         position: fixed;
-        bottom: 90px;
+        bottom: 88px;
         right: 24px;
-        width: 380px;
+        width: 410px;
         max-width: calc(100vw - 32px);
-        height: 520px;
+        height: 560px;
         max-height: calc(100vh - 120px);
-        background: rgba(255, 255, 255, 0.96);
-        backdrop-filter: blur(16px);
+        background: #ffffff;
         border-radius: 20px;
-        border: 1px solid rgba(16, 185, 129, 0.3);
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
-        display: none;
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(15, 23, 42, 0.08);
+        display: flex;
         flex-direction: column;
         z-index: 1000;
         overflow: hidden;
-        animation: chatSlideIn 0.3s ease-out;
+        transform: translateY(20px) scale(0.96);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
       }
-      @keyframes chatSlideIn {
-        from { opacity: 0; transform: translateY(20px) scale(0.95); }
-        to { opacity: 1; transform: translateY(0) scale(1); }
+      .chat-drawer.open {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+        pointer-events: auto;
       }
+
       .chat-header {
-        background: linear-gradient(135deg, #064e3b, #10b981);
-        color: white;
-        padding: 14px 18px;
+        background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+        padding: 14px 16px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        color: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+      .chat-avatar-ring {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1.5px solid rgba(255,255,255,0.4);
+      }
+      .chat-ctrl-btn {
+        background: rgba(255,255,255,0.15);
+        border: 1px solid rgba(255,255,255,0.25);
+        color: white;
+        border-radius: 12px;
+        padding: 5px 9px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        transition: all 0.2s ease;
+      }
+      .chat-ctrl-btn:hover {
+        background: rgba(255,255,255,0.28);
+      }
+      .chat-ctrl-btn.active {
+        background: #10b981;
+        border-color: #34d399;
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+      }
+      .stop-audio-btn {
+        background: #dc2626 !important;
+        border-color: #ef4444 !important;
+        animation: pulse-red 1.5s infinite;
+      }
+      @keyframes pulse-red {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.08); }
       }
       .chat-close-btn {
-        background: rgba(255,255,255,0.2);
+        background: transparent;
         border: none;
         color: white;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
+        font-size: 1.1rem;
         cursor: pointer;
-        font-weight: bold;
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s ease;
       }
+      .chat-close-btn:hover {
+        background: rgba(255,255,255,0.2);
+      }
+
       .chat-quick-tags {
         display: flex;
         gap: 6px;
-        padding: 8px 12px;
-        background: #f0fdf4;
-        border-bottom: 1px solid #dcfce7;
+        padding: 10px 14px;
+        background: #f8fafc;
         overflow-x: auto;
         white-space: nowrap;
-        scrollbar-width: thin;
+        border-bottom: 1px solid #e2e8f0;
+        scrollbar-width: none;
+      }
+      .chat-quick-tags::-webkit-scrollbar {
+        display: none;
       }
       .quick-chip {
-        background: white;
-        border: 1px solid #86efac;
-        color: #065f46;
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 0.78rem;
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        color: #1e293b;
+        font-size: 0.74rem;
         font-weight: 600;
+        padding: 5px 10px;
+        border-radius: 9999px;
         cursor: pointer;
-        flex-shrink: 0;
         transition: all 0.2s ease;
+        flex-shrink: 0;
       }
       .quick-chip:hover {
-        background: #10b981;
-        color: white;
+        background: #ecfdf5;
+        border-color: #10b981;
+        color: #065f46;
+        transform: translateY(-1px);
       }
+
       .chat-messages {
         flex: 1;
         padding: 14px;
@@ -235,119 +369,166 @@ class ChayaChatWidget {
         display: flex;
         flex-direction: column;
         gap: 12px;
-        font-size: 0.9rem;
+        background: #fdfbf7;
+        font-size: 0.88rem;
       }
       .chat-msg {
         display: flex;
-        max-width: 85%;
+        flex-direction: column;
+        max-width: 88%;
+        animation: fadeInMsg 0.2s ease-out;
       }
-      .chat-msg.bot {
-        align-self: flex-start;
+      @keyframes fadeInMsg {
+        from { opacity: 0; transform: translateY(6px); }
+        to { opacity: 1; transform: translateY(0); }
       }
       .chat-msg.user {
         align-self: flex-end;
       }
-      .msg-bubble {
-        padding: 10px 14px;
-        border-radius: 14px;
-        line-height: 1.45;
-        word-break: break-word;
-        position: relative;
-      }
-      .msg-speak-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 22px;
-        height: 22px;
-        margin-left: 6px;
-        border: none;
-        background: rgba(16, 185, 129, 0.15);
-        border-radius: 50%;
-        cursor: pointer;
-        font-size: 0.75rem;
-        vertical-align: middle;
-      }
-      .msg-speak-btn.listening {
-        background: #10b981;
-        animation: pulseRecord 1s infinite alternate;
-      }
-      @media (max-width: 600px) {
-        .chat-drawer {
-          width: calc(100vw - 20px);
-          right: 10px;
-          bottom: 80px;
-          height: 70vh;
-        }
-        .chat-launcher {
-          right: 14px;
-          bottom: 14px;
-          padding: 10px 16px;
-        }
-        .chat-launcher .chat-label { display: none; }
-      }
-      .chat-msg.bot .msg-bubble {
-        background: #f3f4f6;
-        color: #1f2937;
-        border-bottom-left-radius: 4px;
-        border: 1px solid #e5e7eb;
+      .chat-msg.bot {
+        align-self: flex-start;
       }
       .chat-msg.user .msg-bubble {
+        background: linear-gradient(135deg, #059669, #047857);
+        color: #ffffff;
+        border-radius: 16px 16px 2px 16px;
+        padding: 10px 14px;
+        box-shadow: 0 2px 5px rgba(5,150,105,0.25);
+        line-height: 1.45;
+      }
+      .chat-msg.bot .msg-bubble {
+        background: #ffffff;
+        color: #0f172a;
+        border-radius: 16px 16px 16px 2px;
+        padding: 12px 14px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        position: relative;
+        line-height: 1.55;
+      }
+      .msg-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: 8px;
+        padding-top: 6px;
+        border-top: 1px dashed #e2e8f0;
+      }
+      .msg-speak-btn {
+        background: #f1f5f9;
+        border: 1px solid #cbd5e1;
+        border-radius: 9999px;
+        color: #334155;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 3px 10px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: all 0.2s ease;
+      }
+      .msg-speak-btn:hover {
+        background: #ecfdf5;
+        border-color: #10b981;
+        color: #065f46;
+      }
+      .msg-speak-btn.speaking {
         background: #10b981;
         color: white;
-        border-bottom-right-radius: 4px;
+        border-color: #059669;
+        animation: pulse-speak 1.2s infinite;
       }
-      .chat-input-area {
+      @keyframes pulse-speak {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+
+      .voice-status-bar {
+        background: #ecfdf5;
+        border-top: 1px solid #a7f3d0;
+        padding: 8px 14px;
         display: flex;
-        padding: 10px 12px;
-        background: white;
-        border-top: 1px solid #e5e7eb;
-        gap: 8px;
         align-items: center;
+        gap: 8px;
       }
-      #chat-user-input {
+      .voice-wave-dot {
+        width: 8px;
+        height: 8px;
+        background: #059669;
+        border-radius: 50%;
+        animation: dotWave 1.2s infinite ease-in-out;
+      }
+      .voice-wave-dot:nth-child(2) { animation-delay: 0.2s; }
+      .voice-wave-dot:nth-child(3) { animation-delay: 0.4s; }
+      @keyframes dotWave {
+        0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+        40% { transform: scale(1.2); opacity: 1; }
+      }
+
+      .chat-input-area {
+        padding: 10px 12px;
+        background: #ffffff;
+        border-top: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .chat-input-area input {
         flex: 1;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 12px;
         padding: 10px 14px;
-        border: 1.5px solid #d1d5db;
-        border-radius: 20px;
         font-size: 0.9rem;
         outline: none;
+        transition: border-color 0.2s ease;
       }
-      #chat-user-input:focus {
-        border-color: #10b981;
+      .chat-input-area input:focus {
+        border-color: #059669;
+        box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
       }
       .chat-action-btn {
-        width: 38px;
-        height: 38px;
-        border-radius: 50%;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
         border: none;
-        cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1rem;
-        transition: transform 0.2s ease;
-      }
-      .chat-action-btn:hover {
-        transform: scale(1.08);
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
       }
       .mic-btn {
-        background: #fef2f2;
-        color: #ef4444;
-        border: 1px solid #fca5a5;
+        background: #f1f5f9;
+        color: #334155;
+        border: 1.5px solid #cbd5e1;
+      }
+      .mic-btn:hover {
+        background: #e2e8f0;
+        color: #0f172a;
       }
       .mic-btn.listening {
-        background: #ef4444;
-        color: white;
-        animation: pulseRecord 1s infinite alternate;
+        background: #fee2e2;
+        color: #dc2626;
+        border-color: #ef4444;
+        animation: pulse-mic 1s infinite;
       }
-      @keyframes pulseRecord {
-        from { transform: scale(1); }
-        to { transform: scale(1.15); }
+      @keyframes pulse-mic {
+        0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+        50% { transform: scale(1.08); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
       }
       .send-btn {
-        background: #10b981;
+        background: #059669;
         color: white;
+      }
+      .send-btn:hover {
+        background: #047857;
+        transform: scale(1.05);
+      }
+      .send-btn:active {
+        transform: scale(0.95);
       }
     `;
     document.head.appendChild(style);
@@ -356,10 +537,65 @@ class ChayaChatWidget {
   toggle() {
     this.isOpen = !this.isOpen;
     const drawer = document.getElementById('chaya-chat-drawer');
-    drawer.style.display = this.isOpen ? 'flex' : 'none';
-    if (this.isOpen) {
-      document.getElementById('chat-user-input').focus();
+    if (drawer) {
+      if (this.isOpen) {
+        drawer.classList.add('open');
+        setTimeout(() => {
+          const input = document.getElementById('chat-user-input');
+          if (input) input.focus();
+        }, 150);
+      } else {
+        drawer.classList.remove('open');
+        this.stopAllSpeech();
+        if (this.recognition && this.isListening) {
+          try { this.recognition.stop(); } catch (_) {}
+        }
+      }
     }
+  }
+
+  toggleAutoSpeak() {
+    this.autoSpeak = !this.autoSpeak;
+    localStorage.setItem('chaya_auto_speak', this.autoSpeak ? 'true' : 'false');
+    const toggleBtn = document.getElementById('chat-auto-speak-toggle');
+    if (toggleBtn) {
+      if (this.autoSpeak) {
+        toggleBtn.classList.add('active');
+      } else {
+        toggleBtn.classList.remove('active');
+        this.stopAllSpeech();
+      }
+    }
+  }
+
+  stopAllSpeech() {
+    if (window.chayaAI && typeof window.chayaAI.stopSpeaking === 'function') {
+      window.chayaAI.stopSpeaking();
+    }
+    this.isSpeaking = false;
+    const stopAudioBtn = document.getElementById('chat-stop-audio-btn');
+    if (stopAudioBtn) stopAudioBtn.style.display = 'none';
+
+    document.querySelectorAll('.msg-speak-btn.speaking').forEach(btn => {
+      btn.classList.remove('speaking');
+      btn.innerHTML = '🔊 ' + (this.lang === 'mr' ? 'ऐका' : 'Listen');
+    });
+  }
+
+  clearHistory() {
+    this.messages = [];
+    const messagesBox = document.getElementById('chat-messages');
+    const t = this.getTranslations()[this.lang];
+    if (messagesBox) {
+      messagesBox.innerHTML = `
+        <div class="chat-msg bot">
+          <div class="msg-bubble">
+            ${t.welcome}
+          </div>
+        </div>
+      `;
+    }
+    this.stopAllSpeech();
   }
 
   handleKey(e) {
@@ -368,9 +604,12 @@ class ChayaChatWidget {
     }
   }
 
-  sendPreset(text) {
-    document.getElementById('chat-user-input').value = text;
-    this.sendMessage();
+  sendPreset(query) {
+    const input = document.getElementById('chat-user-input');
+    if (input) {
+      input.value = query;
+      this.sendMessage();
+    }
   }
 
   async sendMessage() {
@@ -378,12 +617,17 @@ class ChayaChatWidget {
     const text = input.value.trim();
     if (!text) return;
 
+    // Refresh active language
+    this.lang = localStorage.getItem('chaya_lang') || this.lang || 'en';
+
+    this.stopAllSpeech();
     this.appendMessage('user', text);
+    this.messages.push({ sender: 'user', text });
     input.value = '';
 
     const messagesBox = document.getElementById('chat-messages');
-    const t = this.getTranslations()[this.lang];
-    
+    const t = this.getTranslations()[this.lang] || this.getTranslations().en;
+
     // Add typing indicator
     const typingElem = document.createElement('div');
     typingElem.className = 'chat-msg bot typing-ind';
@@ -391,22 +635,30 @@ class ChayaChatWidget {
     messagesBox.appendChild(typingElem);
     messagesBox.scrollTop = messagesBox.scrollHeight;
 
-    // Get current farm context from localStorage
-    const savedData = localStorage.getItem('chayaFormData');
-    const farmContext = savedData ? JSON.parse(savedData) : {
-      taluka: 'ardhapur',
-      water: 'मुबलक पाणी',
-      land: '2'
-    };
+    // Get current farm context from localStorage if available
+    let farmContext = null;
+    try {
+      const savedData = localStorage.getItem('chayaFormData');
+      if (savedData) farmContext = JSON.parse(savedData);
+    } catch (_) {}
 
     if (!window.chayaAI.isLoaded) {
       await window.chayaAI.loadKnowledgeBase();
     }
 
-    const reply = await window.chayaAI.handleChatMessage(text, farmContext, this.lang);
-    
+    const reply = await window.chayaAI.handleChatMessage(text, farmContext, this.lang, this.messages);
+
     typingElem.remove();
-    this.appendMessage('bot', reply);
+    this.messages.push({ sender: 'bot', text: reply });
+    const botMsgBubble = this.appendMessage('bot', reply);
+
+    // Auto speak if enabled
+    if (this.autoSpeak && botMsgBubble) {
+      const speakBtn = botMsgBubble.querySelector('.msg-speak-btn');
+      if (speakBtn) {
+        this.speakMessage(speakBtn, reply);
+      }
+    }
   }
 
   appendMessage(sender, text) {
@@ -414,68 +666,152 @@ class ChayaChatWidget {
     const msgElem = document.createElement('div');
     msgElem.className = `chat-msg ${sender}`;
 
-    // Format markdown bold, lists and line breaks
+    // Format bold, bullet points, line breaks
     let formatted = text
-      .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
       .replace(/\n/g, '<br>')
-      .replace(/- /g, '• ');
+      .replace(/• /g, '👉 ')
+      .replace(/👉 /g, '<span style="color:#059669; font-weight:bold;">• </span>');
+
+    const speakBtnLabel = this.lang === 'mr' ? 'ऐका' : 'Listen';
+    const escapedText = encodeURIComponent(text);
 
     const speakBtnHtml = sender === 'bot'
-      ? `<button class="msg-speak-btn" onclick="window.chayaChat.speakMessage(this, ${JSON.stringify(text).replace(/"/g, '&quot;')})">🔊</button>`
+      ? `<div class="msg-actions">
+           <button class="msg-speak-btn" onclick="window.chayaChat.speakMessage(this, decodeURIComponent('${escapedText}'))">
+             🔊 ${speakBtnLabel}
+           </button>
+         </div>`
       : '';
 
     msgElem.innerHTML = `<div class="msg-bubble">${formatted}${speakBtnHtml}</div>`;
     messagesBox.appendChild(msgElem);
     messagesBox.scrollTop = messagesBox.scrollHeight;
+    return msgElem;
   }
 
   speakMessage(btnEl, text) {
-    btnEl.classList.add('listening');
+    this.stopAllSpeech();
+
+    const stopAudioBtn = document.getElementById('chat-stop-audio-btn');
+    if (stopAudioBtn) stopAudioBtn.style.display = 'flex';
+
+    if (btnEl) {
+      btnEl.classList.add('speaking');
+      btnEl.innerHTML = '🔊 ' + (this.lang === 'mr' ? 'बोलत आहे...' : 'Speaking...');
+    }
+
+    this.isSpeaking = true;
     window.chayaAI.speak(text, {
       lang: this.lang,
-      onEnd: () => btnEl.classList.remove('listening'),
-      onError: () => btnEl.classList.remove('listening')
+      onStart: () => {
+        this.isSpeaking = true;
+        if (stopAudioBtn) stopAudioBtn.style.display = 'flex';
+      },
+      onEnd: () => {
+        this.isSpeaking = false;
+        if (btnEl) {
+          btnEl.classList.remove('speaking');
+          btnEl.innerHTML = '🔊 ' + (this.lang === 'mr' ? 'ऐका' : 'Listen');
+        }
+        if (stopAudioBtn) stopAudioBtn.style.display = 'none';
+      },
+      onError: () => {
+        this.isSpeaking = false;
+        if (btnEl) {
+          btnEl.classList.remove('speaking');
+          btnEl.innerHTML = '🔊 ' + (this.lang === 'mr' ? 'ऐका' : 'Listen');
+        }
+        if (stopAudioBtn) stopAudioBtn.style.display = 'none';
+      }
     });
   }
 
   startVoiceInput() {
     const micBtn = document.getElementById('chat-mic-btn');
     const input = document.getElementById('chat-user-input');
+    const statusBar = document.getElementById('chat-voice-status-bar');
+    const statusText = document.getElementById('chat-voice-status-text');
     const t = this.getTranslations()[this.lang];
+
+    // If currently listening, stop it
+    if (this.isListening && this.recognition) {
+      try { this.recognition.stop(); } catch (_) {}
+      this.isListening = false;
+      if (micBtn) micBtn.classList.remove('listening');
+      if (statusBar) statusBar.style.display = 'none';
+      return;
+    }
 
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
       alert(t.voiceUnsupported);
       return;
     }
 
+    this.stopAllSpeech();
+
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
+    this.recognition = recognition;
     recognition.lang = this.lang === 'mr' ? 'mr-IN' : 'en-IN';
     recognition.continuous = false;
-    recognition.interimResults = false;
+    recognition.interimResults = true;
 
-    micBtn.classList.add('listening');
+    this.isListening = true;
+    if (micBtn) micBtn.classList.add('listening');
+    if (statusBar) {
+      statusBar.style.display = 'flex';
+      if (statusText) statusText.innerText = t.micListening;
+    }
 
     recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
-      input.value = transcript;
-      micBtn.classList.remove('listening');
-      this.sendMessage();
+      let finalTranscript = '';
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        } else {
+          input.value = event.results[i][0].transcript;
+        }
+      }
+
+      if (finalTranscript) {
+        input.value = finalTranscript;
+        this.isListening = false;
+        if (micBtn) micBtn.classList.remove('listening');
+        if (statusBar) statusBar.style.display = 'none';
+        this.sendMessage();
+      }
     };
 
-    recognition.onerror = () => {
-      micBtn.classList.remove('listening');
+    recognition.onerror = (e) => {
+      console.warn('Speech recognition notice:', e.error);
+      this.isListening = false;
+      if (micBtn) micBtn.classList.remove('listening');
+      if (statusBar) statusBar.style.display = 'none';
     };
 
     recognition.onend = () => {
-      micBtn.classList.remove('listening');
+      this.isListening = false;
+      if (micBtn) micBtn.classList.remove('listening');
+      if (statusBar) statusBar.style.display = 'none';
     };
 
-    recognition.start();
+    try {
+      recognition.start();
+    } catch (e) {
+      console.warn('Speech recognition start failed:', e);
+      this.isListening = false;
+      if (micBtn) micBtn.classList.remove('listening');
+      if (statusBar) statusBar.style.display = 'none';
+    }
   }
 }
 
 // Auto instantiate when page loads
-document.addEventListener('DOMContentLoaded', () => {
-  window.chayaChat = new ChayaChatWidget();
-});
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    if (!window.chayaChat) window.chayaChat = new ChayaChatWidget();
+  });
+} else {
+  if (!window.chayaChat) window.chayaChat = new ChayaChatWidget();
+}

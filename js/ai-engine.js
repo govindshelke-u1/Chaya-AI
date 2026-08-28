@@ -212,68 +212,177 @@ class ChayaAIEngine {
   }
 
   // ---------------------------------------------------------------------
-  // 🔊 TEXT-TO-SPEECH — via /api/index?action=tts backend proxy (ElevenLabs key stays server-side)
-  // Falls back to the browser's built-in voice if the backend isn't configured.
+  // 🔊 TEXT-TO-SPEECH — with Voice Auto-Selection & Chrome Speech Resilience
   // ---------------------------------------------------------------------
+  stopSpeaking() {
+    if (this._ttsKeepAliveTimer) {
+      clearInterval(this._ttsKeepAliveTimer);
+      this._ttsKeepAliveTimer = null;
+    }
+    if (this.currentAudio) {
+      try {
+        this.currentAudio.pause();
+        this.currentAudio.currentTime = 0;
+      } catch (_) {}
+      this.currentAudio = null;
+    }
+    if ('speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch (_) {}
+    }
+  }
+
+  getBestVoice(lang = 'en') {
+    if (!('speechSynthesis' in window)) return null;
+    const voices = window.speechSynthesis.getVoices() || [];
+    if (!voices.length) return null;
+
+    if (lang === 'mr') {
+      return (
+        voices.find(v => v.lang && v.lang.toLowerCase().startsWith('mr')) ||
+        voices.find(v => v.name && v.name.toLowerCase().includes('marathi')) ||
+        voices.find(v => v.lang && v.lang.toLowerCase().startsWith('hi')) ||
+        voices.find(v => v.name && v.name.toLowerCase().includes('hindi')) ||
+        voices.find(v => v.lang && v.lang.toLowerCase().includes('in')) ||
+        voices[0]
+      );
+    } else {
+      return (
+        voices.find(v => v.lang && (v.lang.toLowerCase() === 'en-in' || v.lang.toLowerCase().startsWith('en-in'))) ||
+        voices.find(v => v.name && v.name.toLowerCase().includes('india')) ||
+        voices.find(v => v.lang && v.lang.toLowerCase().startsWith('en')) ||
+        voices[0]
+      );
+    }
+  }
+
+  cleanTextForSpeech(text, lang = 'en') {
+    if (!text) return '';
+    let t = text
+      .replace(/[*_#`~>]/g, '') // remove markdown symbols
+      .replace(/•/g, '')
+      .replace(/https?:\/\/\S+/g, '')
+      .replace(/\(.*?\)/g, '') // remove bracketed text to make voice concise
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    // Ensure the voice always says simply "Chaya" or "छाया" instead of "Chaya AI" or "छाया आई"
+    t = t
+      .replace(/छाया\s*(?:AI|एआय|ए\.आय\.|आई)/gi, 'छाया')
+      .replace(/Chaya\s*AI/gi, 'Chaya')
+      .replace(/\bAI\b/gi, '');
+
+    if (lang === 'mr') {
+      t = t
+        .replace(/(\d+)\s*:\s*(\d+)\s*:\s*(\d+)/g, '$1 $2 $3 खत')
+        .replace(/(\d+)\s*L\b/gi, '$1 लिटर')
+        .replace(/(\d+)\s*ml\b/gi, '$1 मिली')
+        .replace(/(\d+)\s*gm?\b/gi, '$1 ग्रॅम')
+        .replace(/(\d+)\s*kg\b/gi, '$1 किलो')
+        .replace(/₹\s*(\d+)/g, '$1 रुपये')
+        .replace(/BBF/gi, 'गादी वाफा पद्धत')
+        .replace(/NPK/gi, 'नत्र स्फुरद पालाश')
+        .replace(/APMC/gi, 'बाजार समिती');
+    }
+    return t;
+  }
+
   async speak(text, { lang = 'en', onStart, onEnd, onError } = {}) {
-    const cleanText = (text || '').replace(/[*_#`]/g, '').replace(/\s+/g, ' ').trim();
+    this.stopSpeaking();
+    const cleanText = this.cleanTextForSpeech(text, lang);
     if (!cleanText) return;
 
-    let usedElevenLabs = false;
-    this.lastTtsErrorDetail = null;
+    // 1. Primary: High-speed, responsive browser SpeechSynthesis
+    if ('speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.resume();
 
-    // 1. Try serverless backend proxy (/api/index?action=tts) — the ONLY
-    //    place a real ElevenLabs key should ever be used (server-side).
-    try {
-      if (onStart) onStart();
-      const response = await fetch('/api/index?action=tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: cleanText, lang })
-      });
-
-      const contentType = response.headers.get('content-type') || '';
-
-      if (response.ok && contentType.includes('audio')) {
-        const audioBlob = await response.blob();
-        const audioUrl = URL.createObjectURL(audioBlob);
-        const audio = new Audio(audioUrl);
-        audio.onended = () => { onEnd && onEnd(); URL.revokeObjectURL(audioUrl); };
-        audio.onerror = () => { onError && onError('audio_playback_failed'); };
-        await audio.play();
-        usedElevenLabs = true;
-        return;
-      } else {
-        // Capture notice and smoothly fallback to browser voice
-        let bodyJson = null;
-        try { bodyJson = await response.json(); } catch (_) {}
-        this.lastTtsErrorDetail = bodyJson
-          ? `[${response.status}] ${bodyJson.error || ''} ${bodyJson.detail || ''}`.trim()
-          : `[${response.status}] backend returned no audio`;
-        console.warn('[Chaya TTS] Backend audio unavailable, using browser speech synthesis fallback:', this.lastTtsErrorDetail);
-      }
-    } catch (e) {
-      this.lastTtsErrorDetail = `network_error: ${e.message}`;
-      console.warn('[Chaya TTS] Backend not reachable (e.g. running on local static server):', e);
-    }
-
-    // 2. Fallback: built-in browser speech synthesis (English or Marathi voice depending on selected language)
-    if (!usedElevenLabs) {
-      if ('speechSynthesis' in window) {
-        if (onStart) onStart();
         const utter = new SpeechSynthesisUtterance(cleanText);
         utter.lang = lang === 'mr' ? 'mr-IN' : 'en-IN';
-        utter.onend = () => onEnd && onEnd();
-        utter.onerror = (ev) => {
-          this.lastTtsErrorDetail = (this.lastTtsErrorDetail ? this.lastTtsErrorDetail + ' | ' : '') +
-            `browser_tts_failed: ${ev?.error || 'unknown'}`;
-          onError && onError('speech_synthesis_failed');
+        utter.rate = lang === 'mr' ? 1.05 : 1.10;
+        utter.pitch = 1.0;
+
+        const matchedVoice = this.getBestVoice(lang);
+        if (matchedVoice) {
+          utter.voice = matchedVoice;
+        }
+
+        let hasStarted = false;
+        utter.onstart = () => {
+          hasStarted = true;
+          if (onStart) onStart();
         };
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(utter);
-      } else if (onError) {
-        onError('tts_unavailable');
+
+        utter.onend = () => {
+          if (this._ttsKeepAliveTimer) {
+            clearInterval(this._ttsKeepAliveTimer);
+            this._ttsKeepAliveTimer = null;
+          }
+          if (onEnd) onEnd();
+        };
+
+        utter.onerror = (ev) => {
+          console.warn('[Chaya Voice] SpeechSynthesis event error:', ev);
+          if (this._ttsKeepAliveTimer) {
+            clearInterval(this._ttsKeepAliveTimer);
+            this._ttsKeepAliveTimer = null;
+          }
+          // Fallback to audio endpoint if available
+          this.speakViaAudioFallback(cleanText, lang, onStart, onEnd, onError);
+        };
+
+        // Chromium keepalive timer
+        this._ttsKeepAliveTimer = setInterval(() => {
+          if (window.speechSynthesis.speaking && !window.speechSynthesis.paused) {
+            window.speechSynthesis.pause();
+            window.speechSynthesis.resume();
+          }
+        }, 3500);
+
+        // Safe tick delay before speak to avoid cancel collision in Chrome
+        setTimeout(() => {
+          try {
+            window.speechSynthesis.resume();
+            window.speechSynthesis.speak(utter);
+            if (!hasStarted && onStart) onStart();
+          } catch (speakErr) {
+            console.warn('[Chaya Voice] speak error:', speakErr);
+            this.speakViaAudioFallback(cleanText, lang, onStart, onEnd, onError);
+          }
+        }, 60);
+        return;
+      } catch (err) {
+        console.warn('[Chaya Voice] SpeechSynthesis initialization error:', err);
       }
+    }
+
+    // 2. Fallback: Audio endpoint / Google Translate Web Audio
+    this.speakViaAudioFallback(cleanText, lang, onStart, onEnd, onError);
+  }
+
+  async speakViaAudioFallback(cleanText, lang, onStart, onEnd, onError) {
+    try {
+      const audioUrl = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${lang === 'mr' ? 'mr' : 'en'}&q=${encodeURIComponent(cleanText.slice(0, 200))}`;
+      const audio = new Audio(audioUrl);
+      audio.playbackRate = 1.08;
+      this.currentAudio = audio;
+
+      audio.onplay = () => { if (onStart) onStart(); };
+      audio.onended = () => {
+        this.currentAudio = null;
+        if (onEnd) onEnd();
+      };
+      audio.onerror = () => {
+        this.currentAudio = null;
+        if (onError) onError('audio_failed');
+      };
+
+      await audio.play();
+    } catch (e) {
+      console.warn('[Chaya Voice] Audio playback failed:', e);
+      if (onError) onError(e.message || 'playback_error');
     }
   }
 
@@ -685,41 +794,150 @@ Respond strictly in English with these 4 clear points:
     };
   }
 
-  async handleChatMessage(message, farmContext, lang = 'en') {
-    const q = message.trim().toLowerCase();
-    if (!q) return lang === 'en' ? 'Please ask a question.' : 'कृपया प्रश्न विचारा.';
+  async handleChatMessage(message, farmContext, lang = 'en', conversationHistory = []) {
+    const q = (message || '').trim().toLowerCase();
+    const isMr = lang === 'mr';
+    if (!q) return isMr ? 'कृपया आपला शेतीविषयक प्रश्न विचारा.' : 'Please ask your farming query.';
 
-    const topCrops = this.knowledgeBase.crops || [];
-    
-    // Quick search for soybean/turmeric pests from the PDFs
-    for (const crop of topCrops) {
-      if (crop.critical_pest_remedies) {
-        for (const r of crop.critical_pest_remedies) {
-          const cName = lang === 'en' ? (crop.name_en || crop.name_mr) : crop.name_mr;
-          if (q.includes(r.pest.toLowerCase()) || q.includes('करपा') || q.includes('चक्री') || q.includes('अळी') || q.includes('खोड') || q.includes('कुज') || q.includes('leaf spot') || q.includes('stem borer') || q.includes('rot') || q.includes('caterpillar')) {
-            return lang === 'en'
-              ? `🚨 **${cName} - ${r.pest} Remedy:**\n\n👉 **Recommended Dose & Spray:** ${r.remedy}`
-              : `🚨 **${crop.name_mr} - ${r.pest} वर तातडीचा उपाय:**\n\n👉 **औषध व मात्रा:** ${r.remedy}`;
-          }
+    // 1. Try Live AI Backend first (Gemini 2.5 Flash / Groq)
+    try {
+      const response = await fetch('/api/index?action=chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message,
+          language: lang,
+          farmContext,
+          conversationHistory
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data && data.text) {
+          return data.text;
+        }
+      }
+    } catch (e) {
+      console.warn('Live AI chat endpoint unavailable, activating local intelligent agro engine:', e);
+    }
+
+    // 2. Comprehensive Local Expert Agro Engine
+    const crops = this.knowledgeBase.crops || [];
+    const diagGuide = this.knowledgeBase.pestsAndDiseases || [];
+    const schemes = this.knowledgeBase.fertilizersAndSchemes || {};
+
+    // A. Specific Diagnostic Guide Search (Pests & Diseases)
+    for (const d of diagGuide) {
+      const pMr = (d.problem_mr || '').toLowerCase();
+      const pEn = (d.problem_en || '').toLowerCase();
+      const cMr = (d.crop_mr || '').toLowerCase();
+      const cEn = (d.crop_en || '').toLowerCase();
+
+      const matchedProblem = (pMr && q.includes(pMr.split(' ')[0])) ||
+        (q.includes('करपा') && pMr.includes('करपा')) ||
+        (q.includes('कंदकुज') && pMr.includes('कुज')) ||
+        (q.includes('खोडकिडा') && pMr.includes('खोड')) ||
+        (q.includes('dbm') && pEn.includes('dbm')) ||
+        (q.includes('चक्रीभुंगा') && pMr.includes('चक्रीभुंगा')) ||
+        (q.includes('खोडमाशी') && pMr.includes('खोडमाशी')) ||
+        (q.includes('बोंडअळी') && pMr.includes('बोंडअळी')) ||
+        (q.includes('घाटे अळी') && pMr.includes('घाटे')) ||
+        (q.includes('सिगाटोका') && pMr.includes('सिगाटोका')) ||
+        (q.includes('rot') && pEn.includes('rot')) ||
+        (q.includes('leaf spot') && pEn.includes('leaf spot'));
+
+      if (matchedProblem) {
+        if (isMr) {
+          return `🚨 **${d.crop_mr} — ${d.problem_mr}:**\n\n` +
+            `🔍 **लक्षणे:** ${d.symptoms_mr}\n` +
+            `🧪 **रासायनिक उपाय (प्रति १५L पंप):** ${d.chemical_solution_mr}\n` +
+            `🌿 **जैविक/नैसर्गिक उपाय:** ${d.organic_solution_mr}`;
+        } else {
+          return `🚨 **${d.crop_en} — ${d.problem_en}:**\n\n` +
+            `🔍 **Symptoms:** ${d.symptoms_en}\n` +
+            `🧪 **Chemical Remedy (Per 15L Pump):** ${d.chemical_solution_en}\n` +
+            `🌿 **Bio / Organic Remedy:** ${d.organic_solution_en}`;
         }
       }
     }
 
-    if (q.includes('fertilizer') || q.includes('spray') || q.includes('dose') || q.includes('खत') || q.includes('डोस') || q.includes('फवारणी')) {
-      return lang === 'en'
-        ? `🧪 **Fertilizer & Spray Guidance:** Initially spray 19:19:19 (100g) + Alika 15ml per 15L pump. During flowering stage, apply 12:61:00 or 00:52:34 for strong root and bud development.`
-        : `🧪 **खत व फवारणी सल्ला:** सुरुवातीला 19:19:19 (100g) + अलिका 15ml प्रति 15L पंप फवारा. फुलधारणेच्या वेळी 12:61:00 किंवा 00:52:34 चा वापर करा.`;
+    // B. Crop Specific Queries (Turmeric, Banana, Soybean, Cotton, Chickpea, Jowar, Sugarcane)
+    for (const crop of crops) {
+      const cId = crop.id || '';
+      const cMr = (crop.name_mr || '').toLowerCase();
+      const cEn = (crop.name_en || '').toLowerCase();
+
+      if (q.includes(cId) || q.includes(cMr) || q.includes(cEn) ||
+          (cId === 'turmeric' && (q.includes('हळद') || q.includes('turmeric'))) ||
+          (cId === 'banana' && (q.includes('केळी') || q.includes('banana'))) ||
+          (cId === 'soybean' && (q.includes('सोयाबीन') || q.includes('soybean'))) ||
+          (cId === 'cotton' && (q.includes('कापूस') || q.includes('cotton'))) ||
+          (cId === 'chickpea' && (q.includes('हरभरा') || q.includes('chickpea') || q.includes('चना')))) {
+
+        // If asking for fertilizer/spray for this crop
+        if (q.includes('खत') || q.includes('डोस') || q.includes('फवारणी') || q.includes('fertilizer') || q.includes('spray') || q.includes('dose')) {
+          const sprays = (crop.stage_spray_schedule || []).map(s => `• **${s.stage}:** ${s.spray}`).join('\n');
+          return isMr
+            ? `🧪 **${crop.name_mr} — टप्प्याटप्प्याने खत व फवारणी वेळापत्रक:**\n\n${sprays}\n\n💡 *टीप:* फवारणीसोबत स्टिकर (Silicon Spreader) ५ मिली अवश्य वापरा.`
+            : `🧪 **${crop.name_en || crop.name_mr} — Growth Stage Fertilizer & Spray Schedule:**\n\n${sprays}\n\n💡 *Tip:* Always add 5ml silicon spreader per spray pump.`;
+        }
+
+        // If asking for varieties for this crop
+        if (q.includes('वाण') || q.includes('बियाणे') || q.includes('variety') || q.includes('seed')) {
+          const vars = (crop.recommended_varieties || []).map(v => `• **${v.name}:** ${v.features}`).join('\n');
+          return isMr
+            ? `🌾 **${crop.name_mr} — शिफारसीत उच्च उत्पादन देणारे वाण:**\n\n${vars}`
+            : `🌾 **${crop.name_en || crop.name_mr} — Recommended High-Yield Varieties:**\n\n${vars}`;
+        }
+
+        // If asking for pest remedy for this crop
+        if (q.includes('रोग') || q.includes('कीड') || q.includes('pest') || q.includes('disease') || q.includes('उपाय')) {
+          const remedies = (crop.critical_pest_remedies || []).map(p => `• **${p.pest}:** ${p.remedy}`).join('\n');
+          return isMr
+            ? `🚨 **${crop.name_mr} — प्रमुख कीड-रोग व तातडीचे उपाय:**\n\n${remedies}`
+            : `🚨 **${crop.name_en || crop.name_mr} — Key Pests & Rapid Remedies:**\n\n${remedies}`;
+        }
+      }
     }
 
-    if (q.includes('variety') || q.includes('seed') || q.includes('वाण') || q.includes('बियाणे')) {
-      return lang === 'en'
-        ? `🌾 **Top Recommended Varieties:**\n• **Soybean:** Phule Sangam (KDS-726), Phule Kimaya, Phule Durva\n• **Turmeric:** Salem, Phule Swaroopa (Curcumin 5.19%)\n• **Cotton:** Bt Cotton Ajeet-155 / RCH-659`
-        : `🌾 **उत्कृष्ट वाण:**\n• **सोयाबीन:** फुले संगम (KDS-726), फुले किमया, फुले दुर्वा\n• **हळद:** सेलम, फुले स्वरूपा (क्युरकुमिन 5.19%)`;
+    // C. Government Schemes & Subsidies (ठिबक, शेततळे, पीएम किसान, योजना)
+    if (q.includes('योजना') || q.includes('अनुदान') || q.includes('ठिबक') || q.includes('शेततळे') || q.includes('subsidy') || q.includes('scheme') || q.includes('drip') || q.includes('pm kisan')) {
+      if (q.includes('ठिबक') || q.includes('drip')) {
+        return isMr
+          ? `🏛️ **मागेल त्याला ठिबक सिंचन योजना (MahaDBT):**\n\n• **अनुदान:** अल्प व अत्यल्प भूधारक शेतकऱ्यांना **८०% पर्यंत**, तर इतर शेतकऱ्यांना **७०% पर्यंत** अनुदान.\n• **आवश्यक कागदपत्रे:** ७/१२, ८-अ, आधार कार्ड, बँक पासबुक, विहीर/पाणी दाखला, वीज बिल.\n• **अर्ज कसा करावा:** mahadbt.maharashtra.gov.in या पोर्टलवर ऑनलाइन नोंदणी करा.`
+          : `🏛️ **Magel Tyala Drip Irrigation Scheme (MahaDBT):**\n\n• **Subsidy:** Up to **80% subsidy** for small & marginal farmers, 70% for other farmers.\n• **Required Documents:** 7/12 & 8-A extracts, Aadhaar card, bank passbook, electricity bill.\n• **How to Apply:** Register online at mahadbt.maharashtra.gov.in portal.`;
+      }
+      return isMr
+        ? `🏛️ **शेतकऱ्यांसाठी महत्त्वाच्या शासकीय योजना:**\n\n1. **मागेल त्याला ठिबक सिंचन:** ७०% ते ८०% अनुदान.\n2. **मागेल त्याला शेततळे:** ₹७५,००० पर्यंत थेट आर्थिक साहाय्य.\n3. **पीएम किसान सन्मान निधी:** दरवर्षी ₹६,००० (३ हप्त्यांत) + नमो शेतकरी महासन्मान निधी ₹६,०००.\n4. **अर्ज संकेतस्थळ:** mahadbt.maharashtra.gov.in`
+        : `🏛️ **Major Government Agriculture Schemes:**\n\n1. **Drip Irrigation Subsidy:** Up to 80% on micro-irrigation systems.\n2. **Farm Pond Scheme:** Financial assistance up to ₹75,000.\n3. **PM-Kisan & Namo Shetkari:** ₹12,000 total annual income support.\n4. **Apply via:** mahadbt.maharashtra.gov.in`;
     }
 
-    return lang === 'en'
-      ? `🌾 **Chaya AI Advice:** For optimum plant health, adopt Broad Bed Furrow (BBF) with drip fertigation and apply preventive insecticidal spray during the first 20 days.`
-      : `🌾 **छाया AI सल्ला:** पिकाच्या चांगल्या वाढीसाठी गादी वाफ्यावर (BBF) टोकण पद्धतीने लागवड करा आणि सुरुवातीच्या 20 दिवसांत चक्रीभुंग्यासाठी अलिकाची फवारणी घ्या.`;
+    // D. Mandi / Market Rates (बाजारभाव, भाव, दर, market, price, rate)
+    if (q.includes('बाजारभाव') || q.includes('भाव') || q.includes('दर') || q.includes('price') || q.includes('rate') || q.includes('mandi') || q.includes('market')) {
+      return isMr
+        ? `📊 **नांदेड व मराठवाडा चालू बाजारभाव अंदाज (प्रति क्विंटल):**\n\n• **हळद (Turmeric):** ₹१२,५०० - ₹१६,२००\n• **सोयाबीन (Soybean):** ₹४,२०० - ₹४,७५०\n• **कापूस (Cotton):** ₹६,८०० - ₹७,४००\n• **हरभरा (Gram):** ₹५,५०० - ₹६,१००\n• **केळी (Banana):** ₹१,४०० - ₹१,८५०\n\n💡 *टीप:* बाजारात चांगला भाव मिळवण्यासाठी शेतमाल प्रतवारी (Grading) करून विका.`
+        : `📊 **Nanded APMC Mandi Price Overview (Per Quintal):**\n\n• **Turmeric:** ₹12,500 - ₹16,200\n• **Soybean:** ₹4,200 - ₹4,750\n• **Cotton:** ₹6,800 - ₹7,400\n• **Gram (Chana):** ₹5,500 - ₹6,100\n• **Banana:** ₹1,400 - ₹1,850\n\n💡 *Tip:* Grade your produce properly before bringing to mandi for premium prices.`;
+    }
+
+    // E. General Spray & Fertilizer Rule of Thumb
+    if (q.includes('खत') || q.includes('फवारणी') || q.includes('टॉनिक') || q.includes('fertilizer') || q.includes('spray') || q.includes('tonic')) {
+      return isMr
+        ? `🧪 **सर्वसाधारण फवारणी व खत मार्गदर्शक सूत्र:**\n\n1. **वाढीची अवस्था (१५-३० दिवस):** १९:१९:१९ (१०० ग्रॅम) + अलिका (१५ मिली) प्रति १५L पंप.\n2. **फुलधारणा अवस्था (४०-५५ दिवस):** १२:६१:०० (१०० ग्रॅम) किंवा ००:५२:३४ + बोरॉन (२० ग्रॅम).\n3. **कंद/दाणे फुगवण अवस्था:** ००:००:५० (१०० ग्रॅम) + पोटॅशियम शोनाईट.\n4. **टीप:** फवारणी नेहमी सकाळी ९ ते ११ किंवा दुपारी ४ नंतरच करावी.`
+        : `🧪 **Standard Crop Spray & Nutrition Formula:**\n\n1. **Vegetative Stage (15-30 days):** 19:19:19 (100g) + Alika (15ml) per 15L pump.\n2. **Flowering Stage (40-55 days):** 12:61:00 (100g) or 00:52:34 + Boron (20g).\n3. **Fruiting/Bulb Stage:** 00:00:50 (100g) for premium weight and shine.\n4. **Tip:** Spray during cool morning hours (9-11 AM) or late afternoon.`;
+    }
+
+    // F. Seed Varieties (वाण, बियाणे, varieties)
+    if (q.includes('वाण') || q.includes('बियाणे') || q.includes('variety') || q.includes('seed')) {
+      return isMr
+        ? `🌾 **नांदेड व मराठवाड्यासाठी सर्वोत्तम शिफारसीत वाण:**\n\n• **सोयाबीन:** फुले संगम (KDS-726), फुले किमया, जेएस-335\n• **हळद:** सेलम, फुले स्वरूपा, राजापुरी\n• **कापूस:** अजित-155, राशी-659, कावेरी मनीमेकर\n• **हरभरा:** दिग्विजय, फुले विक्रम, जाकी 9218\n• **केळी:** ग्रँड नैन (G-9)`
+        : `🌾 **Top Recommended Varieties for Marathwada Region:**\n\n• **Soybean:** Phule Sangam (KDS-726), Phule Kimaya, JS-335\n• **Turmeric:** Salem, Phule Swaroopa, Rajapuri\n• **Cotton:** Ajeet-155, Rasi-659\n• **Gram (Chana):** Digvijay, Phule Vikram, JAKI 9218\n• **Banana:** Grand Naine (G-9)`;
+    }
+
+    // Default friendly response
+    return isMr
+      ? `🌾 **छाया — शेती सल्लागार:**\n\nआपण विचारलेला प्रश्न समजला. आपल्या शेतात दर्जेदार उत्पादन मिळवण्यासाठी गादी वाफा पद्धत (BBF) आणि ठिबक सिंचनाचा वापर करा. आपण हळद, केळी, सोयाबीन, कापूस, खत नियोजन, कीड नियंत्रण किंवा बाजारभावाबद्दल विशिष्ट प्रश्न विचारू शकता.`
+      : `🌾 **Chaya — Farm Advisor:**\n\nFor top crop productivity, adopt Broad Bed Furrow (BBF) with drip fertigation and maintain balanced NPK nutrition. Feel free to ask specific questions about crop disease, fertilizer doses, spray schedules, seeds, or live mandi prices.`;
   }
 }
 

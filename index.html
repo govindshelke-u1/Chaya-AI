@@ -1069,6 +1069,10 @@
             document.querySelectorAll(".btn-next-text").forEach(el => el.innerText = t.btnNext);
             document.querySelectorAll(".btn-prev-text").forEach(el => el.innerText = t.btnPrev);
 
+            if (window.chayaChat && typeof window.chayaChat.setLanguage === 'function') {
+                window.chayaChat.setLanguage(currentLang);
+            }
+
             updateStepCounter();
             updateSoilData();
         }
