@@ -332,26 +332,81 @@
             line-height: 1.35;
         }
 
-        /* Extra Feather / Key Crop Specs */
-        .specs-panel {
-            background: #ffffff;
-            border: 1.5px solid #d1fae5;
-            border-radius: 14px;
-            padding: 16px;
+        /* Extra Details Horizontal Long Button */
+        .extra-detail-btn-wrapper {
             margin-bottom: 20px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.04);
         }
 
-        .specs-title {
-            font-size: 0.95rem;
+        .extra-detail-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 1.5px solid #86efac;
+            color: #065f46;
+            border-radius: 14px;
+            padding: 14px 20px;
+            font-size: 1.02rem;
             font-weight: 800;
-            color: var(--primary-dark);
-            margin-bottom: 10px;
+            font-family: inherit;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 6px;
+            justify-content: space-between;
+            gap: 12px;
+            box-shadow: 0 4px 14px rgba(6, 78, 59, 0.08);
+            transition: all 0.2s ease;
         }
 
+        .extra-detail-btn:hover {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            border-color: #4ade80;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(6, 78, 59, 0.14);
+        }
+
+        .extra-detail-btn .btn-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-align: left;
+        }
+
+        .extra-detail-btn .btn-icon {
+            font-size: 1.35rem;
+            background: white;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            flex-shrink: 0;
+        }
+
+        .extra-detail-btn .btn-title {
+            font-size: 1.02rem;
+            font-weight: 800;
+            color: #065f46;
+        }
+
+        .extra-detail-btn .btn-sub {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #047857;
+        }
+
+        .extra-detail-btn .btn-arrow {
+            font-size: 1.15rem;
+            color: #059669;
+            font-weight: 800;
+            transition: transform 0.2s ease;
+        }
+
+        .extra-detail-btn:hover .btn-arrow {
+            transform: translateX(4px);
+        }
+
+        /* Legacy/Modal specs grid */
         .specs-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -360,23 +415,26 @@
 
         .spec-box {
             background: #f8fafc;
-            border-radius: 10px;
-            padding: 10px 12px;
+            border-radius: 12px;
+            padding: 12px 14px;
             border-left: 4px solid var(--primary);
+            border-top: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
         }
 
         .spec-box .spec-label {
-            font-size: 0.78rem;
+            font-size: 0.8rem;
             color: #64748b;
-            font-weight: 700;
-            margin-bottom: 2px;
+            font-weight: 800;
+            margin-bottom: 4px;
         }
 
         .spec-box .spec-content {
-            font-size: 0.88rem;
+            font-size: 0.92rem;
             color: #1e293b;
             font-weight: 700;
-            line-height: 1.35;
+            line-height: 1.45;
         }
 
         /* Info Action Buttons Row */
@@ -670,14 +728,18 @@
                 </div>
             </div>
 
-            <!-- Extra Feather / Detailed Agronomic Specs Panel -->
-            <div class="specs-panel" id="specsPanel">
-                <div class="specs-title">
-                    <span>🔬</span> <span id="lblSpecsTitle">Detailed Agronomic Specifications</span>
-                </div>
-                <div class="specs-grid" id="specsGrid">
-                    <!-- Loaded dynamically -->
-                </div>
+            <!-- Extra Details Horizontal Long Button -->
+            <div class="extra-detail-btn-wrapper" id="specsPanel">
+                <button class="extra-detail-btn" id="btnExtraDetails" onclick="openInfoModal('extra_details')">
+                    <div class="btn-left">
+                        <span class="btn-icon">🔬</span>
+                        <div>
+                            <div class="btn-title" id="lblSpecsTitle">Extra Details</div>
+                            <div class="btn-sub" id="lblSpecsSub">Detailed Agronomic Specifications, Seed Treatment & Sowing Spacing</div>
+                        </div>
+                    </div>
+                    <span class="btn-arrow">➔</span>
+                </button>
             </div>
 
             <!-- Quick Info Action Buttons -->
@@ -772,7 +834,9 @@
                 lblFastYield: "📦 Total Expected Yield:",
                 lblFastProfit: "💰 Estimated Net Profit & Cost:",
                 lblFastFormula: "📐 Sowing Method & Spacing (Token Formula):",
-                lblSpecsTitle: "Detailed Agronomic Specifications",
+                lblSpecsTitle: "Extra Details",
+                lblSpecsSub: "Detailed Agronomic Specifications, Seed Treatment & Sowing Spacing",
+                modalExtraDetailsTitle: "Detailed Agronomic Specifications",
                 btnSchemeText: "Government Schemes<br>(Gov Schemes)",
                 btnFertText: "Fertilizer Schedule<br>(Fertilizer Guide)",
                 btnPestText: "Pests & Diseases<br>(Protection Guide)",
@@ -815,7 +879,9 @@
                 lblFastYield: "📦 एकूण अपेक्षित उत्पादन:",
                 lblFastProfit: "💰 अंदाजे निव्वळ नफा व खर्च (Net Profit):",
                 lblFastFormula: "📐 टोकण फॉर्म्युला व अंतर (Token Formula & Sowing Spacing):",
-                lblSpecsTitle: "सविस्तर तांत्रिक माहिती (Feather Agronomic Details)",
+                lblSpecsTitle: "अधिक माहिती (Extra Details)",
+                lblSpecsSub: "सविस्तर तांत्रिक माहिती, बीजप्रक्रिया व लागवड अंतर",
+                modalExtraDetailsTitle: "सविस्तर तांत्रिक माहिती (Agronomic Specifications)",
                 btnSchemeText: "सरकारी योजना<br>(Gov Scheme)",
                 btnFertText: "खत व्यवस्थापन<br>(Fertilizer Guide)",
                 btnPestText: "रोग व किडी उपाय<br>(Pests & Diseases)",
@@ -873,6 +939,9 @@
             document.getElementById("lblFastProfit").innerText = t.lblFastProfit;
             document.getElementById("lblFastFormula").innerText = t.lblFastFormula;
             document.getElementById("lblSpecsTitle").innerText = t.lblSpecsTitle;
+            if (document.getElementById("lblSpecsSub")) {
+                document.getElementById("lblSpecsSub").innerText = t.lblSpecsSub;
+            }
             document.getElementById("btnSchemeText").innerHTML = t.btnSchemeText;
             document.getElementById("btnFertText").innerHTML = t.btnFertText;
             document.getElementById("btnPestText").innerHTML = t.btnPestText;
@@ -1041,8 +1110,7 @@
                 : (crop.yield_formula_en || crop.yield_formula || "3.5 ft raised bed token sowing method");
             document.getElementById("fastFormula").innerText = formulaText;
 
-            // 2. Populate Feather Agronomic Specifications
-            const specsGrid = document.getElementById("specsGrid");
+            // 2. Build and Cache Feather Agronomic Specifications
             let rootTreatment = isMr
                 ? (crop.seed_management?.root_treatment_mr || crop.seed_management?.seed_treatment_mr || crop.seed_management?.root_treatment || crop.seed_management?.seed_treatment || crop.seed_management?.biological_seed_treatment || 'बीजप्रक्रिया करून पेरणी करावी.')
                 : (crop.seed_management?.root_treatment_en || crop.seed_management?.seed_treatment_en || crop.seed_management?.root_treatment || crop.seed_management?.seed_treatment || 'Perform biological seed treatment before planting.');
@@ -1063,24 +1131,27 @@
             const reasonsList = isMr ? (crop.reasons_mr || crop.reasons) : (crop.reasons_en || crop.reasons);
             const advantageText = (reasonsList && reasonsList.length) ? reasonsList.join(' • ') : (isMr ? 'भरघोस नफा देणारे पीक' : 'High yield & profitability potential');
 
-            specsGrid.innerHTML = `
-                <div class="spec-box">
-                    <div class="spec-label">${t.specSeedTreatment}</div>
-                    <div class="spec-content">${rootTreatment}</div>
-                </div>
-                <div class="spec-box">
-                    <div class="spec-label">${t.specSpacing}</div>
-                    <div class="spec-content">${spacingInfo}</div>
-                </div>
-                <div class="spec-box">
-                    <div class="spec-label">${t.specDuration}</div>
-                    <div class="spec-content">${durationText} | ${sowingTime}</div>
-                </div>
-                <div class="spec-box">
-                    <div class="spec-label">${t.specAdvantage}</div>
-                    <div class="spec-content">${advantageText}</div>
-                </div>
-            `;
+            const specsGrid = document.getElementById("specsGrid");
+            if (specsGrid) {
+                specsGrid.innerHTML = `
+                    <div class="spec-box">
+                        <div class="spec-label">${t.specSeedTreatment}</div>
+                        <div class="spec-content">${rootTreatment}</div>
+                    </div>
+                    <div class="spec-box">
+                        <div class="spec-label">${t.specSpacing}</div>
+                        <div class="spec-content">${spacingInfo}</div>
+                    </div>
+                    <div class="spec-box">
+                        <div class="spec-label">${t.specDuration}</div>
+                        <div class="spec-content">${durationText} | ${sowingTime}</div>
+                    </div>
+                    <div class="spec-box">
+                        <div class="spec-label">${t.specAdvantage}</div>
+                        <div class="spec-content">${advantageText}</div>
+                    </div>
+                `;
+            }
 
             // Build audio speech text
             if (isMr) {
@@ -1111,7 +1182,64 @@
 
             const cropName = isMr ? (crop.name_mr ? crop.name_mr.split('(')[0] : '') : (crop.name_en || crop.id);
 
-            if (type === 'scheme') {
+            if (type === 'extra_details') {
+                title = `🔬 ${cropName} ${t.modalExtraDetailsTitle}`;
+                let rootTreatment = isMr
+                    ? (crop.seed_management?.root_treatment_mr || crop.seed_management?.seed_treatment_mr || crop.seed_management?.root_treatment || crop.seed_management?.seed_treatment || crop.seed_management?.biological_seed_treatment || 'बीजप्रक्रिया करून पेरणी करावी.')
+                    : (crop.seed_management?.root_treatment_en || crop.seed_management?.seed_treatment_en || crop.seed_management?.root_treatment || crop.seed_management?.seed_treatment || 'Perform biological seed treatment before planting.');
+                
+                let spacingInfo = isMr
+                    ? (crop.sowing_geometry?.spacing_mr || crop.sowing_geometry?.token_bed_method_mr || crop.sowing_geometry?.cabbage_spacing_mr || crop.sowing_geometry?.token_bed_method || crop.sowing_geometry?.cabbage_spacing || crop.sowing_geometry?.spacing || crop.sowing_geometry?.bed_size || '3.5 फूट बेडवर टोकण')
+                    : (crop.sowing_geometry?.spacing_en || crop.sowing_geometry?.token_bed_method_en || crop.sowing_geometry?.cabbage_spacing_en || crop.sowing_geometry?.spacing || '3.5 ft raised bed spacing');
+                
+                const durationText = isMr
+                    ? (crop.duration_days_mr || crop.duration_days || 'हंगामानुसार')
+                    : (crop.duration_days_en || crop.duration_days || 'As per season');
+                
+                const sowingTimeList = isMr
+                    ? (crop.sowing_months_mr || crop.sowing_months || [])
+                    : (crop.sowing_months_en || crop.sowing_months || []);
+                let sowingTime = sowingTimeList.join(' | ') || (isMr ? 'हंगामानुसार पेरणी' : 'Seasonal window');
+                
+                const reasonsList = isMr ? (crop.reasons_mr || crop.reasons) : (crop.reasons_en || crop.reasons);
+                const advantageText = (reasonsList && reasonsList.length) ? reasonsList.join(' • ') : (isMr ? 'भरघोस नफा देणारे पीक' : 'High yield & profitability potential');
+
+                const formulaText = isMr
+                    ? (crop.yield_formula_mr || crop.yield_formula || "3.5 फूट गादी वाफ्यावर टोकण पद्धत")
+                    : (crop.yield_formula_en || crop.yield_formula || "3.5 ft raised bed token sowing method");
+
+                const seedRate = isMr
+                    ? (crop.seed_management?.rate_per_acre_mr || crop.seed_management?.rate_per_acre || 'स्थानिक शिफारसीनुसार')
+                    : (crop.seed_management?.rate_per_acre_en || crop.seed_management?.rate_per_acre || 'As per local agronomist recommendation');
+
+                html = `
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                        <div class="info-item">
+                            <div class="info-item-title" style="color:#065f46;">🌱 ${t.specSeedTreatment}</div>
+                            <div class="info-item-sub">${rootTreatment}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-item-title" style="color:#065f46;">📐 ${t.specSpacing}</div>
+                            <div class="info-item-sub">${spacingInfo}</div>
+                            <div class="info-item-sub" style="margin-top:4px;"><b>${isMr ? 'टोकण फॉर्म्युला:' : 'Token Sowing Formula:'}</b> ${formulaText}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-item-title" style="color:#065f46;">⏳ ${t.specDuration}</div>
+                            <div class="info-item-sub"><b>${isMr ? 'कालावधी:' : 'Duration:'}</b> ${durationText}</div>
+                            <div class="info-item-sub"><b>${isMr ? 'पेरणी योग्य महिने:' : 'Sowing Window:'}</b> ${sowingTime}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-item-title" style="color:#065f46;">⚖️ ${isMr ? 'बियाणे / रोपे प्रमाण (Seed Rate):' : 'Seed / Planting Material Rate:'}</div>
+                            <div class="info-item-sub">${seedRate}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-item-title" style="color:#065f46;">💡 ${t.specAdvantage}</div>
+                            <div class="info-item-sub">${advantageText}</div>
+                        </div>
+                    </div>
+                `;
+
+            } else if (type === 'scheme') {
                 title = t.modalGovSchemeTitle;
                 const schemes = (kb.fertilizersAndSchemes && kb.fertilizersAndSchemes.schemes) || [];
                 html = schemes.length ? schemes.map(s => {
