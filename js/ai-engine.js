@@ -860,84 +860,119 @@ Respond strictly in English with these 4 clear points:
       }
     }
 
-    // B. Horticultural Crops (Tomato, Chilli, Ginger, Garlic, Pomegranate, Papaya, Sugarcane, Watermelon)
-    // Tomato (टोमॅटो)
-    if (q.includes('tomato') || q.includes('टोमॅटो') || q.includes('tamatar')) {
-      if (q.includes('plant') || q.includes('grow') || q.includes('sow') || q.includes('लागवड') || q.includes('कसा लावावा') || q.includes('पेरणी')) {
+    // B. Horticultural & Field Crops (Tomato, Chilli, Ginger, Garlic, Pomegranate, Sugarcane, Brinjal, Bhendi, Papaya, Watermelon, Wheat, Maize)
+    
+    // 1. Tomato (टोमॅटो / टमाटा / टमाट्याची / टमाटर)
+    if (q.includes('tomato') || q.includes('टोमॅटो') || q.includes('टमाट') || q.includes('टमाटर') || q.includes('tamatar') || q.includes('tamata')) {
+      if (q.includes('रोग') || q.includes('कीड') || q.includes('pest') || q.includes('disease') || q.includes('करपा') || q.includes('चुरडा') || q.includes('अळी')) {
         return isMr
-          ? `🍅 **टोमॅटो सुधारित लागवड तंत्रज्ञान (Tomato Cultivation Guide):**\n\n` +
-            `1. **गादी वाफा व अंतर:** ३.५ ते ४ फूट रुंद गादी वाफ्यावर १.५ फूट अंतरावर एका ओळीत किंवा ५x२ फूट अंतरावर नागमोडी पद्धतीने रोपे लावा.\n` +
-            `2. **रोपवाटिका (Nursery):** २५ ते ३० दिवसांची सशक्त, निरोगी रोपे वापरा. लागवडीपूर्वी रोपांची मुळे ट्रायकोडर्मा (५ ग्रॅम/लिटर) + ह्युमिक अ‍ॅसिड (२ मिली/लिटर) द्रावणात १५ मिनिटे बुडवून लावा.\n` +
-            `3. **उत्कृष्ट वाण:** सिजेंटा अभिनव, US-440, आर्यमान, साहो (Seminis), फुले राजा.\n` +
-            `4. **मल्चिंग व ठिबक:** २५-३० मायक्रॉन सिल्व्हर-ब्लॅक मल्चिंग पेपर आणि १६ मिमी इनलाईन ठिबक वापरा.\n` +
-            `5. **तार-काठी बांबू बांधणी (Staking):** लागवडीनंतर २५-३० दिवसांनी बांबू व तारेच्या साहाय्याने झाडे बांधा, ज्यामुळे फळे जमिनीला न टेकून डागमुक्त व दर्जेदार मिळतात.\n` +
-            `6. **खत नियोजन (ठिबकद्वारे):**\n` +
-            `   • ०-३० दिवस: १९:१९:१९ (३ किलो/एकर आठवड्यातून दोनदा)\n` +
-            `   • ३०-६० दिवस: १२:६१:०० (३ किलो) + कॅल्शियम नायट्रेट (२.५ किलो)\n` +
-            `   • ६०+ दिवस (फुगवण): ००:५२:३४ आणि ००:००:५० (४ किलो/एकर)`
-          : `🍅 **High-Yield Tomato Cultivation & Planting Guide:**\n\n` +
-            `1. **Bed Preparation & Spacing:** Prepare 3.5 to 4 ft raised beds with 16mm inline drip. Transplant at **4 x 1.5 ft** (single row) or **5 x 2 ft** spacing with 25-30 micron silver-black mulching sheet.\n` +
-            `2. **Seedlings & Root Treatment:** Use **25 to 30-day-old** healthy nursery seedlings. Dip seedling roots in *Trichoderma viride* (5g/L) + Humic Acid (2ml/L) for 15 minutes before planting to prevent damping-off.\n` +
-            `3. **Top Recommended Varieties:** Syngenta Abhinav, US-440, Aryaman, Saho (TO-1057), Phule Raja.\n` +
-            `4. **Trellising / Staking:** Install bamboo stakes and wire trellising 25-30 days after transplanting to keep foliage and fruits off the ground, maximizing Grade-A export yield.\n` +
-            `5. **Fertigation Schedule (via Drip):**\n` +
-            `   • **Day 1-30 (Vegetative):** 19:19:19 (3 kg/acre twice a week)\n` +
-            `   • **Day 31-60 (Flowering & Fruit Set):** 12:61:00 (3 kg) + Calcium Nitrate (2.5 kg) + Boron (500g)\n` +
-            `   • **Day 60+ (Harvesting & Sizing):** 00:52:34 and 00:00:50 (4 kg/acre)\n` +
-            `6. **Key Pest Protection:** For leaf curl virus and whiteflies, spray Pegasus (15g) or Alika (12ml/15L pump); for fruit borer, spray Coragen (6ml/15L).`;
-      }
-      if (q.includes('रोग') || q.includes('कीड') || q.includes('pest') || q.includes('disease') || q.includes('करपा') || q.includes('चुरडा')) {
-        return isMr
-          ? `🚨 **टोमॅटो प्रमुख कीड-रोग व नियंत्रण:**\n\n` +
-            `• **पांढरी माशी व चुरडा-मुरडा (Leaf Curl):** पेगासस (१५ ग्रॅम) किंवा अलिका (१२ मिली) + निंबोळी तेल (३० मिली) प्रति १५L पंप.\n` +
-            `• **करपा (Early/Late Blight):** रिडोमिल गोल्ड (३५ ग्रॅम) किंवा नॅटिव्हो (१० ग्रॅम) प्रति १५L पंप.\n` +
+          ? `🚨 **टोमॅटो प्रमुख कीड-रोग व तातडीचे उपाय:**\n\n` +
+            `• **पांढरी माशी व चुरडा-मुरडा (Leaf Curl):** पेगासस (१५ ग्रॅम) किंवा अलिका (१२ मिली) + निंबोळी तेल (३० मिली) प्रति १५L पंप फवारा.\n` +
+            `• **करपा (Early/Late Blight):** रिडोमिल गोल्ड (३५ ग्रॅम) किंवा नॅटिव्हो (१० ग्रॅम) किंवा कस्टोडिया (२० मिली) प्रति १५L पंप.\n` +
             `• **फळ पोखरणारी अळी (Fruit Borer):** कोराजन (६ मिली) किंवा फेम (५ मिली) प्रति १५L पंप.\n` +
-            `• **फुलगळ रोखण्यासाठी:** प्लॅनोफिक्स (४ मिली) + बोरॉन (२० ग्रॅम) प्रति १५L पंप फवारा.`
+            `• **फुलगळ व फळगळ:** प्लॅनोफिक्स (४ मिली) + बोरॉन (२० ग्रॅम) प्रति १५L पंप फवारा.`
           : `🚨 **Tomato Disease & Pest Management:**\n\n` +
             `• **Whiteflies & Leaf Curl Virus:** Spray Pegasus (15g) or Alika (12ml) + Neem Oil (30ml) per 15L pump.\n` +
             `• **Early & Late Blight (Karpa):** Spray Ridomil Gold (35g) or Nativo (10g) or Custodia (20ml) per 15L pump.\n` +
             `• **Fruit Borer Caterpillars:** Spray Coragen (6ml) or Fame (5ml) or Proclaim (8g) per 15L pump.\n` +
             `• **Flower Drop Prevention:** Spray Planofix (4ml) + Chelated Boron (20g) per 15L pump during peak bloom.`;
       }
+      if (q.includes('खत') || q.includes('डोस') || q.includes('ठिबक') || q.includes('fertilizer') || q.includes('drip') || q.includes('dose')) {
+        return isMr
+          ? `🧪 **टोमॅटो खत व ठिबक फर्टीगेशन वेळापत्रक (प्रति एकर):**\n\n` +
+            `1. **लागवड ते ३० दिवस (शाकीय वाढ):** १९:१९:१९ (३ किलो) आठवड्यातून दोनदा + ह्युमिक अ‍ॅसिड ५०० ग्रॅम.\n` +
+            `2. **३० ते ६० दिवस (फुलधारणा व फळधारणा):** १२:६१:०० (३ किलो) + कॅल्शियम नायट्रेट (२.५ किलो) + बोरॉन (५०० ग्रॅम).\n` +
+            `3. **६० दिवस पुढे (फळ फुगवण व तोडणी):** ००:५२:३४ (३ किलो) आणि ००:००:५० (४ किलो) आठवड्यातून एकदा.`
+          : `🧪 **Tomato Drip Fertigation Schedule (Per Acre):**\n\n` +
+            `1. **Day 1-30 (Vegetative):** 19:19:19 (3 kg twice weekly) + Humic Acid (500g).\n` +
+            `2. **Day 31-60 (Flowering & Fruit Set):** 12:61:00 (3 kg) + Calcium Nitrate (2.5 kg) + Boron (500g).\n` +
+            `3. **Day 60+ (Sizing & Harvesting):** 00:52:34 (3 kg) and 00:00:50 (4 kg) once weekly.`;
+      }
+      // General Cultivation & Complete Guide (टोमॅटो/टमाटा शेती कशी करावी / माहिती)
+      return isMr
+        ? `🍅 **टोमॅटो (टमाटा) आधुनिक सुधारित शेती तंत्रज्ञान:**\n\n` +
+          `1. **गादी वाफा व अंतर (Spacing):** ३.५ ते ४ फूट रुंद गादी वाफ्यावर **४x१.५ फूट** किंवा ५x२ फूट अंतरावर नागमोडी पद्धतीने रोपे लावा.\n` +
+          `2. **रोपवाटिका व बीजप्रक्रिया:** २५ ते ३० दिवसांची सशक्त रोपे वापरा. मुळे ट्रायकोडर्मा (५ ग्रॅम/लिटर) + ह्युमिक अ‍ॅसिड (२ मिली/लिटर) द्रावणात बुडवून लावा.\n` +
+          `3. **उत्कृष्ट वाण (Varieties):** सिजेंटा अभिनव, US-440, आर्यमान, साहो (Seminis), फुले राजा.\n` +
+          `4. **मल्चिंग व ठिबक:** २५-३० मायक्रॉन सिल्व्हर-ब्लॅक मल्चिंग पेपर व १६ मिमी इनलाईन ठिबक वापरा.\n` +
+          `5. **बांबू-तार बांधणी (Staking):** लागवडीनंतर २५-३० दिवसांनी बांबू व तारेच्या साहाय्याने झाडे बांधा, ज्यामुळे फळे डागमुक्त व दर्जेदार मिळतात.\n` +
+          `6. **खत नियोजन (ठिबकद्वारे):** सुरुवातीला १९:१९:१९ (३ किलो), फुलधारणेत १२:६१:०० व कॅल्शियम, फळ फुगवणीत ००:००:५० खत द्यावे.\n` +
+          `7. **कीड नियंत्रण:** पांढरी माशी व चुरड्यासाठी पेगासस (१५ ग्रॅम) आणि फळ पोखरणार्‍या अळीसाठी कोराजन (६ मिली) फवारा.`
+        : `🍅 **High-Yield Commercial Tomato Cultivation Guide:**\n\n` +
+          `1. **Bed Preparation & Spacing:** Prepare 3.5 to 4 ft raised beds with 16mm inline drip. Transplant at **4 x 1.5 ft** (single row) or **5 x 2 ft** spacing with 25-30 micron silver-black mulching sheet.\n` +
+          `2. **Seedlings & Root Treatment:** Use **25 to 30-day-old** healthy nursery seedlings. Dip seedling roots in *Trichoderma viride* (5g/L) + Humic Acid (2ml/L) for 15 minutes before planting to prevent damping-off.\n` +
+          `3. **Top Recommended Varieties:** Syngenta Abhinav, US-440, Aryaman, Saho (TO-1057), Phule Raja.\n` +
+          `4. **Trellising / Staking:** Install bamboo stakes and wire trellising 25-30 days after transplanting to keep foliage and fruits off the ground, maximizing Grade-A export yield.\n` +
+          `5. **Fertigation Schedule (via Drip):**\n` +
+          `   • **Day 1-30 (Vegetative):** 19:19:19 (3 kg/acre twice a week)\n` +
+          `   • **Day 31-60 (Flowering & Fruit Set):** 12:61:00 (3 kg) + Calcium Nitrate (2.5 kg) + Boron (500g)\n` +
+          `   • **Day 60+ (Harvesting & Sizing):** 00:52:34 and 00:00:50 (4 kg/acre)\n` +
+          `6. **Key Pest Protection:** For leaf curl virus and whiteflies, spray Pegasus (15g) or Alika (12ml/15L pump); for fruit borer, spray Coragen (6ml/15L).`;
     }
 
-    // Chilli / Mirchi (मिरची)
-    if (q.includes('chilli') || q.includes('chili') || q.includes('मिरची') || q.includes('mirchi')) {
+    // 2. Chilli / Mirchi (मिरची / मिरचीची)
+    if (q.includes('chilli') || q.includes('chili') || q.includes('मिरच') || q.includes('mirchi')) {
+      if (q.includes('रोग') || q.includes('कीड') || q.includes('बोकड्या') || q.includes('चुरडा') || q.includes('थ्रिप्स') || q.includes('pest')) {
+        return isMr
+          ? `🌶️ **मिरची बोकड्या (चुरडा-मुरडा) व थ्रिप्स नियंत्रण:**\n\n` +
+            `• **पहिली फवारणी (थ्रिप्स व कोळी):** डेलिगेट (१८ मिली) + ओमाईट (२५ मिली) प्रति १५L पंप.\n` +
+            `• **दुसरी फवारणी (पांढरी माशी व मावा):** पेगासस (१८ ग्रॅम) किंवा अलिका (१२ मिली) + निंबोळी अर्क ५० मिली.\n` +
+            `• **फुलगळ थांबवण्यासाठी:** प्लॅनोफिक्स ४ मिली + चिलेटेड बोरॉन २० ग्रॅम फवारा.`
+          : `🌶️ **Chilli Leaf Curl & Thrips/Mites Control:**\n\n` +
+            `• **Spray 1:** Delegate (18ml) + Omite (25ml) per 15L pump for thrips and mites.\n` +
+            `• **Spray 2:** Pegasus (18g) + Neem Oil (30ml) per 15L pump for whitefly.\n` +
+            `• **Flower Setting:** Planofix (4ml) + Chelated Boron (20g) per 15L pump.`;
+      }
       return isMr
-        ? `🌶️ **मिरची सुधारित लागवड व बोकड्या/थ्रिप्स नियंत्रण:**\n\n` +
-          `1. **लागवड अंतर:** ४ x १.५ फूट गादी वाफ्यावर २५ मायक्रॉन सिल्व्हर मल्चिंगवर लागवड करा.\n` +
+        ? `🌶️ **मिरची सुधारित लागवड व भरघोस उत्पादन तंत्रज्ञान:**\n\n` +
+          `1. **गादी वाफा व अंतर:** ४ x १.५ फूट अंतरावर गादी वाफ्यावर २५ मायक्रॉन सिल्व्हर मल्चिंगवर लागवड करा.\n` +
           `2. **उत्कृष्ट वाण:** सितारा, तेजा-४, बुलेट, यूएस-७०२, नवतेज.\n` +
-          `3. **बोकड्या / चुरडा-मुरडा (थ्रिप्स व कोळी नियंत्रण):**\n` +
-          `   • पहिली फवारणी: डेलिगेट (१८ मिली) + ओमाईट (२५ मिली) प्रति १५L पंप.\n` +
-          `   • दुसरी फवारणी: पेगासस (१८ ग्रॅम) + निंबोळी अर्क ५० मिली.\n` +
-          `4. **खत व्यवस्थापन:** फुलधारणेच्या वेळी १२:६१:०० आणि १३:००:४५ खते ठिबकद्वारे द्यावीत.`
-        : `🌶️ **Chilli Cultivation & Mite/Thrips (Murda Disease) Remedy:**\n\n` +
-          `1. **Spacing & Mulching:** Plant at **4 x 1.5 ft** on raised beds with 25-micron silver mulching and drip irrigation.\n` +
-          `2. **Top High-Yield Varieties:** Sitara, Teja-4, Bullet, US-702, Navtej.\n` +
-          `3. **Leaf Curl / Murda Disease Control:**\n` +
-          `   • Spray 1: Delegate (18ml) + Omite (25ml) per 15L pump for thrips and yellow mites.\n` +
-          `   • Spray 2: Pegasus (18g) + Neem Oil (30ml) per 15L pump.\n` +
-          `4. **Bloom & Yield Booster:** Drip fertigate 12:61:00 (3 kg/acre) followed by 13:00:45 (3 kg/acre) during peak flush.`;
+          `3. **रोपांची प्रक्रिया:** लागवडीपूर्वी मुळे ट्रायकोडर्मा (५ ग्रॅम/लिटर) व इमिडाक्लोप्रिड (१ मिली/लिटर) द्रावणात बुडवा.\n` +
+          `4. **खत व्यवस्थापन:**\n` +
+          `   • वाढीच्या काळात: १९:१९:१९ (३ किलो/एकर आठवड्यातून दोनदा)\n` +
+          `   • फुलधारणेत: १२:६१:०० (३ किलो) + १३:००:४५ (३ किलो)\n` +
+          `   • तोडणीच्या वेळी: ००:००:५० (४ किलो) ठिबकद्वारे द्या.`
+        : `🌶️ **High-Yield Chilli Cultivation & Crop Schedule:**\n\n` +
+          `1. **Spacing & Mulching:** Plant at **4 x 1.5 ft** on raised beds with 25-micron silver mulching and inline drip.\n` +
+          `2. **Top Varieties:** Sitara, Teja-4, Bullet, US-702, Navtej.\n` +
+          `3. **Seedling Treatment:** Dip seedling roots in *Trichoderma viride* (5g/L) + Imidacloprid (1ml/L) before transplanting.\n` +
+          `4. **Fertigation:** Drip feed 19:19:19 during vegetative growth, 12:61:00 during flowering, and 13:00:45 / 00:00:50 during harvest flushes.`;
     }
 
-    // Ginger / Adrak (आले / अद्रक)
-    if (q.includes('ginger') || q.includes('आले') || q.includes('अद्रक') || q.includes('adrak')) {
+    // 3. Ginger / Adrak (आले / अद्रक / आलं)
+    if (q.includes('ginger') || q.includes('आल') || q.includes('अद्रक') || q.includes('adrak')) {
       return isMr
-        ? `🫚 **आले (अद्रक) कंदकुज नियंत्रण व व्यवस्थापन:**\n\n` +
-          `1. **लागवड:** ४ फूट रुंद गादी वाफ्यावर दोन ओळींत ९x९ इंच अंतरावर बेणे टोचावे.\n` +
-          `2. **कंदकुज प्रतिबंधक उपाय (Drenching):**\n` +
-          `   • ट्रायकोडर्मा व्हिरिडी (२ किलो) + ५०० किलो शेणखतात मिसळून एकरी द्या.\n` +
-          `   • रासायनिक आळवणी: रिडोमिल गोल्ड (३ ग्रॅम/लिटर) किंवा अलिएट (२.५ ग्रॅम/लिटर) + क्लोरो २४% ठिबकद्वारे सोडावे.\n` +
-          `3. **सुडोमोनास व हुमणी नियंत्रण:** मेटारायझियम (२ किलो/एकर) शेणखतातून द्यावे.`
-        : `🫚 **Ginger Rhizome Rot Management & High-Yield Guide:**\n\n` +
+        ? `🫚 **आले (अद्रक) कंदकुज नियंत्रण व सुधारित लागवड:**\n\n` +
+          `1. **लागवड अंतर:** ४ फूट रुंद गादी वाफ्यावर दोन ओळींत ९x९ इंच अंतरावर निरोगी बेणे टोचावे.\n` +
+          `2. **कंदकुज प्रतिबंधक आळवणी (Drenching):**\n` +
+          `   • जैविक: ट्रायकोडर्मा व्हिरिडी (२ किलो) + ५०० किलो शेणखतात मिसळून एकरी द्या.\n` +
+          `   • रासायनिक आळवणी: रिडोमिल गोल्ड (३ ग्रॅम/लिटर) किंवा अलिएट (२.५ ग्रॅम/लिटर) + क्लोरोपायरिफॉस २०% ठिबकद्वारे सोडावे.\n` +
+          `3. **खत व भरणी:** लागवडीनंतर ६० व ९० दिवसांनी मोठी भरणी करून १०:२६:२६ (२ पोती) + सूक्ष्म अन्नद्रव्ये द्यावीत.`
+        : `🫚 **Ginger (Adrak) Rhizome Rot Management & High-Yield Guide:**\n\n` +
           `1. **Raised Bed Spacing:** 4 ft wide raised beds with 9x9 inch seed rhizome spacing.\n` +
           `2. **Rhizome Rot (Kandkuj) Drenching Protocol:**\n` +
           `   • Biological: Soil application of *Trichoderma* (2 kg/acre) mixed with FYM.\n` +
-          `   • Chemical Drenching: Drip drench Ridomil Gold (3g/L) or Aliette (2.5g/L) + Humic acid.\n` +
-          `3. **White Grub (Humani) Control:** Apply Metarhizium anisopliae (2 kg/acre) through drip.`;
+          `   • Chemical Drenching: Drip drench Ridomil Gold (3g/L) or Aliette (2.5g/L) + Chlorpyrifos.\n` +
+          `3. **Earthing Up:** Perform thorough earthing up at 60 and 90 days with 10:26:26 (100kg/acre).`;
     }
 
-    // Pomegranate / Dalimb (डाळिंब)
+    // 4. Garlic / Lasun (लसूण / लसणाची)
+    if (q.includes('garlic') || q.includes('लसूण') || q.includes('लसण') || q.includes('lasun')) {
+      return isMr
+        ? `🧄 **लसूण सुधारित लागवड व खत नियोजन:**\n\n` +
+          `1. **उत्कृष्ट वाण:** जी-४१, जी-२८२, भीमा ओंकार, गोदावरी.\n` +
+          `2. **पेरणी अंतर:** गादी वाफ्यावर १५ x १० सेमी अंतरावर कांडी लावा.\n` +
+          `3. **खत व्यवस्थापन:**\n` +
+          `   • पेरणीवेळी: १०:२६:२६ (२ पोती) + गंधक (सल्फर) १० किलो/एकर.\n` +
+          `   • ३० दिवसांनी: १९:१९:१९ व सूक्ष्म अन्नद्रव्ये.\n` +
+          `   • ६० दिवसांनंतर: ००:५२:३४ (३ किलो) आणि ००:००:५० (४ किलो) कंद फुगवणीसाठी द्या.`
+        : `🧄 **Garlic High-Yield Commercial Cultivation Guide:**\n\n` +
+          `1. **Top Varieties:** G-41, G-282, Bhima Omkar, Godavari.\n` +
+          `2. **Sowing Spacing:** 15 x 10 cm on raised beds (BBF).\n` +
+          `3. **Fertilizer:** Basal 10:26:26 (100kg) + Sulphur (10kg/acre). Drip fertigate 00:52:34 and 00:00:50 after 60 days for bold clove size.`;
+    }
+
+    // 5. Pomegranate / Dalimb (डाळिंब / डाळिंबाची)
     if (q.includes('pomegranate') || q.includes('डाळिंब') || q.includes('dalimb')) {
       return isMr
         ? `🪴 **डाळिंब — तेल्या रोग प्रतिबंध व बहार व्यवस्थापन:**\n\n` +
@@ -954,8 +989,8 @@ Respond strictly in English with these 4 clear points:
           `3. **Fruit Cracking Prevention:** Apply Chelated Calcium (15g) + Boron (20g) foliar spray during sizing.`;
     }
 
-    // Sugarcane / Oos (ऊस)
-    if (q.includes('sugarcane') || q.includes('ऊस') || q.includes('oos')) {
+    // 6. Sugarcane / Oos (ऊस / उसाची / उसावर)
+    if (q.includes('sugarcane') || q.includes('ऊस') || q.includes('उसा') || q.includes('oos')) {
       return isMr
         ? `🎋 **ऊस सुधारित लागवड व खत नियोजन:**\n\n` +
           `1. **वाण:** को-८६०३२ (निरा), कोएम-०२६५ (फुले २६५).\n` +
@@ -969,23 +1004,103 @@ Respond strictly in English with these 4 clear points:
           `4. **Trash Mulching:** Retain dry sugarcane trash on soil surface to conserve 50% soil moisture and build organic carbon.`;
     }
 
-    // C. Crop Specific Queries from Database (Turmeric, Banana, Soybean, Cotton, Chickpea, Jowar, Onion, Cabbage)
+    // 7. Brinjal / Eggplant (वांगी / वांगे / वांग्याची)
+    if (q.includes('brinjal') || q.includes('eggplant') || q.includes('वांग') || q.includes('वांगे')) {
+      return isMr
+        ? `🍆 **वांगी सुधारित लागवड व शेंडा-फळ पोखरणारी अळी नियंत्रण:**\n\n` +
+          `1. **लागवड अंतर:** ४ x २.५ फूट अंतरावर गादी वाफ्यावर रोपे लावा.\n` +
+          `2. **शेंडा व फळ पोखरणारी अळी नियंत्रण:**\n` +
+          `   • कोराजन (६ मिली) किंवा अँप्लिगो (१० मिली) किंवा फेम (५ मिली) प्रति १५L पंप फवारा.\n` +
+          `   • शेतात एकरी ५ कामगंध सापळे (Pheromone Traps) लावा.\n` +
+          `3. **खत नियोजन:** १९:१९:१९ व १२:६१:०० ठिबकद्वारे द्यावे.`
+        : `🍆 **Brinjal Cultivation & Shoot/Fruit Borer Control:**\n\n` +
+          `1. **Spacing:** 4 x 2.5 ft on raised beds with drip irrigation.\n` +
+          `2. **Shoot & Fruit Borer Control:** Spray Coragen (6ml) or Ampligo (10ml) or Fame (5ml) per 15L pump. Install 5 pheromone traps per acre.\n` +
+          `3. **Fertigation:** Drip fertigate 19:19:19 and 12:61:00 during growth and flowering.`;
+    }
+
+    // 8. Okra / Bhendi (भेंडी / भेंडीची)
+    if (q.includes('okra') || q.includes('bhendi') || q.includes('भेंड')) {
+      return isMr
+        ? `🌱 **भेंडी लागवड व पिवळा शिरा (Yellow Vein Mosaic) नियंत्रण:**\n\n` +
+          `1. **उत्कृष्ट वाण:** राधिका (Advanta Radhika), सिंघम, सम्राट.\n` +
+          `2. **पेरणी अंतर:** २ x ०.७५ फूट किंवा गादी वाफ्यावर २ ओळीत.\n` +
+          `3. **पांढरी माशी (रोग प्रसारक) नियंत्रण:** अलिका (१२ मिली) किंवा पेगासस (१५ ग्रॅम) + निंबोळी तेल ३० मिली फवारा.`
+        : `🌱 **Okra (Bhendi) Cultivation & Yellow Vein Mosaic Protection:**\n\n` +
+          `1. **Top Resistant Varieties:** Advanta Radhika, Singham, Samrat.\n` +
+          `2. **Spacing:** 2 x 0.75 ft on raised beds.\n` +
+          `3. **Vector Control (Whiteflies):** Spray Alika (12ml) or Pegasus (15g) + Neem Oil (30ml) per 15L pump.`;
+    }
+
+    // 9. Papaya (पपई / पपईची)
+    if (q.includes('papaya') || q.includes('पपई') || q.includes('papai')) {
+      return isMr
+        ? `🍈 **पपई लागवड व रिंगस्पॉट व्हायरस नियंत्रण:**\n\n` +
+          `1. **उत्कृष्ट वाण:** तैवान ७८६ (Red Lady 786).\n` +
+          `2. **लागवड अंतर:** ७ x ७ फूट किंवा ८ x ६ फूट.\n` +
+          `3. **व्हायरस नियंत्रण:** मावा व तुडतुडे नियंत्रणासाठी अलिका (१२ मिली) नियमित फवारा व शेताभोवती मका लावा.`
+        : `🍈 **Papaya Cultivation & Ring Spot Virus Management:**\n\n` +
+          `1. **Top Variety:** Taiwan 786 (Red Lady).\n` +
+          `2. **Spacing:** 7 x 7 ft or 8 x 6 ft with drip irrigation.\n` +
+          `3. **Virus Protection:** Control aphid vectors using Alika (12ml/15L pump) and plant border rows of maize.`;
+    }
+
+    // 10. Watermelon / Tarbooj (कलिंगड / टरबूज)
+    if (q.includes('watermelon') || q.includes('कलिंगड') || q.includes('टरबूज') || q.includes('खरबूज')) {
+      return isMr
+        ? `🍉 **कलिंगड (टरबूज) सुधारित मल्चिंग शेती तंत्रज्ञान:**\n\n` +
+          `1. **गादी वाफा व अंतर:** ६ ते ७ फूट अंतरावर गादी वाफे, ठिबक व २५ मायक्रॉन मल्चिंगवर १.५ फूट अंतरावर टोकण करा.\n` +
+          `2. **उत्कृष्ट वाण:** सागर किंग, शुगर क्वीन, मॅक्स, कावेरी.\n` +
+          `3. **फळ फुगवण खत:** ५० दिवसानंतर ००:००:५० (४ किलो/एकर) + मॅग्नेशियम सल्फेट व बोरॉन ठिबकद्वारे द्या.`
+        : `🍉 **Watermelon High-Yield Mulch Cultivation:**\n\n` +
+          `1. **Bed Spacing:** 6-7 ft bed-to-bed with 1.5 ft plant-to-plant on 25-micron silver mulching.\n` +
+          `2. **Top Varieties:** Sagar King, Sugar Queen, Max.\n` +
+          `3. **Fruit Sizing Fertigation:** Apply 00:00:50 (4 kg/acre) + Magnesium Sulphate & Boron at fruit swell stage.`;
+    }
+
+    // 11. Wheat / Gahu (गहू / गव्हाची)
+    if (q.includes('wheat') || q.includes('गहू') || q.includes('गव्हा') || q.includes('gahu')) {
+      return isMr
+        ? `🌾 **गहू सुधारित पेरणी व पाणी व्यवस्थापन:**\n\n` +
+          `1. **उत्कृष्ट वाण:** समाधान (NIAW-1994), लोकवन, नेत्रावती, फुले समाधानी.\n` +
+          `2. **पेरणी वेळ व अंतर:** नोव्हेंबर पहिला पंधरवडा, २२.५ सेमी अंतरावर पेरणी करा. बियाणे ४० किलो/एकर.\n` +
+          `3. **महत्त्वाच्या पाण्याच्या पाळ्या:** २१ व्या दिवशी (मुकुट मुळे फुटताना - CRI Stage), ४५ व्या दिवशी व ६५ व्या दिवशी (पोटरी अवस्था).`
+        : `🌾 **Wheat Sowing & Critical Irrigation Schedule:**\n\n` +
+          `1. **Top Varieties:** Samadhan (NIAW-1994), Lokwan, Netravati.\n` +
+          `2. **Sowing Time & Spacing:** Nov 1-15, 22.5 cm row spacing, 40 kg seed per acre.\n` +
+          `3. **Critical Irrigations:** Day 21 (CRI stage), Day 45 (Tillering), Day 65 (Booting/Grain filling).`;
+    }
+
+    // 12. Maize / Maka (मका / मक्याची)
+    if (q.includes('maize') || q.includes('corn') || q.includes('मका') || q.includes('मक्या') || q.includes('maka')) {
+      return isMr
+        ? `🌽 **मका लागवड व लष्करी अळी (Fall Armyworm) नियंत्रण:**\n\n` +
+          `1. **उत्कृष्ट वाण:** पायोनियर P-3396, सिजेंटा NK-6240, डिकॅलब 9108.\n` +
+          `2. **लागवड अंतर:** २ x १ फूट किंवा ७५ x २० सेमी.\n` +
+          `3. **लष्करी अळी नियंत्रण:** कोराजन (६ मिली) किंवा प्रोक्लेम (८ ग्रॅम) मक्याच्या पोंग्यात पडेल असे फवारा.`
+        : `🌽 **Maize Cultivation & Fall Armyworm Management:**\n\n` +
+          `1. **Top Varieties:** Pioneer P-3396, Syngenta NK-6240, Dekalb 9108.\n` +
+          `2. **Spacing:** 2 x 1 ft or 75 x 20 cm.\n` +
+          `3. **Fall Armyworm Control:** Spray Coragen (6ml) or Proclaim (8g) directed right into the whorl.`;
+    }
+
+    // C. Crop Specific Queries from Database (Turmeric, Banana, Soybean, Cotton, Chickpea, Jowar, Onion, Cabbage, Pigeon Pea)
     for (const crop of crops) {
       const cId = crop.id || '';
       const cMr = (crop.name_mr || '').toLowerCase();
       const cEn = (crop.name_en || '').toLowerCase();
 
       if (q.includes(cId) || q.includes(cMr) || q.includes(cEn) ||
-          (cId === 'turmeric' && (q.includes('हळद') || q.includes('turmeric'))) ||
-          (cId === 'banana' && (q.includes('केळी') || q.includes('banana'))) ||
-          (cId === 'soybean' && (q.includes('सोयाबीन') || q.includes('soybean'))) ||
-          (cId === 'cotton' && (q.includes('कापूस') || q.includes('cotton'))) ||
-          (cId === 'onion' && (q.includes('कांदा') || q.includes('onion'))) ||
-          (cId === 'pigeon_pea' && (q.includes('तूर') || q.includes('arhar') || q.includes('pigeon pea'))) ||
-          (cId === 'chickpea' && (q.includes('हरभरा') || q.includes('chickpea') || q.includes('चना')))) {
+          (cId === 'turmeric' && (q.includes('हळद') || q.includes('हळदी') || q.includes('turmeric') || q.includes('halad') || q.includes('haldi'))) ||
+          (cId === 'banana' && (q.includes('केळी') || q.includes('केळ') || q.includes('banana') || q.includes('keli'))) ||
+          (cId === 'soybean' && (q.includes('सोयाबीन') || q.includes('सोयाबिन') || q.includes('soybean') || q.includes('soyabean'))) ||
+          (cId === 'cotton' && (q.includes('कापूस') || q.includes('कापसा') || q.includes('कपाशी') || q.includes('cotton') || q.includes('kapas'))) ||
+          (cId === 'onion' && (q.includes('कांदा') || q.includes('कांदे') || q.includes('कांद्या') || q.includes('onion') || q.includes('kanda'))) ||
+          (cId === 'pigeon_pea' && (q.includes('तूर') || q.includes('तुरी') || q.includes('arhar') || q.includes('toor') || q.includes('pigeon pea'))) ||
+          (cId === 'chickpea' && (q.includes('हरभरा') || q.includes('हरभऱ्या') || q.includes('chickpea') || q.includes('चना') || q.includes('चणा')))) {
 
         // If asking for fertilizer/spray for this crop
-        if (q.includes('खत') || q.includes('डोस') || q.includes('फवारणी') || q.includes('fertilizer') || q.includes('spray') || q.includes('dose')) {
+        if (q.includes('खत') || q.includes('डोस') || q.includes('फवारणी') || q.includes('टॉनिक') || q.includes('fertilizer') || q.includes('spray') || q.includes('dose') || q.includes('tonic')) {
           const sprays = (crop.stage_spray_schedule || []).map(s => `• **${s.stage}:** ${s.spray}`).join('\n');
           return isMr
             ? `🧪 **${crop.name_mr} — टप्प्याटप्प्याने खत व फवारणी वेळापत्रक:**\n\n${sprays}\n\n💡 *टीप:* फवारणीसोबत स्टिकर (Silicon Spreader) ५ मिली अवश्य वापरा.`
@@ -993,7 +1108,7 @@ Respond strictly in English with these 4 clear points:
         }
 
         // If asking for varieties for this crop
-        if (q.includes('वाण') || q.includes('बियाणे') || q.includes('variety') || q.includes('seed')) {
+        if (q.includes('वाण') || q.includes('बियाणे') || q.includes('बेणे') || q.includes('variety') || q.includes('seed')) {
           const vars = (crop.recommended_varieties || []).map(v => `• **${v.name}:** ${v.features}`).join('\n');
           return isMr
             ? `🌾 **${crop.name_mr} — शिफारसीत उच्च उत्पादन देणारे वाण:**\n\n${vars}`
@@ -1001,27 +1116,29 @@ Respond strictly in English with these 4 clear points:
         }
 
         // If asking for pest remedy for this crop
-        if (q.includes('रोग') || q.includes('कीड') || q.includes('pest') || q.includes('disease') || q.includes('उपाय')) {
+        if (q.includes('रोग') || q.includes('कीड') || q.includes('pest') || q.includes('disease') || q.includes('उपाय') || q.includes('करपा') || q.includes('अळी') || q.includes('कुज')) {
           const remedies = (crop.critical_pest_remedies || []).map(p => `• **${p.pest}:** ${p.remedy}`).join('\n');
           return isMr
             ? `🚨 **${crop.name_mr} — प्रमुख कीड-रोग व तातडीचे उपाय:**\n\n${remedies}`
             : `🚨 **${crop.name_en || crop.name_mr} — Key Pests & Rapid Remedies:**\n\n${remedies}`;
         }
 
-        // General planting / overview of this DB crop
-        if (q.includes('plant') || q.includes('लागवड') || q.includes('पेरणी') || q.includes('spacing') || q.includes('अंतर')) {
-          return isMr
-            ? `🌱 **${crop.name_mr} — लागवड तंत्र व अंतर:**\n\n` +
-              `• **लागवड पद्धत:** ${crop.sowing_method_mr || 'सुधारित गादी वाफा / टोकण पद्धत'}\n` +
-              `• **कालावधी:** ${crop.duration_days || '120-150'} दिवस\n` +
-              `• **अपेक्षित उत्पादन:** ${crop.expected_yield_range || 'दर्जेदार उत्पादन'}\n` +
-              `• **पाणी व्यवस्थापन:** ठिबक सिंचनाचा वापर करून वाफसा स्थितीत पाणी द्यावे.`
-            : `🌱 **${crop.name_en || crop.name_mr} — Sowing & Cultivation Guidelines:**\n\n` +
-              `• **Sowing Method:** ${crop.sowing_method_en || 'Raised bed / BBF token system'}\n` +
-              `• **Crop Duration:** ${crop.duration_days || '120-150'} days\n` +
-              `• **Expected Yield:** ${crop.expected_yield_range || 'High commercial yield'}\n` +
-              `• **Irrigation:** Maintain field capacity using inline drip fertigation.`;
-        }
+        // Comprehensive Cultivation, Sowing & Best Practice Guide
+        const topVars = (crop.recommended_varieties || []).slice(0, 3).map(v => v.name).join(', ');
+        const sprayTips = (crop.stage_spray_schedule || []).slice(0, 2).map(s => `   • **${s.stage}:** ${s.spray}`).join('\n');
+        return isMr
+          ? `🌱 **${crop.name_mr} सुधारित आधुनिक शेती तंत्रज्ञान:**\n\n` +
+            `1. **लागवड पद्धत व अंतर:** ${crop.sowing_method_mr || 'गादी वाफा / रुंद वरंबा-सरी (BBF) टोकण पद्धत'}\n` +
+            `2. **कालावधी व उत्पादन:** ${crop.duration_days || '120-150'} दिवस | अपेक्षित उत्पादन: **${crop.expected_yield_range || 'दर्जेदार भरघोस उत्पादन'}**\n` +
+            `3. **उत्कृष्ट शिफारसीत वाण:** ${topVars || 'फुले वाण'}\n` +
+            `4. **पाणी व ठिबक व्यवस्थापन:** ठिबक सिंचनाचा वापर करून वाफसा स्थितीत पाणी द्यावे.\n` +
+            `5. **प्रमुख खत व फवारणी अवस्था:**\n${sprayTips}`
+          : `🌱 **${crop.name_en || crop.name_mr} Modern High-Yield Cultivation Guide:**\n\n` +
+            `1. **Sowing Method & Spacing:** ${crop.sowing_method_en || 'Raised bed / BBF token system'}\n` +
+            `2. **Duration & Yield:** ${crop.duration_days || '120-150'} days | Expected Yield: **${crop.expected_yield_range || 'High commercial yield'}**\n` +
+            `3. **Top Recommended Varieties:** ${topVars || 'University certified'}\n` +
+            `4. **Irrigation:** Maintain field capacity using inline drip fertigation.\n` +
+            `5. **Stage Spray Schedule:**\n${sprayTips}`;
       }
     }
 

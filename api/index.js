@@ -113,19 +113,22 @@ Your goals:
   // 1. Try Gemini API first with resilient multi-model failover
   if (geminiApiKey) {
     const geminiModels = [
-      'gemini-2.5-flash',
-      'gemini-2.5-flash-lite',
-      'gemini-2.0-flash',
-      'gemini-2.0-flash-lite',
+      'gemini-flash-latest',
       'gemini-3.5-flash-lite',
-      'gemini-3.5-flash',
+      'gemini-3.1-flash-lite',
       'gemini-3.7-flash',
-      'gemini-flash-lite-latest',
-      'gemini-flash-latest'
+      'gemini-3.1-pro-preview'
     ];
     for (const model of geminiModels) {
       try {
-        const ai = new GoogleGenAI({ apiKey: geminiApiKey });
+        const ai = new GoogleGenAI({
+          apiKey: geminiApiKey,
+          httpOptions: {
+            headers: {
+              'User-Agent': 'aistudio-build'
+            }
+          }
+        });
         const response = await ai.models.generateContent({
           model,
           contents: formattedPrompt,
@@ -135,7 +138,7 @@ Your goals:
           return res.status(200).json({ text: response.text, provider: 'gemini', model });
         }
       } catch (geminiErr) {
-        console.warn(`Gemini (${model}) status notice:`, geminiErr.message || geminiErr);
+        // Quietly failover to next model on transient capacity/demand spikes (503/429)
       }
     }
   }
@@ -223,19 +226,22 @@ async function handleGroq(req, res) {
     // Try Gemini first with resilient multi-model failover
     if (geminiApiKey) {
       const geminiModels = [
-        'gemini-2.5-flash',
-        'gemini-2.5-flash-lite',
-        'gemini-2.0-flash',
-        'gemini-2.0-flash-lite',
+        'gemini-flash-latest',
         'gemini-3.5-flash-lite',
-        'gemini-3.5-flash',
+        'gemini-3.1-flash-lite',
         'gemini-3.7-flash',
-        'gemini-flash-lite-latest',
-        'gemini-flash-latest'
+        'gemini-3.1-pro-preview'
       ];
       for (const model of geminiModels) {
         try {
-          const ai = new GoogleGenAI({ apiKey: geminiApiKey });
+          const ai = new GoogleGenAI({
+            apiKey: geminiApiKey,
+            httpOptions: {
+              headers: {
+                'User-Agent': 'aistudio-build'
+              }
+            }
+          });
           const prompt = `${systemPrompt || defaultSystemPrompt}\n\n${userPromptContent}`;
           
           const response = await ai.models.generateContent({
@@ -247,7 +253,7 @@ async function handleGroq(req, res) {
             return res.status(200).json({ text: response.text, model });
           }
         } catch (geminiErr) {
-          console.warn(`Gemini (${model}) status notice:`, geminiErr.message || geminiErr);
+          // Quietly failover to next model on transient capacity/demand spikes (503/429)
         }
       }
     }
