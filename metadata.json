@@ -1,6 +1,6 @@
 {
-  "name": "Chaya AI - Smart Farm Advisor",
-  "description": "Smart agricultural advisor for Nanded, Maharashtra providing crop recommendations, pest management, market prices, and farming advice in Marathi with voice support.",
+  "name": "Chaya AI",
+  "description": "Smart agricultural advisor for Nanded, Maharashtra providing crop recommendations, pest management, market prices, and farming advice in Marathi and English.",
   "requestFramePermissions": ["microphone"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

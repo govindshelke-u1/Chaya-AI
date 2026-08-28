@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>छाया AI - कृषी सल्लागार (Chaya AI Smart Farm Advisor)</title>
+    <title>Chaya AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -110,26 +110,6 @@
         .lang-btn:hover {
             background: rgba(255, 255, 255, 0.35);
             transform: translateY(-1px);
-        }
-
-        .api-badge {
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: #d1fae5;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-        }
-
-        .api-badge:hover {
-            background: rgba(255, 255, 255, 0.25);
-            color: white;
         }
 
         .live-tag {
@@ -270,7 +250,7 @@
             header { padding: 10px 14px; }
             .brand { font-size: 1.1rem; }
             .header-actions { gap: 6px; }
-            .api-badge, .lang-btn { font-size: 0.72rem; padding: 4px 9px; }
+            .lang-btn { font-size: 0.72rem; padding: 4px 9px; }
             .live-tag { font-size: 0.68rem; }
             .btn { font-size: 1rem; padding: 14px; }
             .weather-widget { flex-direction: column; align-items: flex-start; gap: 8px; }
@@ -628,28 +608,6 @@
 
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Modal */
-        .modal-backdrop {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-
-        .modal-card {
-            background: white;
-            border-radius: 20px;
-            padding: 28px;
-            max-width: 500px;
-            width: 100%;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            animation: slideIn 0.3s ease;
-        }
     </style>
 </head>
 <body>
@@ -662,15 +620,12 @@
 
     <header>
         <a href="index.html" class="brand">
-            <span class="brand-icon">🌿</span> <span id="brandTitle">छाया AI (Chaya AI)</span>
+            <span class="brand-icon">🌿</span> <span id="brandTitle">Chaya AI</span>
         </a>
         <div class="header-actions">
             <!-- Language Toggle Button -->
             <button class="lang-btn" onclick="toggleLanguage()">
                 🌐 <span id="langBtnText">English</span>
-            </button>
-            <button class="api-badge" onclick="openApiModal()">
-                ⚙️ <span id="apiStatusText">AI सेटिंग</span>
             </button>
             <span class="live-tag">LIVE APMC</span>
         </div>
@@ -896,27 +851,6 @@
         </div>
     </div>
 
-    <!-- API Key / Settings Modal -->
-    <div id="apiModal" class="modal-backdrop" onclick="closeApiModal(event)">
-        <div class="modal-card" onclick="event.stopPropagation()">
-            <h3 style="color:var(--primary-dark); margin-bottom:14px; display:flex; align-items:center; gap:8px;">
-                ⚙️ <span id="modalTitle">छाया AI - मॉडेल व API सेटिंग</span>
-            </h3>
-            <p style="font-size:0.88rem; color:#4b5563; line-height:1.5; margin-bottom:16px;" id="modalDesc">
-                छाया AI इनबिल्ट <b>स्मार्ट नॉलेज इंजिन</b> वापरून ऑफलाइनही उत्तम कार्य करते. AI, Live बाजारभाव व आवाज (Voice) या सेवा आता <b>सुरक्षित बॅकएंडवरून</b> चालतात.
-            </p>
-            <div id="backendStatusList" style="display:flex; flex-direction:column; gap:10px; margin-bottom:18px;">
-                <div class="status-row"><span>🧠 Groq AI</span><span id="statusGroq">तपासत आहे...</span></div>
-                <div class="status-row"><span>💹 Live बाजारभाव</span><span id="statusMarket">तपासत आहे...</span></div>
-                <div class="status-row"><span>🔊 ElevenLabs आवाज</span><span id="statusTts">तपासत आहे...</span></div>
-                <div class="status-row"><span>🌦️ हवामान</span><span style="color:#059669; font-weight:700;" id="statusWeather">✅ नेहमी सुरू (Open-Meteo)</span></div>
-            </div>
-            <div style="display:flex; justify-content:flex-end; gap:10px;">
-                <button type="button" onclick="closeApiModal()" style="padding:10px 20px; border:none; background:var(--primary); color:white; border-radius:10px; font-weight:700; cursor:pointer;" id="btnCloseModal">ठीक आहे</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Load AI Engine & Chatbot Widget -->
     <script src="js/ai-engine.js"></script>
     <script src="js/chat-assistant.js"></script>
@@ -927,7 +861,7 @@
 
         const translations = {
             mr: {
-                brandTitle: "छाया AI (Chaya AI)",
+                brandTitle: "Chaya AI",
                 langBtn: "English",
                 cardTitle: "📍 शेती व माती माहिती नोंदणी",
                 stepPrefix: "पायरी",
@@ -964,7 +898,7 @@
                 landLabel: "३. एकूण क्षेत्रफळ (Land Size):",
                 landHint: "उत्पादन व खर्च गणित यावर आधारित असेल",
                 unitAcres: "एकर",
-                questionLabel: "४. छाया AI ला विचारा किंवा लक्षणे सांगा:",
+                questionLabel: "४. Chaya AI ला विचारा किंवा लक्षणे सांगा:",
                 questionHint: "बोलण्यासाठी 🎤 आयकॉन दाबा किंवा लिहा",
                 qPlaceholder: "उदा. हळदीवर करपा पडला आहे, किंवा सर्वोत्तम खत कोणते?",
                 btnNext: "पुढे जा (Next) ➔",
@@ -992,14 +926,10 @@
                 placeholderP: "उदा. 18",
                 placeholderK: "उदा. 340",
                 placeholderPh: "उदा. 7.3",
-                modalTitle: "छाया AI - मॉडेल व API सेटिंग",
-                modalDesc: "छाया AI इनबिल्ट <b>स्मार्ट नॉलेज इंजिन</b> वापरून ऑफलाइनही उत्तम कार्य करते. AI, Live बाजारभाव व आवाज (Voice) या सेवा आता <b>सुरक्षित बॅकएंडवरून</b> चालतात.",
-                btnModalClose: "ठीक आहे",
-                apiSettings: "AI सेटिंग",
                 micPrompt: "मराठीत बोला"
             },
             en: {
-                brandTitle: "Chaya AI - Smart Farm Advisor",
+                brandTitle: "Chaya AI",
                 langBtn: "मराठी",
                 cardTitle: "📍 Farm & Soil Details Registration",
                 stepPrefix: "Step",
@@ -1064,10 +994,6 @@
                 placeholderP: "e.g. 18",
                 placeholderK: "e.g. 340",
                 placeholderPh: "e.g. 7.3",
-                modalTitle: "Chaya AI - Model & API Settings",
-                modalDesc: "Chaya AI operates smoothly offline using an inbuilt <b>smart agricultural engine</b>. AI, live market rates, and voice services run securely via the server.",
-                btnModalClose: "Got It",
-                apiSettings: "AI Settings",
                 micPrompt: "Tap to speak in English"
             }
         };
@@ -1139,14 +1065,9 @@
             document.getElementById("question").placeholder = t.qPlaceholder;
             document.getElementById("voiceBtn").title = t.micPrompt;
             document.getElementById("btnText").innerText = t.btnSubmit;
-            document.getElementById("apiStatusText").innerText = t.apiSettings;
             
             document.querySelectorAll(".btn-next-text").forEach(el => el.innerText = t.btnNext);
             document.querySelectorAll(".btn-prev-text").forEach(el => el.innerText = t.btnPrev);
-
-            document.getElementById("modalTitle").innerText = t.modalTitle;
-            document.getElementById("modalDesc").innerHTML = t.modalDesc;
-            document.getElementById("btnCloseModal").innerText = t.btnModalClose;
 
             updateStepCounter();
             updateSoilData();
@@ -1306,41 +1227,6 @@
             rec.onerror = () => btn.classList.remove("recording");
             rec.onend = () => btn.classList.remove("recording");
             rec.start();
-        }
-
-        function openApiModal() {
-            document.getElementById("apiModal").style.display = "flex";
-            refreshBackendStatusPanel();
-        }
-
-        function closeApiModal(e) {
-            if (e && e.target !== e.currentTarget) return;
-            document.getElementById("apiModal").style.display = "none";
-        }
-
-        async function refreshBackendStatusPanel() {
-            const status = await window.chayaAI.checkBackendStatus();
-            const isMr = currentLang === 'mr';
-            const render = (id, ok) => {
-                document.getElementById(id).innerHTML = ok
-                    ? `<span style="color:#059669;">${isMr ? '✅ कनेक्टेड' : '✅ Connected'}</span>`
-                    : `<span style="color:#b91c1c;">${isMr ? '⚪ कॉन्फिगर नाही' : '⚪ Not Configured'}</span>`;
-            };
-            render('statusGroq', status.groq);
-            render('statusMarket', status.market);
-            render('statusTts', status.tts);
-        }
-
-        function checkApiStatus() {
-            window.chayaAI.checkBackendStatus().then((status) => {
-                const statusText = document.getElementById("apiStatusText");
-                const isMr = currentLang === 'mr';
-                let label = status.groq 
-                    ? (isMr ? "Groq AI कनेक्टेड 🟢" : "Groq AI Connected 🟢") 
-                    : (isMr ? "ऑफलाइन AI इंजिन ⚡" : "Smart Offline Engine ⚡");
-                if (status.tts) label += " 🔊";
-                statusText.innerText = label;
-            });
         }
 
         function submitForm(e) {
