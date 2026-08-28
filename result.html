@@ -717,9 +717,9 @@
                         <tr>
                             <th id="thCommodity">Crop / Commodity</th>
                             <th id="thMarket">APMC Mandi</th>
+                            <th id="thMinRate">Min Rate</th>
                             <th id="thModalRate">Modal Rate (Avg)</th>
                             <th id="thMaxRate">Max Rate</th>
-                            <th id="thTrend">Market Trend</th>
                         </tr>
                     </thead>
                     <tbody id="ratesTableBody">
@@ -777,15 +777,13 @@
                 btnFertText: "Fertilizer Schedule<br>(Fertilizer Guide)",
                 btnPestText: "Pests & Diseases<br>(Protection Guide)",
                 btnStepsText: "Step-by-Step Schedule<br>(Spray & Irrigation)",
-                lblMarketSectionTitle: "📊 Nanded & Marathwada APMC Mandi Rates (₹ per Quintal)",
+                lblMarketSectionTitle: "📊 Nanded District APMC Mandi Rates (₹ per Quintal)",
                 liveRateTag: "🟢 Live APMC Rates",
                 thCommodity: "Crop / Commodity",
-                thMarket: "APMC Mandi",
+                thMarket: "Nanded APMC Mandi",
+                thMinRate: "Min Rate",
                 thModalRate: "Modal Rate (Avg)",
                 thMaxRate: "Max Rate",
-                thTrend: "Market Trend",
-                trendStable: "Stable",
-                trendUp: "Bullish",
                 specSeedTreatment: "🌱 Seed / Root Treatment:",
                 specSpacing: "📐 Sowing Geometry & Method:",
                 specDuration: "⏳ Duration & Sowing Window:",
@@ -822,15 +820,13 @@
                 btnFertText: "खत व्यवस्थापन<br>(Fertilizer Guide)",
                 btnPestText: "रोग व किडी उपाय<br>(Pests & Diseases)",
                 btnStepsText: "टप्प्याटप्प्याने वेळापत्रक<br>(Step Schedule)",
-                lblMarketSectionTitle: "📊 नांदेड व मराठवाडा APMC थेट चालू बाजारभाव (₹ प्रति क्विंटल)",
+                lblMarketSectionTitle: "📊 नांदेड जिल्हा APMC थेट चालू बाजारभाव (₹ प्रति क्विंटल)",
                 liveRateTag: "🟢 APMC थेट दर",
                 thCommodity: "शेती पीक (Commodity)",
-                thMarket: "बाजार समिती (APMC Mandi)",
+                thMarket: "नांदेड APMC बाजार समिती",
+                thMinRate: "किमान भाव (Min Rate)",
                 thModalRate: "सरासरी भाव (Modal Rate)",
                 thMaxRate: "कमाल भाव (Max Rate)",
-                thTrend: "बाजार कल (Trend)",
-                trendStable: "स्थिर",
-                trendUp: "तेजी",
                 specSeedTreatment: "🌱 बीज / मुळ प्रक्रिया (Seed / Root Treatment):",
                 specSpacing: "📐 लागवड अंतर व पद्धत (Sowing Geometry):",
                 specDuration: "⏳ कालावधी व पेरणी वेळ (Duration & Timing):",
@@ -884,9 +880,9 @@
             document.getElementById("lblMarketSectionTitle").innerText = t.lblMarketSectionTitle;
             document.getElementById("thCommodity").innerText = t.thCommodity;
             document.getElementById("thMarket").innerText = t.thMarket;
+            document.getElementById("thMinRate").innerText = t.thMinRate;
             document.getElementById("thModalRate").innerText = t.thModalRate;
             document.getElementById("thMaxRate").innerText = t.thMaxRate;
-            document.getElementById("thTrend").innerText = t.thTrend;
         }
 
         function renderSummaryChips() {
@@ -1286,30 +1282,32 @@
             const t = translations[currentLang];
 
             const defaultLabels = isMr
-                ? ['हळद (Turmeric)', 'सोयाबीन (Soybean)', 'कापूस (Cotton)', 'रब्बी ज्वारी (Jowar)', 'कोबी/फ्लॉवर (Cabbage)', 'तूर (Arhar)', 'हरभरा (Gram)']
-                : ['Turmeric', 'Soybean', 'Cotton', 'Rabi Jowar', 'Cabbage', 'Red Gram (Tur)', 'Gram (Chana)'];
+                ? ['हळद (सेलम)', 'सोयाबीन (पिवळा)', 'कापूस (मध्यम धागा)', 'रब्बी ज्वारी (मालदांडी)', 'तूर (पांढरी व लाल)', 'हरभरा / चणा', 'केळी (G9)', 'पत्ताकोबी व फ्लॉवर', 'कांदा']
+                : ['Turmeric (Selam)', 'Soybean (Yellow)', 'Bt Cotton', 'Rabi Jowar (Maldandi)', 'Red Gram / Tur', 'Gram / Chana', 'Banana (G9)', 'Cabbage & Cauliflower', 'Onion'];
 
             let chartData = {
                 labels: defaultLabels,
-                modal: [15200, 4980, 7880, 4250, 1850, 9750, 6200],
-                max: [18200, 5350, 8450, 4900, 2600, 10600, 6750],
+                min: [13500, 4650, 7250, 3600, 9200, 5800, 1450, 1400, 1900],
+                modal: [15200, 4980, 7880, 4250, 9750, 6200, 1800, 1850, 2550],
+                max: [18200, 5350, 8450, 4900, 10600, 6750, 2200, 2600, 3300],
                 ratesList: []
             };
 
-            let sourceTag = { text: isMr ? '🟢 APMC थेट दर' : '🟢 Live APMC Rates', cls: 'live' };
+            let sourceTag = { text: isMr ? '🟢 नांदेड APMC थेट दर' : '🟢 Live Nanded APMC Rates', cls: 'live' };
 
             try {
                 const live = await window.chayaAI.fetchLiveMarketPrices('Nanded', 'Maharashtra');
                 if (live.rates && live.rates.length > 0) {
                     chartData = {
-                        labels: live.rates.map(r => isMr ? (r.commodity || r.crop_name_mr || 'पीक') : (r.crop_name_en || r.commodity || 'Crop')),
-                        modal: live.rates.map(r => Number(r.modal_price || r.modal_rate || 0)),
-                        max: live.rates.map(r => Number(r.max_price || r.max_rate || 0)),
+                        labels: live.rates.map(r => isMr ? (r.crop_name_mr || r.commodity) : (r.crop_name_en || r.commodity || 'Crop')),
+                        min: live.rates.map(r => Number(r.min_price ?? r.min_rate ?? 0)),
+                        modal: live.rates.map(r => Number(r.modal_price ?? r.modal_rate ?? 0)),
+                        max: live.rates.map(r => Number(r.max_price ?? r.max_rate ?? 0)),
                         ratesList: live.rates
                     };
                     sourceTag = live.source === 'live' || live.source === 'data_gov_in_live' 
                         ? { text: isMr ? '🟢 डेटा.जीओव्ही.इन थेट लाईव्ह' : '🟢 data.gov.in Mandi Live', cls: 'live' }
-                        : { text: isMr ? '🟢 नांदेड APMC मार्केट दर' : '🟢 Nanded APMC Rates', cls: 'live' };
+                        : { text: isMr ? '🟢 नांदेड APMC चालू दर' : '🟢 Nanded APMC Rates', cls: 'live' };
                 }
             } catch (e) {
                 console.warn('Market chart fallback:', e);
@@ -1319,27 +1317,38 @@
             tagEl.innerText = sourceTag.text;
             tagEl.className = `price-tag ${sourceTag.cls}`;
 
-            // Populate Table
+            // Populate Table (Min Rate, Modal Rate, Max Rate)
             const tbody = document.getElementById("ratesTableBody");
             const list = chartData.ratesList.length ? chartData.ratesList : chartData.labels.map((l, i) => ({
                 commodity: l,
-                market: isMr ? 'नांदेड मोंढा APMC' : 'Nanded APMC Mandi',
+                crop_name_en: defaultLabels[i],
+                crop_name_mr: defaultLabels[i],
+                market_en: 'Nanded Mondha APMC',
+                market_mr: 'नांदेड मोंढा APMC',
+                min_price: chartData.min[i],
                 modal_price: chartData.modal[i],
-                max_price: chartData.max[i],
-                trend: isMr ? 'तेजी' : 'Bullish'
+                max_price: chartData.max[i]
             }));
 
-            tbody.innerHTML = list.map(r => `
-                <tr>
-                    <td style="font-weight:700; color:#065f46;">🌱 ${isMr ? (r.crop_name_mr || r.commodity) : (r.crop_name_en || r.commodity)}</td>
-                    <td>${r.market || (isMr ? 'नांदेड APMC' : 'Nanded APMC')}</td>
-                    <td style="font-weight:800; color:#059669;">₹${(r.modal_price || 0).toLocaleString('en-IN')}</td>
-                    <td style="font-weight:800; color:#d97706;">₹${(r.max_price || 0).toLocaleString('en-IN')}</td>
-                    <td><span style="background:#ecfdf5; color:#065f46; padding:2px 8px; border-radius:6px; font-weight:700;">${r.trend || t.trendStable}</span></td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = list.map(r => {
+                const cropName = isMr ? (r.crop_name_mr || r.commodity) : (r.crop_name_en || r.commodity);
+                const marketName = isMr ? (r.market_mr || r.market || 'नांदेड मोंढा APMC') : (r.market_en || r.market || 'Nanded Mondha APMC');
+                const minVal = Number(r.min_price ?? r.min_rate ?? 0);
+                const modalVal = Number(r.modal_price ?? r.modal_rate ?? 0);
+                const maxVal = Number(r.max_price ?? r.max_rate ?? 0);
 
-            // Render Chart
+                return `
+                <tr>
+                    <td style="font-weight:700; color:#065f46;">🌱 ${cropName}</td>
+                    <td>${marketName}</td>
+                    <td style="font-weight:800; color:#2563eb;">₹${minVal.toLocaleString('en-IN')}</td>
+                    <td style="font-weight:800; color:#059669;">₹${modalVal.toLocaleString('en-IN')}</td>
+                    <td style="font-weight:800; color:#d97706;">₹${maxVal.toLocaleString('en-IN')}</td>
+                </tr>
+                `;
+            }).join('');
+
+            // Render Chart - Only current live rate
             const ctx = document.getElementById('marketChart').getContext('2d');
             if (marketChartInstance) marketChartInstance.destroy();
             marketChartInstance = new Chart(ctx, {
@@ -1348,20 +1357,14 @@
                     labels: chartData.labels,
                     datasets: [
                         {
-                            label: isMr ? 'सरासरी भाव (Modal Rate ₹)' : 'Modal Avg Rate (₹ / Qtl)',
+                            label: isMr ? 'चालू थेट बाजारभाव (Live Rate ₹ / क्विंटल)' : 'Current Live Rate (₹ / Quintal)',
                             data: chartData.modal,
                             backgroundColor: 'rgba(16, 185, 129, 0.88)',
                             borderColor: '#059669',
                             borderWidth: 1.5,
-                            borderRadius: 6
-                        },
-                        {
-                            label: isMr ? 'कमाल भाव (Max Rate ₹)' : 'Max Rate (₹ / Qtl)',
-                            data: chartData.max,
-                            backgroundColor: 'rgba(245, 158, 11, 0.88)',
-                            borderColor: '#d97706',
-                            borderWidth: 1.5,
-                            borderRadius: 6
+                            borderRadius: 8,
+                            barPercentage: 0.62,
+                            categoryPercentage: 0.8
                         }
                     ]
                 },

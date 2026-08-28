@@ -165,13 +165,17 @@ async function handleMarket(req, res) {
     const content = await fs.readFile(filePath, 'utf-8');
     const parsed = JSON.parse(content);
     const rates = (parsed.rates || []).map(r => ({
-      commodity: r.commodity || r.crop_name_mr,
-      market: r.market || 'APMC Nanded',
-      modal_price: Number(r.modal_price || r.modal_rate),
-      max_price: Number(r.max_price || r.max_rate),
-      min_price: Number(r.min_price || r.min_rate),
-      date: parsed.last_updated || new Date().toISOString().slice(0, 10),
-      trend: r.trend
+      crop_id: r.crop_id,
+      commodity: r.crop_name_en || r.crop_name_mr || 'Crop',
+      crop_name_en: r.crop_name_en || r.crop_name_mr,
+      crop_name_mr: r.crop_name_mr || r.crop_name_en,
+      market: r.market_en || r.market_mr || 'Nanded Mondha APMC',
+      market_en: r.market_en || r.market_mr || 'Nanded Mondha APMC',
+      market_mr: r.market_mr || r.market_en || 'नांदेड मोंढा APMC',
+      modal_price: Number(r.modal_price ?? r.modal_rate ?? 0),
+      max_price: Number(r.max_price ?? r.max_rate ?? 0),
+      min_price: Number(r.min_price ?? r.min_rate ?? 0),
+      date: parsed.last_updated || new Date().toISOString().slice(0, 10)
     }));
 
     return res.status(200).json({ source: 'apmc_market_data', rates });

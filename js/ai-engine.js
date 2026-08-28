@@ -162,12 +162,16 @@ class ChayaAIEngine {
 
       if (data.rates && data.rates.length) {
         const normalized = data.rates.map(r => ({
-          commodity: r.commodity || r.crop_name_mr || r.crop || 'कृषी पीक',
-          market: r.market || 'APMC Nanded',
+          crop_id: r.crop_id,
+          commodity: r.commodity || r.crop_name_en || r.crop_name_mr || 'Crop',
+          crop_name_en: r.crop_name_en || r.commodity || 'Crop',
+          crop_name_mr: r.crop_name_mr || r.commodity || 'पीक',
+          market: r.market || r.market_en || 'Nanded Mandi',
+          market_en: r.market_en || r.market || 'Nanded Mandi',
+          market_mr: r.market_mr || r.market || 'नांदेड बाजार समिती',
           modal_price: Number(r.modal_price ?? r.modal_rate ?? r.avg_price ?? 0),
           max_price: Number(r.max_price ?? r.max_rate ?? 0),
           min_price: Number(r.min_price ?? r.min_rate ?? 0),
-          trend: r.trend || 'stable',
           date: r.date || new Date().toISOString().slice(0, 10)
         }));
         return { source: data.source || 'live', rates: normalized };
@@ -175,24 +179,32 @@ class ChayaAIEngine {
 
       // Backend not configured or empty -> use locally bundled JSON
       const localRates = (this.knowledgeBase.marketPrices?.rates || []).map(r => ({
-        commodity: r.commodity || r.crop_name_mr,
-        market: r.market || 'नांदेड मोंढा',
-        modal_price: Number(r.modal_price || r.modal_rate || 0),
-        max_price: Number(r.max_price || r.max_rate || 0),
-        min_price: Number(r.min_price || r.min_rate || 0),
-        trend: r.trend || 'stable',
+        crop_id: r.crop_id,
+        commodity: r.crop_name_en || r.crop_name_mr || 'Crop',
+        crop_name_en: r.crop_name_en || 'Crop',
+        crop_name_mr: r.crop_name_mr || 'पीक',
+        market: r.market_en || r.market_mr || 'Nanded Mondha APMC',
+        market_en: r.market_en || 'Nanded Mondha APMC',
+        market_mr: r.market_mr || 'नांदेड मोंढा APMC',
+        modal_price: Number(r.modal_price ?? r.modal_rate ?? 0),
+        max_price: Number(r.max_price ?? r.max_rate ?? 0),
+        min_price: Number(r.min_price ?? r.min_rate ?? 0),
         date: this.knowledgeBase.marketPrices?.last_updated || new Date().toISOString().slice(0, 10)
       }));
       return { source: 'local_cache', rates: localRates };
     } catch (e) {
       console.warn('Live market price fetch failed, falling back to local data:', e);
       const localRates = (this.knowledgeBase.marketPrices?.rates || []).map(r => ({
-        commodity: r.commodity || r.crop_name_mr,
-        market: r.market || 'नांदेड मोंढा',
-        modal_price: Number(r.modal_price || r.modal_rate || 0),
-        max_price: Number(r.max_price || r.max_rate || 0),
-        min_price: Number(r.min_price || r.min_rate || 0),
-        trend: r.trend || 'stable',
+        crop_id: r.crop_id,
+        commodity: r.crop_name_en || r.crop_name_mr || 'Crop',
+        crop_name_en: r.crop_name_en || 'Crop',
+        crop_name_mr: r.crop_name_mr || 'पीक',
+        market: r.market_en || r.market_mr || 'Nanded Mondha APMC',
+        market_en: r.market_en || 'Nanded Mondha APMC',
+        market_mr: r.market_mr || 'नांदेड मोंढा APMC',
+        modal_price: Number(r.modal_price ?? r.modal_rate ?? 0),
+        max_price: Number(r.max_price ?? r.max_rate ?? 0),
+        min_price: Number(r.min_price ?? r.min_rate ?? 0),
         date: this.knowledgeBase.marketPrices?.last_updated || new Date().toISOString().slice(0, 10)
       }));
       return { source: 'local_cache_fallback', rates: localRates };
