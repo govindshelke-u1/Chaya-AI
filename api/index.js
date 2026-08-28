@@ -3,7 +3,32 @@
 const { GoogleGenAI } = require('@google/genai');
 
 module.exports = async (req, res) => {
-  const action = req.query?.action;
+  // 1. CORS headers for cross-origin and Vercel environments
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  // 2. Safe body parsing for serverless runtimes
+  if (req.body && typeof req.body === 'string') {
+    try {
+      req.body = JSON.parse(req.body);
+    } catch (_) {}
+  }
+
+  // 3. Robust action determination
+  let action = req.query?.action;
+  if (!action && req.body && typeof req.body === 'object') {
+    action = req.body.action;
+  }
+  if (!action && req.url) {
+    const urlMatch = req.url.match(/\/api\/(chat|groq|market|tts|status)/i);
+    if (urlMatch) action = urlMatch[1].toLowerCase();
+  }
 
   switch (action) {
     case 'status':
@@ -88,9 +113,12 @@ Your goals:
   // 1. Try Gemini API first with resilient multi-model failover
   if (geminiApiKey) {
     const geminiModels = [
+      'gemini-2.5-flash',
+      'gemini-2.5-flash-lite',
+      'gemini-2.0-flash',
+      'gemini-2.0-flash-lite',
       'gemini-3.5-flash-lite',
       'gemini-3.5-flash',
-      'gemini-3.6-flash',
       'gemini-3.7-flash',
       'gemini-flash-lite-latest',
       'gemini-flash-latest'
@@ -195,9 +223,12 @@ async function handleGroq(req, res) {
     // Try Gemini first with resilient multi-model failover
     if (geminiApiKey) {
       const geminiModels = [
+        'gemini-2.5-flash',
+        'gemini-2.5-flash-lite',
+        'gemini-2.0-flash',
+        'gemini-2.0-flash-lite',
         'gemini-3.5-flash-lite',
         'gemini-3.5-flash',
-        'gemini-3.6-flash',
         'gemini-3.7-flash',
         'gemini-flash-lite-latest',
         'gemini-flash-latest'

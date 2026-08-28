@@ -389,12 +389,12 @@ class ChayaAIEngine {
   async loadKnowledgeBase() {
     try {
       const [cropsRes, soilRes, fertRes, marketRes, pestsRes, surveyRes] = await Promise.all([
-        fetch('data/crops_database.json').then(r => r.json()).catch(() => null),
-        fetch('data/soil_and_climate.json').then(r => r.json()).catch(() => null),
-        fetch('data/fertilizers_and_schemes.json').then(r => r.json()).catch(() => null),
-        fetch('data/market_prices.json').then(r => r.json()).catch(() => null),
-        fetch('data/pests_and_diseases.json').then(r => r.json()).catch(() => null),
-        fetch('data/nanded_survey_data.json').then(r => r.json()).catch(() => null)
+        fetch('/data/crops_database.json').then(r => r.json()).catch(() => null),
+        fetch('/data/soil_and_climate.json').then(r => r.json()).catch(() => null),
+        fetch('/data/fertilizers_and_schemes.json').then(r => r.json()).catch(() => null),
+        fetch('/data/market_prices.json').then(r => r.json()).catch(() => null),
+        fetch('/data/pests_and_diseases.json').then(r => r.json()).catch(() => null),
+        fetch('/data/nanded_survey_data.json').then(r => r.json()).catch(() => null)
       ]);
 
       if (cropsRes && cropsRes.crops) this.knowledgeBase.crops = cropsRes.crops;
@@ -831,8 +831,6 @@ Respond strictly in English with these 4 clear points:
     for (const d of diagGuide) {
       const pMr = (d.problem_mr || '').toLowerCase();
       const pEn = (d.problem_en || '').toLowerCase();
-      const cMr = (d.crop_mr || '').toLowerCase();
-      const cEn = (d.crop_en || '').toLowerCase();
 
       const matchedProblem = (pMr && q.includes(pMr.split(' ')[0])) ||
         (q.includes('करपा') && pMr.includes('करपा')) ||
@@ -862,7 +860,116 @@ Respond strictly in English with these 4 clear points:
       }
     }
 
-    // B. Crop Specific Queries (Turmeric, Banana, Soybean, Cotton, Chickpea, Jowar, Sugarcane)
+    // B. Horticultural Crops (Tomato, Chilli, Ginger, Garlic, Pomegranate, Papaya, Sugarcane, Watermelon)
+    // Tomato (टोमॅटो)
+    if (q.includes('tomato') || q.includes('टोमॅटो') || q.includes('tamatar')) {
+      if (q.includes('plant') || q.includes('grow') || q.includes('sow') || q.includes('लागवड') || q.includes('कसा लावावा') || q.includes('पेरणी')) {
+        return isMr
+          ? `🍅 **टोमॅटो सुधारित लागवड तंत्रज्ञान (Tomato Cultivation Guide):**\n\n` +
+            `1. **गादी वाफा व अंतर:** ३.५ ते ४ फूट रुंद गादी वाफ्यावर १.५ फूट अंतरावर एका ओळीत किंवा ५x२ फूट अंतरावर नागमोडी पद्धतीने रोपे लावा.\n` +
+            `2. **रोपवाटिका (Nursery):** २५ ते ३० दिवसांची सशक्त, निरोगी रोपे वापरा. लागवडीपूर्वी रोपांची मुळे ट्रायकोडर्मा (५ ग्रॅम/लिटर) + ह्युमिक अ‍ॅसिड (२ मिली/लिटर) द्रावणात १५ मिनिटे बुडवून लावा.\n` +
+            `3. **उत्कृष्ट वाण:** सिजेंटा अभिनव, US-440, आर्यमान, साहो (Seminis), फुले राजा.\n` +
+            `4. **मल्चिंग व ठिबक:** २५-३० मायक्रॉन सिल्व्हर-ब्लॅक मल्चिंग पेपर आणि १६ मिमी इनलाईन ठिबक वापरा.\n` +
+            `5. **तार-काठी बांबू बांधणी (Staking):** लागवडीनंतर २५-३० दिवसांनी बांबू व तारेच्या साहाय्याने झाडे बांधा, ज्यामुळे फळे जमिनीला न टेकून डागमुक्त व दर्जेदार मिळतात.\n` +
+            `6. **खत नियोजन (ठिबकद्वारे):**\n` +
+            `   • ०-३० दिवस: १९:१९:१९ (३ किलो/एकर आठवड्यातून दोनदा)\n` +
+            `   • ३०-६० दिवस: १२:६१:०० (३ किलो) + कॅल्शियम नायट्रेट (२.५ किलो)\n` +
+            `   • ६०+ दिवस (फुगवण): ००:५२:३४ आणि ००:००:५० (४ किलो/एकर)`
+          : `🍅 **High-Yield Tomato Cultivation & Planting Guide:**\n\n` +
+            `1. **Bed Preparation & Spacing:** Prepare 3.5 to 4 ft raised beds with 16mm inline drip. Transplant at **4 x 1.5 ft** (single row) or **5 x 2 ft** spacing with 25-30 micron silver-black mulching sheet.\n` +
+            `2. **Seedlings & Root Treatment:** Use **25 to 30-day-old** healthy nursery seedlings. Dip seedling roots in *Trichoderma viride* (5g/L) + Humic Acid (2ml/L) for 15 minutes before planting to prevent damping-off.\n` +
+            `3. **Top Recommended Varieties:** Syngenta Abhinav, US-440, Aryaman, Saho (TO-1057), Phule Raja.\n` +
+            `4. **Trellising / Staking:** Install bamboo stakes and wire trellising 25-30 days after transplanting to keep foliage and fruits off the ground, maximizing Grade-A export yield.\n` +
+            `5. **Fertigation Schedule (via Drip):**\n` +
+            `   • **Day 1-30 (Vegetative):** 19:19:19 (3 kg/acre twice a week)\n` +
+            `   • **Day 31-60 (Flowering & Fruit Set):** 12:61:00 (3 kg) + Calcium Nitrate (2.5 kg) + Boron (500g)\n` +
+            `   • **Day 60+ (Harvesting & Sizing):** 00:52:34 and 00:00:50 (4 kg/acre)\n` +
+            `6. **Key Pest Protection:** For leaf curl virus and whiteflies, spray Pegasus (15g) or Alika (12ml/15L pump); for fruit borer, spray Coragen (6ml/15L).`;
+      }
+      if (q.includes('रोग') || q.includes('कीड') || q.includes('pest') || q.includes('disease') || q.includes('करपा') || q.includes('चुरडा')) {
+        return isMr
+          ? `🚨 **टोमॅटो प्रमुख कीड-रोग व नियंत्रण:**\n\n` +
+            `• **पांढरी माशी व चुरडा-मुरडा (Leaf Curl):** पेगासस (१५ ग्रॅम) किंवा अलिका (१२ मिली) + निंबोळी तेल (३० मिली) प्रति १५L पंप.\n` +
+            `• **करपा (Early/Late Blight):** रिडोमिल गोल्ड (३५ ग्रॅम) किंवा नॅटिव्हो (१० ग्रॅम) प्रति १५L पंप.\n` +
+            `• **फळ पोखरणारी अळी (Fruit Borer):** कोराजन (६ मिली) किंवा फेम (५ मिली) प्रति १५L पंप.\n` +
+            `• **फुलगळ रोखण्यासाठी:** प्लॅनोफिक्स (४ मिली) + बोरॉन (२० ग्रॅम) प्रति १५L पंप फवारा.`
+          : `🚨 **Tomato Disease & Pest Management:**\n\n` +
+            `• **Whiteflies & Leaf Curl Virus:** Spray Pegasus (15g) or Alika (12ml) + Neem Oil (30ml) per 15L pump.\n` +
+            `• **Early & Late Blight (Karpa):** Spray Ridomil Gold (35g) or Nativo (10g) or Custodia (20ml) per 15L pump.\n` +
+            `• **Fruit Borer Caterpillars:** Spray Coragen (6ml) or Fame (5ml) or Proclaim (8g) per 15L pump.\n` +
+            `• **Flower Drop Prevention:** Spray Planofix (4ml) + Chelated Boron (20g) per 15L pump during peak bloom.`;
+      }
+    }
+
+    // Chilli / Mirchi (मिरची)
+    if (q.includes('chilli') || q.includes('chili') || q.includes('मिरची') || q.includes('mirchi')) {
+      return isMr
+        ? `🌶️ **मिरची सुधारित लागवड व बोकड्या/थ्रिप्स नियंत्रण:**\n\n` +
+          `1. **लागवड अंतर:** ४ x १.५ फूट गादी वाफ्यावर २५ मायक्रॉन सिल्व्हर मल्चिंगवर लागवड करा.\n` +
+          `2. **उत्कृष्ट वाण:** सितारा, तेजा-४, बुलेट, यूएस-७०२, नवतेज.\n` +
+          `3. **बोकड्या / चुरडा-मुरडा (थ्रिप्स व कोळी नियंत्रण):**\n` +
+          `   • पहिली फवारणी: डेलिगेट (१८ मिली) + ओमाईट (२५ मिली) प्रति १५L पंप.\n` +
+          `   • दुसरी फवारणी: पेगासस (१८ ग्रॅम) + निंबोळी अर्क ५० मिली.\n` +
+          `4. **खत व्यवस्थापन:** फुलधारणेच्या वेळी १२:६१:०० आणि १३:००:४५ खते ठिबकद्वारे द्यावीत.`
+        : `🌶️ **Chilli Cultivation & Mite/Thrips (Murda Disease) Remedy:**\n\n` +
+          `1. **Spacing & Mulching:** Plant at **4 x 1.5 ft** on raised beds with 25-micron silver mulching and drip irrigation.\n` +
+          `2. **Top High-Yield Varieties:** Sitara, Teja-4, Bullet, US-702, Navtej.\n` +
+          `3. **Leaf Curl / Murda Disease Control:**\n` +
+          `   • Spray 1: Delegate (18ml) + Omite (25ml) per 15L pump for thrips and yellow mites.\n` +
+          `   • Spray 2: Pegasus (18g) + Neem Oil (30ml) per 15L pump.\n` +
+          `4. **Bloom & Yield Booster:** Drip fertigate 12:61:00 (3 kg/acre) followed by 13:00:45 (3 kg/acre) during peak flush.`;
+    }
+
+    // Ginger / Adrak (आले / अद्रक)
+    if (q.includes('ginger') || q.includes('आले') || q.includes('अद्रक') || q.includes('adrak')) {
+      return isMr
+        ? `🫚 **आले (अद्रक) कंदकुज नियंत्रण व व्यवस्थापन:**\n\n` +
+          `1. **लागवड:** ४ फूट रुंद गादी वाफ्यावर दोन ओळींत ९x९ इंच अंतरावर बेणे टोचावे.\n` +
+          `2. **कंदकुज प्रतिबंधक उपाय (Drenching):**\n` +
+          `   • ट्रायकोडर्मा व्हिरिडी (२ किलो) + ५०० किलो शेणखतात मिसळून एकरी द्या.\n` +
+          `   • रासायनिक आळवणी: रिडोमिल गोल्ड (३ ग्रॅम/लिटर) किंवा अलिएट (२.५ ग्रॅम/लिटर) + क्लोरो २४% ठिबकद्वारे सोडावे.\n` +
+          `3. **सुडोमोनास व हुमणी नियंत्रण:** मेटारायझियम (२ किलो/एकर) शेणखतातून द्यावे.`
+        : `🫚 **Ginger Rhizome Rot Management & High-Yield Guide:**\n\n` +
+          `1. **Raised Bed Spacing:** 4 ft wide raised beds with 9x9 inch seed rhizome spacing.\n` +
+          `2. **Rhizome Rot (Kandkuj) Drenching Protocol:**\n` +
+          `   • Biological: Soil application of *Trichoderma* (2 kg/acre) mixed with FYM.\n` +
+          `   • Chemical Drenching: Drip drench Ridomil Gold (3g/L) or Aliette (2.5g/L) + Humic acid.\n` +
+          `3. **White Grub (Humani) Control:** Apply Metarhizium anisopliae (2 kg/acre) through drip.`;
+    }
+
+    // Pomegranate / Dalimb (डाळिंब)
+    if (q.includes('pomegranate') || q.includes('डाळिंब') || q.includes('dalimb')) {
+      return isMr
+        ? `🪴 **डाळिंब — तेल्या रोग प्रतिबंध व बहार व्यवस्थापन:**\n\n` +
+          `1. **उत्कृष्ट वाण:** भगवा (Bhagwa).\n` +
+          `2. **तेल्या रोग (Bacterial Blight) नियंत्रण:**\n` +
+          `   • ०.५% बोर्डो मिश्रण (१ किलो चुना + १ किलो मोरचूद १००L पाण्यात) नियमित फवारा.\n` +
+          `   • स्ट्रेप्टोसायक्लिन (६ ग्रॅम) + कॉपर ऑक्सिक्लोराईड (३० ग्रॅम) प्रति १५L पंप फवारा.\n` +
+          `3. **फळ तडकणे रोखण्यासाठी:** बोरॉन (२० ग्रॅम) + चिलेटेड कॅल्शियम (१५ ग्रॅम) फवारणी करा.`
+        : `🪴 **Pomegranate Bacterial Blight (Telya) & Orchard Care:**\n\n` +
+          `1. **Top Variety:** Bhagwa.\n` +
+          `2. **Telya (Bacterial Blight) Control:**\n` +
+          `   • Spray 0.5% fresh Bordeaux mixture regularly during monsoon.\n` +
+          `   • Spray Streptocycline (6g) + Copper Oxychloride (30g) per 15L pump.\n` +
+          `3. **Fruit Cracking Prevention:** Apply Chelated Calcium (15g) + Boron (20g) foliar spray during sizing.`;
+    }
+
+    // Sugarcane / Oos (ऊस)
+    if (q.includes('sugarcane') || q.includes('ऊस') || q.includes('oos')) {
+      return isMr
+        ? `🎋 **ऊस सुधारित लागवड व खत नियोजन:**\n\n` +
+          `1. **वाण:** को-८६०३२ (निरा), कोएम-०२६५ (फुले २६५).\n` +
+          `2. **लागवड अंतर:** मध्यम ते भारी जमिनीत ४.५ ते ५ फूट पट्टा पद्धत वापरा.\n` +
+          `3. **मोठी बांधणी (Earthing Up):** लागवडीनंतर १०० ते १२० दिवसांनी १०:२६:२६ (२ पोती) + युरिया (१ पोते) + पोटॅश (१ पोते) देऊन मातीची भर लावा.\n` +
+          `4. **पाचट आच्छादन:** उसाचे पाचट शेतात ठेवल्याने पाण्याचे ५०% बाष्पीभवन थांबते व सेंद्रिय कर्ब वाढतो.`
+        : `🎋 **Sugarcane Advanced Planting & Nutrition Schedule:**\n\n` +
+          `1. **Recommended Varieties:** Co-86032 (Nira), CoM-0265 (Phule 265).\n` +
+          `2. **Row Spacing:** 4.5 to 5.0 ft wide furrows for maximum sunlight and mechanized weeding.\n` +
+          `3. **Earthing Up (100-120 Days):** Apply 10:26:26 (100kg) + Urea (50kg) + MOP (50kg) per acre before earthing up.\n` +
+          `4. **Trash Mulching:** Retain dry sugarcane trash on soil surface to conserve 50% soil moisture and build organic carbon.`;
+    }
+
+    // C. Crop Specific Queries from Database (Turmeric, Banana, Soybean, Cotton, Chickpea, Jowar, Onion, Cabbage)
     for (const crop of crops) {
       const cId = crop.id || '';
       const cMr = (crop.name_mr || '').toLowerCase();
@@ -873,6 +980,8 @@ Respond strictly in English with these 4 clear points:
           (cId === 'banana' && (q.includes('केळी') || q.includes('banana'))) ||
           (cId === 'soybean' && (q.includes('सोयाबीन') || q.includes('soybean'))) ||
           (cId === 'cotton' && (q.includes('कापूस') || q.includes('cotton'))) ||
+          (cId === 'onion' && (q.includes('कांदा') || q.includes('onion'))) ||
+          (cId === 'pigeon_pea' && (q.includes('तूर') || q.includes('arhar') || q.includes('pigeon pea'))) ||
           (cId === 'chickpea' && (q.includes('हरभरा') || q.includes('chickpea') || q.includes('चना')))) {
 
         // If asking for fertilizer/spray for this crop
@@ -898,10 +1007,74 @@ Respond strictly in English with these 4 clear points:
             ? `🚨 **${crop.name_mr} — प्रमुख कीड-रोग व तातडीचे उपाय:**\n\n${remedies}`
             : `🚨 **${crop.name_en || crop.name_mr} — Key Pests & Rapid Remedies:**\n\n${remedies}`;
         }
+
+        // General planting / overview of this DB crop
+        if (q.includes('plant') || q.includes('लागवड') || q.includes('पेरणी') || q.includes('spacing') || q.includes('अंतर')) {
+          return isMr
+            ? `🌱 **${crop.name_mr} — लागवड तंत्र व अंतर:**\n\n` +
+              `• **लागवड पद्धत:** ${crop.sowing_method_mr || 'सुधारित गादी वाफा / टोकण पद्धत'}\n` +
+              `• **कालावधी:** ${crop.duration_days || '120-150'} दिवस\n` +
+              `• **अपेक्षित उत्पादन:** ${crop.expected_yield_range || 'दर्जेदार उत्पादन'}\n` +
+              `• **पाणी व्यवस्थापन:** ठिबक सिंचनाचा वापर करून वाफसा स्थितीत पाणी द्यावे.`
+            : `🌱 **${crop.name_en || crop.name_mr} — Sowing & Cultivation Guidelines:**\n\n` +
+              `• **Sowing Method:** ${crop.sowing_method_en || 'Raised bed / BBF token system'}\n` +
+              `• **Crop Duration:** ${crop.duration_days || '120-150'} days\n` +
+              `• **Expected Yield:** ${crop.expected_yield_range || 'High commercial yield'}\n` +
+              `• **Irrigation:** Maintain field capacity using inline drip fertigation.`;
+        }
       }
     }
 
-    // C. Government Schemes & Subsidies (ठिबक, शेततळे, पीएम किसान, योजना)
+    // D. Flower Drop & Fruit Setting (फुलगळ, सेटिंग, फळगळ, flower drop)
+    if (q.includes('फुलगळ') || q.includes('फळगळ') || q.includes('सेटिंग') || q.includes('flower drop') || q.includes('fruit drop') || q.includes('flowering')) {
+      return isMr
+        ? `🌸 **फुलगळ व फळगळ प्रतिबंधक फवारणी फॉर्म्युला:**\n\n` +
+          `1. **प्लॅनोफिक्स (Planofix):** ४ मिली प्रति १५L पंप (प्रमाण जास्त करू नका).\n` +
+          `2. **बोरॉन २०% (Boron):** २० ग्रॅम प्रति १५L पंप (फुलांचे फळात रूपांतर होण्यासाठी).\n` +
+          `3. **००:५२:३४ (Mono Potassium Phosphate):** ७५ ग्रॅम प्रति १५L पंप.\n` +
+          `4. **इसाबियन किंवा सिंजेंटा क्वांटिस:** ३० मिली प्रति पंप (टॉनिक म्हणून).\n` +
+          `💡 *टीप:* फुलधारणेच्या अवस्थेत पिकाला पाण्याचा ताण किंवा अतिरिक्त पाणी बसू देऊ नका.`
+        : `🌸 **Flower Drop Prevention & Fruit Setting Formula:**\n\n` +
+          `1. **Planofix (Alpha NAA):** 4 ml per 15L spray pump (Do not overdose).\n` +
+          `2. **Chelated Boron 20%:** 20g per 15L pump (Ensures efficient pollen germination & fruit set).\n` +
+          `3. **00:52:34 (MKP):** 75g per 15L pump.\n` +
+          `4. **Biostimulant (Isabion / Quantis):** 30ml per 15L pump.\n` +
+          `💡 *Tip:* Maintain uniform soil moisture; avoid severe water stress or over-irrigation during bloom.`;
+    }
+
+    // E. Organic Farming & Jeevamrut (सेंद्रिय शेती, जीवामृत, दशपर्णी)
+    if (q.includes('जीवामृत') || q.includes('सेंद्रिय') || q.includes('organic') || q.includes('jeevamrut') || q.includes('दशपर्णी') || q.includes('dashaparni')) {
+      return isMr
+        ? `🌿 **सेंद्रिय शेती — देशी गाईचे जीवामृत तयार करण्याची सोपी पद्धत:**\n\n` +
+          `• **साहित्य (१ एकरासाठी २००L बॅरलमध्ये):**\n` +
+          `  - १० किलो ताजे देशी गाईचे शेण + १० लिटर गोमूत्र\n` +
+          `  - २ किलो काळा गूळ + २ किलो बेसण (डाळीचे पीठ)\n` +
+          `  - मूठभर बांधाची / वडाच्या झाडाखालील जिवाणूयुक्त माती\n` +
+          `• **कृती:** २०० लिटर पाण्यात सर्व घटक एकत्र मिसळा. सावलीत ठेवून दररोज सकाळी व संध्याकाळी लाकडी काठीने घड्याळाच्या दिशेने २ मिनिटे ढवळा. ४ ते ६ दिवसांत जीवामृत तयार होते.\n` +
+          `• **वापर:** ठिबकद्वारे किंवा पाटाच्या पाण्यातून एका एकरासाठी २०० लिटर सोडा.`
+        : `🌿 **Organic Farming — Homemade Jeevamrut Preparation:**\n\n` +
+          `• **Ingredients (For 1 Acre in 200L Drum):**\n` +
+          `  - 10 kg fresh indigenous cow dung + 10 Litres cow urine\n` +
+          `  - 2 kg organic jaggery + 2 kg gram flour (Besan)\n` +
+          `  - Handful of fertile farm bund soil (rich in native microbes)\n` +
+          `• **Method:** Mix thoroughly in 200L clean water under shade. Stir clockwise for 2 minutes every morning and evening. Ferments in 4 to 6 days.\n` +
+          `• **Application:** Apply 200 Litres per acre via drip irrigation or flood water channel every 15-21 days.`;
+    }
+
+    // F. Yellowing of Leaves (पाने पिवळी पडणे, yellow leaves)
+    if (q.includes('पिवळी') || q.includes('yellow') || q.includes('chlorosis')) {
+      return isMr
+        ? `🍂 **झाडांची पाने पिवळी पडण्याची कारणे व उपाय:**\n\n` +
+          `1. **लोहाची (Iron) कमतरता (शेंड्याची पाने पिवळी पण शिरा हिरव्या):** चिलेटेड फेरस (Fe-EDTA १२%) १५ ग्रॅम प्रति १५L पंप फवारा किंवा फेरस सल्फेट ५ किलो/एकर ठिबकमधून द्या.\n` +
+          `2. **नत्राची (Nitrogen) कमतरता (खालची जुनी पाने पिवळी):** १९:१९:१९ १०० ग्रॅम फवारा किंवा युरिया द्या.\n` +
+          `3. **अतिरिक्त पाणी/दलदल:** मुळांना हवा न मिळाल्याने पाने पिवळी पडतात. पाणी देणे त्वरित थांबवा व वाफसा स्थिती आणा.`
+        : `🍂 **Causes and Remedies for Yellowing Leaves:**\n\n` +
+          `1. **Iron Chlorosis (Young top leaves turn yellow while veins remain green):** Spray Chelated Iron (Fe-EDTA 12%) @ 15g per 15L pump or apply Ferrous Sulphate (5 kg/acre) through drip.\n` +
+          `2. **Nitrogen Deficiency (Older bottom leaves turn pale yellow):** Foliar spray of 19:19:19 (100g/15L pump) or light top-dressing of Urea.\n` +
+          `3. **Waterlogging:** Excessive water asphyxiates root respiration. Pause irrigation immediately until proper aeration (Vapsa) is restored.`;
+    }
+
+    // G. Government Schemes & Subsidies (ठिबक, शेततळे, पीएम किसान, योजना)
     if (q.includes('योजना') || q.includes('अनुदान') || q.includes('ठिबक') || q.includes('शेततळे') || q.includes('subsidy') || q.includes('scheme') || q.includes('drip') || q.includes('pm kisan')) {
       if (q.includes('ठिबक') || q.includes('drip')) {
         return isMr
@@ -913,31 +1086,46 @@ Respond strictly in English with these 4 clear points:
         : `🏛️ **Major Government Agriculture Schemes:**\n\n1. **Drip Irrigation Subsidy:** Up to 80% on micro-irrigation systems.\n2. **Farm Pond Scheme:** Financial assistance up to ₹75,000.\n3. **PM-Kisan & Namo Shetkari:** ₹12,000 total annual income support.\n4. **Apply via:** mahadbt.maharashtra.gov.in`;
     }
 
-    // D. Mandi / Market Rates (बाजारभाव, भाव, दर, market, price, rate)
+    // H. Mandi / Market Rates (बाजारभाव, भाव, दर, market, price, rate)
     if (q.includes('बाजारभाव') || q.includes('भाव') || q.includes('दर') || q.includes('price') || q.includes('rate') || q.includes('mandi') || q.includes('market')) {
       return isMr
         ? `📊 **नांदेड व मराठवाडा चालू बाजारभाव अंदाज (प्रति क्विंटल):**\n\n• **हळद (Turmeric):** ₹१२,५०० - ₹१६,२००\n• **सोयाबीन (Soybean):** ₹४,२०० - ₹४,७५०\n• **कापूस (Cotton):** ₹६,८०० - ₹७,४००\n• **हरभरा (Gram):** ₹५,५०० - ₹६,१००\n• **केळी (Banana):** ₹१,४०० - ₹१,८५०\n\n💡 *टीप:* बाजारात चांगला भाव मिळवण्यासाठी शेतमाल प्रतवारी (Grading) करून विका.`
         : `📊 **Nanded APMC Mandi Price Overview (Per Quintal):**\n\n• **Turmeric:** ₹12,500 - ₹16,200\n• **Soybean:** ₹4,200 - ₹4,750\n• **Cotton:** ₹6,800 - ₹7,400\n• **Gram (Chana):** ₹5,500 - ₹6,100\n• **Banana:** ₹1,400 - ₹1,850\n\n💡 *Tip:* Grade your produce properly before bringing to mandi for premium prices.`;
     }
 
-    // E. General Spray & Fertilizer Rule of Thumb
+    // I. General Sowing / Planting questions
+    if (q.includes('plant') || q.includes('sow') || q.includes('grow') || q.includes('लागवड') || q.includes('पेरणी')) {
+      return isMr
+        ? `🌱 **आधुनिक पीक लागवड व पेरणी मार्गदर्शक सूत्र:**\n\n` +
+          `1. **जमीन तयार करणे:** खोल नांगरट करून ५ टन चांगले कुजलेले शेणखत मिसळा.\n` +
+          `2. **बीजप्रक्रिया:** बियाण्याला ट्रायकोडर्मा (५ ग्रॅम/किलो) + रायझोबियम/PSB (२५ ग्रॅम/किलो) चोळावे.\n` +
+          `3. **गादी वाफा (BBF):** गादी वाफ्यावर लागवड केल्याने मुळांना भरपूर हवा मिळते व उत्पादनात २५% वाढ होते.\n` +
+          `4. **मल्चिंग व ठिबक:** भाजीपाला व फळपिकांसाठी सिल्व्हर-ब्लॅक मल्चिंग व ठिबक सिंचनाचा वापर करा.`
+        : `🌱 **Modern Planting & Crop Sowing Golden Rules:**\n\n` +
+          `1. **Land Preparation:** Deep ploughing followed by rotavator, incorporating 5 tonnes well-decomposed FYM/compost per acre.\n` +
+          `2. **Seed / Seedling Treatment:** Treat seeds with *Trichoderma viride* (5g/kg) + Rhizobium/PSB (25g/kg) before sowing.\n` +
+          `3. **Broad Bed Furrow (BBF) / Raised Beds:** Raised beds ensure superior root aeration, eliminate waterlogging, and boost yield by 20-30%.\n` +
+          `4. **Drip Fertigation & Mulching:** Use inline drip with silver-black mulch for vegetable and commercial crops to save 50% water and stop weeds.`;
+    }
+
+    // J. General Spray & Fertilizer Rule of Thumb
     if (q.includes('खत') || q.includes('फवारणी') || q.includes('टॉनिक') || q.includes('fertilizer') || q.includes('spray') || q.includes('tonic')) {
       return isMr
         ? `🧪 **सर्वसाधारण फवारणी व खत मार्गदर्शक सूत्र:**\n\n1. **वाढीची अवस्था (१५-३० दिवस):** १९:१९:१९ (१०० ग्रॅम) + अलिका (१५ मिली) प्रति १५L पंप.\n2. **फुलधारणा अवस्था (४०-५५ दिवस):** १२:६१:०० (१०० ग्रॅम) किंवा ००:५२:३४ + बोरॉन (२० ग्रॅम).\n3. **कंद/दाणे फुगवण अवस्था:** ००:००:५० (१०० ग्रॅम) + पोटॅशियम शोनाईट.\n4. **टीप:** फवारणी नेहमी सकाळी ९ ते ११ किंवा दुपारी ४ नंतरच करावी.`
         : `🧪 **Standard Crop Spray & Nutrition Formula:**\n\n1. **Vegetative Stage (15-30 days):** 19:19:19 (100g) + Alika (15ml) per 15L pump.\n2. **Flowering Stage (40-55 days):** 12:61:00 (100g) or 00:52:34 + Boron (20g).\n3. **Fruiting/Bulb Stage:** 00:00:50 (100g) for premium weight and shine.\n4. **Tip:** Spray during cool morning hours (9-11 AM) or late afternoon.`;
     }
 
-    // F. Seed Varieties (वाण, बियाणे, varieties)
+    // K. Seed Varieties (वाण, बियाणे, varieties)
     if (q.includes('वाण') || q.includes('बियाणे') || q.includes('variety') || q.includes('seed')) {
       return isMr
-        ? `🌾 **नांदेड व मराठवाड्यासाठी सर्वोत्तम शिफारसीत वाण:**\n\n• **सोयाबीन:** फुले संगम (KDS-726), फुले किमया, जेएस-335\n• **हळद:** सेलम, फुले स्वरूपा, राजापुरी\n• **कापूस:** अजित-155, राशी-659, कावेरी मनीमेकर\n• **हरभरा:** दिग्विजय, फुले विक्रम, जाकी 9218\n• **केळी:** ग्रँड नैन (G-9)`
-        : `🌾 **Top Recommended Varieties for Marathwada Region:**\n\n• **Soybean:** Phule Sangam (KDS-726), Phule Kimaya, JS-335\n• **Turmeric:** Salem, Phule Swaroopa, Rajapuri\n• **Cotton:** Ajeet-155, Rasi-659\n• **Gram (Chana):** Digvijay, Phule Vikram, JAKI 9218\n• **Banana:** Grand Naine (G-9)`;
+        ? `🌾 **नांदेड व मराठवाड्यासाठी सर्वोत्तम शिफारसीत वाण:**\n\n• **सोयाबीन:** फुले संगम (KDS-726), फुले किमया, जेएस-335\n• **हळद:** सेलम, फुले स्वरूपा, राजापुरी\n• **कापूस:** अजित-155, राशी-659, कावेरी मनीमेकर\n• **हरभरा:** दिग्विजय, फुले विक्रम, जाकी 9218\n• **केळी:** ग्रँड नैन (G-9)\n• **टोमॅटो:** सिजेंटा अभिनव, US-440, आर्यमान`
+        : `🌾 **Top Recommended Varieties for Marathwada Region:**\n\n• **Soybean:** Phule Sangam (KDS-726), Phule Kimaya, JS-335\n• **Turmeric:** Salem, Phule Swaroopa, Rajapuri\n• **Cotton:** Ajeet-155, Rasi-659\n• **Gram (Chana):** Digvijay, Phule Vikram, JAKI 9218\n• **Banana:** Grand Naine (G-9)\n• **Tomato:** Syngenta Abhinav, US-440, Aryaman`;
     }
 
     // Default friendly response
     return isMr
-      ? `🌾 **छाया — शेती सल्लागार:**\n\nआपण विचारलेला प्रश्न समजला. आपल्या शेतात दर्जेदार उत्पादन मिळवण्यासाठी गादी वाफा पद्धत (BBF) आणि ठिबक सिंचनाचा वापर करा. आपण हळद, केळी, सोयाबीन, कापूस, खत नियोजन, कीड नियंत्रण किंवा बाजारभावाबद्दल विशिष्ट प्रश्न विचारू शकता.`
-      : `🌾 **Chaya — Farm Advisor:**\n\nFor top crop productivity, adopt Broad Bed Furrow (BBF) with drip fertigation and maintain balanced NPK nutrition. Feel free to ask specific questions about crop disease, fertilizer doses, spray schedules, seeds, or live mandi prices.`;
+      ? `🌾 **छाया — शेती सल्लागार:**\n\nआपण विचारलेला प्रश्न समजला. आपल्या शेतात दर्जेदार उत्पादन मिळवण्यासाठी गादी वाफा पद्धत (BBF) आणि ठिबक सिंचनाचा वापर करा. आपण टोमॅटो, हळद, केळी, सोयाबीन, कापूस, खत नियोजन, कीड नियंत्रण किंवा बाजारभावाबद्दल विशिष्ट प्रश्न विचारू शकता.`
+      : `🌾 **Chaya — Farm Advisor:**\n\nFor top crop productivity, adopt Broad Bed Furrow (BBF) with drip fertigation and maintain balanced NPK nutrition. Feel free to ask specific questions about tomato cultivation, turmeric, banana, crop disease, fertilizer doses, spray schedules, seeds, or live mandi prices.`;
   }
 }
 
