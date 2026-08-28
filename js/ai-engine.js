@@ -244,13 +244,13 @@ class ChayaAIEngine {
         usedElevenLabs = true;
         return;
       } else {
-        // Capture the REAL reason (invalid key, quota exceeded, bad voice id, etc.)
+        // Capture notice and smoothly fallback to browser voice
         let bodyJson = null;
         try { bodyJson = await response.json(); } catch (_) {}
         this.lastTtsErrorDetail = bodyJson
           ? `[${response.status}] ${bodyJson.error || ''} ${bodyJson.detail || ''}`.trim()
           : `[${response.status}] backend returned no audio`;
-        console.error('[Chaya TTS] Backend proxy did not return audio:', this.lastTtsErrorDetail);
+        console.warn('[Chaya TTS] Backend audio unavailable, using browser speech synthesis fallback:', this.lastTtsErrorDetail);
       }
     } catch (e) {
       this.lastTtsErrorDetail = `network_error: ${e.message}`;

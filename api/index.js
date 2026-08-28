@@ -194,7 +194,9 @@ async function handleTts(req, res) {
   }
 
   const apiKey = process.env.ELEVENLABS_API_KEY;
-  const voiceId = process.env.ELEVENLABS_VOICE_ID || 'k2intd1ORm0YUH8etnXg';
+  // Default to standard premade voice '21m00Tcm4TlvDq8ikWAM' (Rachel) which works on all free and paid tiers
+  const primaryVoiceId = process.env.ELEVENLABS_VOICE_ID || '21m00Tcm4TlvDq8ikWAM';
+  const STANDARD_PREMADE_VOICE = '21m00Tcm4TlvDq8ikWAM';
 
   if (!apiKey) {
     return res.status(200).json({ error: 'not_configured', detail: 'ELEVENLABS_API_KEY is not configured.' });
@@ -207,9 +209,8 @@ async function handleTts(req, res) {
     return res.status(400).json({ error: 'missing_text' });
   }
 
-  const endpoint = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`;
-
-  async function callElevenLabs(modelId) {
+  async function callElevenLabs(targetVoiceId, modelId) {
+    const endpoint = `https://api.elevenlabs.io/v1/text-to-speech/${targetVoiceId}`;
     return fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -225,23 +226,34 @@ async function handleTts(req, res) {
   }
 
   try {
-    let response = await callElevenLabs('eleven_v3');
-    let usedModel = 'eleven_v3';
+    // Attempt 1: primary voice with eleven_multilingual_v2 (best for Indic/Marathi & English)
+    let usedModel = 'eleven_multilingual_v2';
+    let response = await callElevenLabs(primaryVoiceId, usedModel);
 
-    if (!response.ok && (response.status === 400 || response.status === 401 || response.status === 403)) {
-      response = await callElevenLabs('eleven_multilingual_v2');
-      usedModel = 'eleven_multilingual_v2';
+    // If 402 (paid plan required for library voice) or 404/400 and custom voice was used, retry with standard premade voice
+    if (!response.ok && (response.status === 402 || response.status === 400 || response.status === 404 || response.status === 422)) {
+      if (primaryVoiceId !== STANDARD_PREMADE_VOICE) {
+        console.warn(`ElevenLabs voice ${primaryVoiceId} returned ${response.status}. Retrying with premade voice ${STANDARD_PREMADE_VOICE}...`);
+        response = await callElevenLabs(STANDARD_PREMADE_VOICE, 'eleven_multilingual_v2');
+      }
+    }
+
+    // Attempt fallback with eleven_v3 if multilingual failed on 400
+    if (!response.ok && (response.status === 400 || response.status === 404)) {
+      response = await callElevenLabs(STANDARD_PREMADE_VOICE, 'eleven_v3');
+      usedModel = 'eleven_v3';
     }
 
     if (!response.ok) {
       let detail = '';
       try { detail = await response.text(); } catch (_) {}
-      console.error(`ElevenLabs error ${response.status} (model: ${usedModel}):`, detail);
-      return res.status(502).json({
+      console.warn(`ElevenLabs notice ${response.status} (model: ${usedModel}):`, detail.slice(0, 300));
+      return res.status(200).json({
         error: 'elevenlabs_request_failed',
         status: response.status,
         model: usedModel,
-        detail: detail.slice(0, 500)
+        fallback_to_browser: true,
+        detail: detail.slice(0, 300)
       });
     }
 
@@ -253,7 +265,7 @@ async function handleTts(req, res) {
     res.setHeader('X-Chaya-TTS-Model', usedModel);
     return res.status(200).send(buffer);
   } catch (e) {
-    console.error('TTS proxy error:', e.message);
-    return res.status(500).json({ error: 'tts_failed', detail: e.message });
+    console.warn('TTS proxy notice:', e.message);
+    return res.status(200).json({ error: 'tts_failed', fallback_to_browser: true, detail: e.message });
   }
 }
