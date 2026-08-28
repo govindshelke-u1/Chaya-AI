@@ -435,15 +435,15 @@ class ChayaAIEngine {
     };
   }
 
-  getPrecisionSoilHealthAnalysis(userInput) {
-    const talukaProfile = this.getTalukaProfile(userInput.taluka);
+  getPrecisionSoilHealthAnalysis(userInput = {}) {
+    const talukaProfile = this.getTalukaProfile(userInput?.taluka);
     
     // Parse user inputs or fall back to taluka defaults
-    const hasCustomN = Boolean(userInput.nutrientN && !isNaN(parseFloat(userInput.nutrientN)));
-    const hasCustomP = Boolean(userInput.nutrientP && !isNaN(parseFloat(userInput.nutrientP)));
-    const hasCustomK = Boolean(userInput.nutrientK && !isNaN(parseFloat(userInput.nutrientK)));
-    const hasCustomPh = Boolean(userInput.soilPh && !isNaN(parseFloat(userInput.soilPh)));
-    const hasCustomOc = Boolean(userInput.organicCarbon && !isNaN(parseFloat(userInput.organicCarbon)));
+    const hasCustomN = Boolean(userInput?.nutrientN && !isNaN(parseFloat(userInput.nutrientN)));
+    const hasCustomP = Boolean(userInput?.nutrientP && !isNaN(parseFloat(userInput.nutrientP)));
+    const hasCustomK = Boolean(userInput?.nutrientK && !isNaN(parseFloat(userInput.nutrientK)));
+    const hasCustomPh = Boolean(userInput?.soilPh && !isNaN(parseFloat(userInput.soilPh)));
+    const hasCustomOc = Boolean(userInput?.organicCarbon && !isNaN(parseFloat(userInput.organicCarbon)));
 
     const userN = hasCustomN ? parseFloat(userInput.nutrientN) : (talukaProfile.n_default || 220);
     const userP = hasCustomP ? parseFloat(userInput.nutrientP) : (talukaProfile.p_default || 17);
@@ -462,6 +462,90 @@ class ChayaAIEngine {
     // pH: <6.5 Acidic, 6.5-7.8 Optimal, >7.8 Alkaline
     const phRating = userPh < 6.5 ? 'acidic' : (userPh <= 7.8 ? 'optimal' : 'alkaline');
 
+    const ratings = {
+      n: {
+        val: userN,
+        rating: nRating,
+        mr: nRating === 'low' ? 'कमी (Deficit)' : (nRating === 'high' ? 'मुबलक (High)' : 'मध्यम (Medium)'),
+        en: nRating === 'low' ? 'Low (Deficit)' : (nRating === 'high' ? 'High' : 'Medium (Optimal)')
+      },
+      p: {
+        val: userP,
+        rating: pRating,
+        mr: pRating === 'low' ? 'कमी (Deficit)' : (pRating === 'high' ? 'मुबलक (High)' : 'मध्यम (Medium)'),
+        en: pRating === 'low' ? 'Low (Deficit)' : (pRating === 'high' ? 'High' : 'Medium (Optimal)')
+      },
+      k: {
+        val: userK,
+        rating: kRating,
+        mr: kRating === 'low' ? 'कमी (Deficit)' : (kRating === 'high' ? 'मुबलक (Rich)' : 'मध्यम (Medium)'),
+        en: kRating === 'low' ? 'Low (Deficit)' : (kRating === 'high' ? 'High (Rich)' : 'Medium (Optimal)')
+      },
+      ph: {
+        val: userPh,
+        rating: phRating,
+        mr: phRating === 'acidic' ? 'आम्लधर्मी (Acidic)' : (phRating === 'alkaline' ? 'अल्कलाईन/चुनखडी (Alkaline)' : 'उत्कृष्ट सामू (Optimal)'),
+        en: phRating === 'acidic' ? 'Acidic' : (phRating === 'alkaline' ? 'Alkaline' : 'Optimal')
+      }
+    };
+
+    const fertilizerAdjustments = {
+      n_mr: nRating === 'low' 
+        ? 'नत्र (N) कमतरता: बेसल डोसमध्ये 25 kg युरिया किंवा 50 kg DAP वाढवा व पेरणीवेळी अझोटोबॅक्टर जिवाणू वापरा.'
+        : (nRating === 'high' 
+            ? 'नत्र (N) मुबलक: रासायनिक युरियाचा मारा 25% कमी करा, अन्यथा रसशोषक कीड व पानावरील बुरशी वाढू शकते.' 
+            : 'नत्र (N) संतुलित: शिफारशीनुसार विभागून (Split Doses) खत द्या.'),
+      n_en: nRating === 'low'
+        ? 'Nitrogen Deficit: Increase basal DAP/Urea by 20% and inoculate seeds with Azotobacter biofertilizer.'
+        : (nRating === 'high'
+            ? 'Nitrogen Surplus: Reduce synthetic Urea by 25% to prevent succulent vegetative growth and sucking pest surges.'
+            : 'Nitrogen Balanced: Apply standard nitrogen doses in 2-3 split stages.'),
+      p_mr: pRating === 'low'
+        ? 'स्फुरद (P) कमतरता: बेसल डोसमध्ये 50-100 kg सिंगल सुपर फॉस्फेट (SSP) + 2 kg PSB जिवाणू संवर्धक वापरा.'
+        : (pRating === 'high'
+            ? 'स्फुरद (P) पुरेसे: अतिरिक्त 12:61:00 चा अनावश्यक खर्च टाळून बचत करा.'
+            : 'स्फुरद (P) समाधानकारक: मुळांची जोमदार वाढ व फुटवे फुटण्यासाठी अनुकूल.'),
+      p_en: pRating === 'low'
+        ? 'Phosphorus Deficit: Apply Single Super Phosphate (SSP 100 kg/acre) + PSB biofertilizer during seedbed preparation.'
+        : (pRating === 'high'
+            ? 'Phosphorus Rich: Avoid redundant water-soluble 12:61:00 applications to save input expenses.'
+            : 'Phosphorus Optimal: Ensures vigorous early root establishment and strong tiller growth.'),
+      k_mr: kRating === 'high'
+        ? 'पालाश (K) मुबलक: जमिनीत नैसर्गिक पालाश भरपूर असल्याने अतिरिक्त 00:00:50 वर होणारा ₹1,200/एकर खर्च वाचवा!'
+        : (kRating === 'low'
+            ? 'पालाश (K) कमतरता: फळ/कंद फुगवणीच्या काळात MOP (म्युरेट ऑफ पोटॅश) किंवा 00:00:50 ची आळवणी अवश्य करा.'
+            : 'पालाश (K) मध्यम: पिकाची रोगप्रतिकारशक्ती व दाण्यांच्या वजनासाठी ठिबकद्वारे नियमित मात्रा द्या.'),
+      k_en: kRating === 'high'
+        ? 'Potassium Rich: High native soil Potash saves ~₹1,200/acre by eliminating unnecessary 00:00:50 foliar sprays!'
+        : (kRating === 'low'
+            ? 'Potassium Deficit: Supply Muriate of Potash (MOP) or drip 00:00:50 during fruit/tuber bulking stage.'
+            : 'Potassium Medium: Maintain steady potassium fertigation for optimal grain filling and disease resistance.'),
+      ph_mr: phRating === 'alkaline'
+        ? 'जमीन चुनखडीयुक्त/अल्कलाईन (pH > 7.8): एकरी 50 kg सल्फर (गंधक) वापरा आणि सूक्ष्म अन्नद्रव्ये चिलेटेड स्वरूपात फवारा.'
+        : (phRating === 'acidic'
+            ? 'जमीन आम्लधर्मी (pH < 6.5): पेरणीपूर्व शेतात एकरी 100 kg कृषी चुना (Agricultural Lime) मिसळा.'
+            : 'सामू (pH) आदर्श (6.5 - 7.8): अन्नद्रव्यांचे शोषण मुळांद्वारे वेगाने होते.'),
+      ph_en: phRating === 'alkaline'
+        ? 'Alkaline/Calcareous Soil (pH > 7.8): Apply 50 kg agricultural Sulphur/acre and spray chelated micronutrients.'
+        : (phRating === 'acidic'
+            ? 'Acidic Soil (pH < 6.5): Incorporate 100 kg Agricultural Lime per acre before sowing.'
+            : 'Optimal Soil pH (6.5 - 7.8): Peak bioavailability for all essential micro & macronutrients.')
+    };
+
+    const actionableAdvice_mr = [
+      fertilizerAdjustments.n_mr,
+      fertilizerAdjustments.p_mr,
+      fertilizerAdjustments.k_mr,
+      fertilizerAdjustments.ph_mr
+    ];
+
+    const actionableAdvice_en = [
+      fertilizerAdjustments.n_en,
+      fertilizerAdjustments.p_en,
+      fertilizerAdjustments.k_en,
+      fertilizerAdjustments.ph_en
+    ];
+
     return {
       isCustomInput,
       hasCustomN,
@@ -469,53 +553,15 @@ class ChayaAIEngine {
       hasCustomK,
       hasCustomPh,
       hasCustomOc,
-      n: { val: userN, rating: nRating, unit: 'kg/ha' },
-      p: { val: userP, rating: pRating, unit: 'kg/ha' },
-      k: { val: userK, rating: kRating, unit: 'kg/ha' },
-      ph: { val: userPh, rating: phRating },
-      oc: { val: userOc, unit: '%' },
-      fertilizerAdjustments: {
-        n_mr: nRating === 'low' 
-          ? 'नत्र (N) कमतरता: बेसल डोसमध्ये 25 kg युरिया किंवा 50 kg DAP वाढवा व पेरणीवेळी अझोटोबॅक्टर जिवाणू वापरा.'
-          : (nRating === 'high' 
-              ? 'नत्र (N) मुबलक: रासायनिक युरियाचा मारा 25% कमी करा, अन्यथा रसशोषक कीड व पानावरील बुरशी वाढू शकते.' 
-              : 'नत्र (N) संतुलित: शिफारशीनुसार विभागून (Split Doses) खत द्या.'),
-        n_en: nRating === 'low'
-          ? 'Nitrogen Deficit: Increase basal DAP/Urea by 20% and inoculate seeds with Azotobacter biofertilizer.'
-          : (nRating === 'high'
-              ? 'Nitrogen Surplus: Reduce synthetic Urea by 25% to prevent succulent vegetative growth and sucking pest surges.'
-              : 'Nitrogen Balanced: Apply standard nitrogen doses in 2-3 split stages.'),
-        p_mr: pRating === 'low'
-          ? 'स्फुरद (P) कमतरता: बेसल डोसमध्ये 50-100 kg सिंगल सुपर फॉस्फेट (SSP) + 2 kg PSB जिवाणू संवर्धक वापरा.'
-          : (pRating === 'high'
-              ? 'स्फुरद (P) पुरेसे: अतिरिक्त 12:61:00 चा अनावश्यक खर्च टाळून बचत करा.'
-              : 'स्फुरद (P) समाधानकारक: मुळांची जोमदार वाढ व फुटवे फुटण्यासाठी अनुकूल.'),
-        p_en: pRating === 'low'
-          ? 'Phosphorus Deficit: Apply Single Super Phosphate (SSP 100 kg/acre) + PSB biofertilizer during seedbed preparation.'
-          : (pRating === 'high'
-              ? 'Phosphorus Rich: Avoid redundant water-soluble 12:61:00 applications to save input expenses.'
-              : 'Phosphorus Optimal: Ensures vigorous early root establishment and strong tiller growth.'),
-        k_mr: kRating === 'high'
-          ? 'पालाश (K) मुबलक: जमिनीत नैसर्गिक पालाश भरपूर असल्याने अतिरिक्त 00:00:50 वर होणारा ₹1,200/एकर खर्च वाचवा!'
-          : (kRating === 'low'
-              ? 'पालाश (K) कमतरता: फळ/कंद फुगवणीच्या काळात MOP (म्युरेट ऑफ पोटॅश) किंवा 00:00:50 ची आळवणी अवश्य करा.'
-              : 'पालाश (K) मध्यम: पिकाची रोगप्रतिकारशक्ती व दाण्यांच्या वजनासाठी ठिबकद्वारे नियमित मात्रा द्या.'),
-        k_en: kRating === 'high'
-          ? 'Potassium Rich: High native soil Potash saves ~₹1,200/acre by eliminating unnecessary 00:00:50 foliar sprays!'
-          : (kRating === 'low'
-              ? 'Potassium Deficit: Supply Muriate of Potash (MOP) or drip 00:00:50 during fruit/tuber bulking stage.'
-              : 'Potassium Medium: Maintain steady potassium fertigation for optimal grain filling and disease resistance.'),
-        ph_mr: phRating === 'alkaline'
-          ? 'जमीन चुनखडीयुक्त/अल्कलाईन (pH > 7.8): एकरी 50 kg सल्फर (गंधक) वापरा आणि सूक्ष्म अन्नद्रव्ये चिलेटेड स्वरूपात फवारा.'
-          : (phRating === 'acidic'
-              ? 'जमीन आम्लधर्मी (pH < 6.5): पेरणीपूर्व शेतात एकरी 100 kg कृषी चुना (Agricultural Lime) मिसळा.'
-              : 'सामू (pH) आदर्श (6.5 - 7.8): अन्नद्रव्यांचे शोषण मुळांद्वारे वेगाने होते.'),
-        ph_en: phRating === 'alkaline'
-          ? 'Alkaline/Calcareous Soil (pH > 7.8): Apply 50 kg agricultural Sulphur/acre and spray chelated micronutrients.'
-          : (phRating === 'acidic'
-              ? 'Acidic Soil (pH < 6.5): Incorporate 100 kg Agricultural Lime per acre before sowing.'
-              : 'Optimal Soil pH (6.5 - 7.8): Peak bioavailability for all essential micro & macronutrients.')
-      }
+      n: userN,
+      p: userP,
+      k: userK,
+      ph: userPh,
+      oc: userOc,
+      ratings,
+      fertilizerAdjustments,
+      actionableAdvice_mr,
+      actionableAdvice_en
     };
   }
 
@@ -535,18 +581,18 @@ class ChayaAIEngine {
     };
   }
 
-  evaluateCropsOffline(userInput) {
+  evaluateCropsOffline(userInput = {}) {
     const { taluka, soilType, water, land, season } = userInput;
     const landSize = parseFloat(land) || 1;
     const talukaProfile = this.getTalukaProfile(taluka);
     const userSeason = (season || 'kharif').toLowerCase();
 
-    // Check custom NPK inputs
+    // Check custom NPK inputs safely
     const soilHealth = this.getPrecisionSoilHealthAnalysis(userInput);
-    const userN = soilHealth.n.val;
-    const userP = soilHealth.p.val;
-    const userK = soilHealth.k.val;
-    const userPh = soilHealth.ph.val;
+    const userN = typeof soilHealth.n === 'object' ? (soilHealth.n?.val ?? 220) : (soilHealth.n ?? 220);
+    const userP = typeof soilHealth.p === 'object' ? (soilHealth.p?.val ?? 17) : (soilHealth.p ?? 17);
+    const userK = typeof soilHealth.k === 'object' ? (soilHealth.k?.val ?? 320) : (soilHealth.k ?? 320);
+    const userPh = typeof soilHealth.ph === 'object' ? (soilHealth.ph?.val ?? 7.3) : (soilHealth.ph ?? 7.3);
 
     const scoredCrops = (this.knowledgeBase.crops || []).map(crop => {
       let score = 50; // base score
@@ -696,7 +742,15 @@ class ChayaAIEngine {
     const topCrop = topCrops[0] || {};
     const cropName = lang === 'en' ? (topCrop.name_en || topCrop.name_mr) : topCrop.name_mr;
 
-    const npkContext = `N: ${soilHealth.n.val} kg/ha (${soilHealth.n.rating}), P: ${soilHealth.p.val} kg/ha (${soilHealth.p.rating}), K: ${soilHealth.k.val} kg/ha (${soilHealth.k.rating}), pH: ${soilHealth.ph.val}`;
+    const nVal = typeof soilHealth.n === 'object' ? (soilHealth.n?.val ?? 220) : (soilHealth.n ?? 220);
+    const pVal = typeof soilHealth.p === 'object' ? (soilHealth.p?.val ?? 17) : (soilHealth.p ?? 17);
+    const kVal = typeof soilHealth.k === 'object' ? (soilHealth.k?.val ?? 320) : (soilHealth.k ?? 320);
+    const phVal = typeof soilHealth.ph === 'object' ? (soilHealth.ph?.val ?? 7.3) : (soilHealth.ph ?? 7.3);
+    const nRating = soilHealth.ratings?.n?.rating || 'medium';
+    const pRating = soilHealth.ratings?.p?.rating || 'medium';
+    const kRating = soilHealth.ratings?.k?.rating || 'medium';
+
+    const npkContext = `N: ${nVal} kg/ha (${nRating}), P: ${pVal} kg/ha (${pRating}), K: ${kVal} kg/ha (${kRating}), pH: ${phVal}`;
 
     return `
 【📍 Farm Background】: Taluka: ${surveyInfo.taluka_name}, Land: ${userInput.land} Acres, Water: ${userInput.waterText || userInput.water}.

@@ -1137,23 +1137,28 @@
                 // Precision Soil Analysis Box
                 let soilHealthHtml = '';
                 if (window.chayaAI && typeof window.chayaAI.getPrecisionSoilHealthAnalysis === 'function') {
-                    const health = window.chayaAI.getPrecisionSoilHealthAnalysis(farmData);
-                    const nRating = isMr ? health.ratings.n.mr : health.ratings.n.en;
-                    const pRating = isMr ? health.ratings.p.mr : health.ratings.p.en;
-                    const kRating = isMr ? health.ratings.k.mr : health.ratings.k.en;
-                    const phRating = isMr ? health.ratings.ph.mr : health.ratings.ph.en;
+                    const health = window.chayaAI.getPrecisionSoilHealthAnalysis(farmData || {});
+                    const nRating = isMr ? (health?.ratings?.n?.mr || health?.n?.rating || 'मध्यम') : (health?.ratings?.n?.en || health?.n?.rating || 'Medium');
+                    const pRating = isMr ? (health?.ratings?.p?.mr || health?.p?.rating || 'मध्यम') : (health?.ratings?.p?.en || health?.p?.rating || 'Medium');
+                    const kRating = isMr ? (health?.ratings?.k?.mr || health?.k?.rating || 'मध्यम') : (health?.ratings?.k?.en || health?.k?.rating || 'Medium');
+                    const phRating = isMr ? (health?.ratings?.ph?.mr || health?.ph?.rating || 'उत्कृष्ट') : (health?.ratings?.ph?.en || health?.ph?.rating || 'Optimal');
                     
-                    const adviceList = isMr ? health.actionableAdvice_mr : health.actionableAdvice_en;
+                    const nVal = typeof health?.n === 'object' ? (health.n?.val ?? 220) : (health?.n ?? 220);
+                    const pVal = typeof health?.p === 'object' ? (health.p?.val ?? 17) : (health?.p ?? 17);
+                    const kVal = typeof health?.k === 'object' ? (health.k?.val ?? 320) : (health?.k ?? 320);
+                    const phVal = typeof health?.ph === 'object' ? (health.ph?.val ?? 7.3) : (health?.ph ?? 7.3);
+
+                    const adviceList = isMr ? (health?.actionableAdvice_mr || []) : (health?.actionableAdvice_en || []);
                     const adviceItems = adviceList.map(a => `<div class="info-item-sub" style="margin-bottom:4px;">• ${a}</div>`).join('');
 
                     soilHealthHtml = `
                     <div class="info-item" style="background:#f0fdf4; border:1px solid #bbf7d0;">
                         <div class="info-item-title" style="color:#065f46;">🧪 ${isMr ? 'माती परीक्षण अचूक विश्लेषण (Precision Soil Health)' : 'Precision Soil Health Analysis'}</div>
                         <div class="info-item-sub" style="display:flex; flex-wrap:wrap; gap:8px; margin:8px 0;">
-                            <span style="background:white; padding:3px 8px; border-radius:6px; border:1px solid #d1fae5;"><b>N:</b> ${health.n} kg/ha (${nRating})</span>
-                            <span style="background:white; padding:3px 8px; border-radius:6px; border:1px solid #d1fae5;"><b>P:</b> ${health.p} kg/ha (${pRating})</span>
-                            <span style="background:white; padding:3px 8px; border-radius:6px; border:1px solid #d1fae5;"><b>K:</b> ${health.k} kg/ha (${kRating})</span>
-                            <span style="background:white; padding:3px 8px; border-radius:6px; border:1px solid #d1fae5;"><b>pH:</b> ${health.ph} (${phRating})</span>
+                            <span style="background:white; padding:3px 8px; border-radius:6px; border:1px solid #d1fae5;"><b>N:</b> ${nVal} kg/ha (${nRating})</span>
+                            <span style="background:white; padding:3px 8px; border-radius:6px; border:1px solid #d1fae5;"><b>P:</b> ${pVal} kg/ha (${pRating})</span>
+                            <span style="background:white; padding:3px 8px; border-radius:6px; border:1px solid #d1fae5;"><b>K:</b> ${kVal} kg/ha (${kRating})</span>
+                            <span style="background:white; padding:3px 8px; border-radius:6px; border:1px solid #d1fae5;"><b>pH:</b> ${phVal} (${phRating})</span>
                         </div>
                         <div style="font-size:0.84rem; font-weight:700; color:#047857; margin-bottom:4px;">💡 ${isMr ? 'खतांचे तज्ज्ञ ॲडजस्टमेंट:' : 'Custom Fertilizer Adjustment:'}</div>
                         ${adviceItems}
