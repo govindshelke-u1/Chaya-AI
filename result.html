@@ -753,9 +753,6 @@
                 <button class="info-btn" onclick="openInfoModal('disease')">
                     <span class="icon">🐛</span> <span id="btnPestText">Pests & Diseases<br>(Protection Guide)</span>
                 </button>
-                <button class="info-btn" onclick="openInfoModal('steps')">
-                    <span class="icon">📅</span> <span id="btnStepsText">Step-by-Step Schedule<br>(Spray & Irrigation)</span>
-                </button>
             </div>
 
         </div>
@@ -840,7 +837,6 @@
                 btnSchemeText: "Government Schemes<br>(Gov Schemes)",
                 btnFertText: "Fertilizer Schedule<br>(Fertilizer Guide)",
                 btnPestText: "Pests & Diseases<br>(Protection Guide)",
-                btnStepsText: "Step-by-Step Schedule<br>(Spray & Irrigation)",
                 lblMarketSectionTitle: "📊 Nanded District APMC Mandi Rates (₹ per Quintal)",
                 liveRateTag: "🟢 Live APMC Rates",
                 thCommodity: "Crop / Commodity",
@@ -858,9 +854,6 @@
                 modalGovSchemeTitle: "🏛️ Government Schemes",
                 modalFertTitle: "Fertilizer Schedule & Nutrition",
                 modalPestTitle: "Pest & Disease Management",
-                modalStepsTitle: "Stage-by-Stage Spray & Fertilizer Schedule",
-                sprayScheduleTitle: "🎯 Spray Schedule",
-                fertScheduleTitle: "🌱 Fertilizer & Fertigation Doses",
                 noData: "Information not available currently."
             },
             mr: {
@@ -885,7 +878,6 @@
                 btnSchemeText: "सरकारी योजना<br>(Gov Scheme)",
                 btnFertText: "खत व्यवस्थापन<br>(Fertilizer Guide)",
                 btnPestText: "रोग व किडी उपाय<br>(Pests & Diseases)",
-                btnStepsText: "टप्प्याटप्प्याने वेळापत्रक<br>(Step Schedule)",
                 lblMarketSectionTitle: "📊 नांदेड जिल्हा APMC थेट चालू बाजारभाव (₹ प्रति क्विंटल)",
                 liveRateTag: "🟢 APMC थेट दर",
                 thCommodity: "शेती पीक (Commodity)",
@@ -903,9 +895,6 @@
                 modalGovSchemeTitle: "🏛️ सरकारी योजना (Gov Schemes)",
                 modalFertTitle: "खत व्यवस्थापन (Fertilizer Schedule)",
                 modalPestTitle: "रोग व कीड उपाय (Pests & Diseases)",
-                modalStepsTitle: "टप्प्याटप्प्याने फवारणी व खत वेळापत्रक",
-                sprayScheduleTitle: "🎯 फवारणी शेड्युल (Spray Schedule)",
-                fertScheduleTitle: "🌱 खत व ड्रिप वेळापत्रक (Fertilizer Doses)",
                 noData: "माहिती उपलब्ध नाही."
             }
         };
@@ -945,7 +934,6 @@
             document.getElementById("btnSchemeText").innerHTML = t.btnSchemeText;
             document.getElementById("btnFertText").innerHTML = t.btnFertText;
             document.getElementById("btnPestText").innerHTML = t.btnPestText;
-            document.getElementById("btnStepsText").innerHTML = t.btnStepsText;
             document.getElementById("lblMarketSectionTitle").innerText = t.lblMarketSectionTitle;
             document.getElementById("thCommodity").innerText = t.thCommodity;
             document.getElementById("thMarket").innerText = t.thMarket;
@@ -1371,38 +1359,6 @@
                     ${diseaseHtml ? `<div class="info-item-title" style="margin-top:${pestHtml ? '14px' : '0'}; font-size:1.05rem;">🍃 ${isMr ? 'सर्वसामान्य रोग व प्रतिबंधक उपाय' : 'Common Diseases & Preventive Measures'}</div>${diseaseHtml}` : ''}
                     ${(!pestHtml && !diseaseHtml) ? `<div class="info-item-sub">${t.noData}</div>` : ''}
                 `;
-
-            } else if (type === 'steps') {
-                title = `📅 ${cropName} ${t.modalStepsTitle}`;
-                const sprays = crop.stage_spray_schedule || [];
-                const ferts = crop.stage_fertilizer_schedule || [];
-                let stepsHtml = '';
-
-                if (sprays.length > 0) {
-                    stepsHtml += `<div class="info-item-title" style="font-size:1.05rem; margin-bottom:8px;">${t.sprayScheduleTitle}</div>`;
-                    sprays.forEach(s => {
-                        stepsHtml += `
-                            <div class="info-item">
-                                <div class="info-item-title" style="color:#065f46;">🎯 ${s.stage} <span style="font-weight:600; color:#475569;">— ${s.target || (isMr ? 'संरक्षण' : 'Protection')}</span></div>
-                                <div class="info-item-sub"><b>${isMr ? 'फवारणी फॉर्म्युला:' : 'Spray Formula:'}</b> ${s.spray}</div>
-                            </div>
-                        `;
-                    });
-                }
-
-                if (ferts.length > 0) {
-                    stepsHtml += `<div class="info-item-title" style="font-size:1.05rem; margin-top:16px; margin-bottom:8px;">${t.fertScheduleTitle}</div>`;
-                    ferts.forEach(f => {
-                        stepsHtml += `
-                            <div class="info-item">
-                                <div class="info-item-title" style="color:#047857;">🌱 ${f.stage}</div>
-                                <div class="info-item-sub"><b>${isMr ? 'खत मात्रा:' : 'Dose:'}</b> ${f.dose}</div>
-                            </div>
-                        `;
-                    });
-                }
-
-                html = stepsHtml || `<div class="info-item-sub">${t.noData}</div>`;
             }
 
             titleEl.innerHTML = `<span></span> ${title}`;

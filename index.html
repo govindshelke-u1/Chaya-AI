@@ -652,7 +652,7 @@
                 <div class="weather-advice" id="weatherAdvice" style="display:none;"></div>
 
                 <div class="step-progress" id="stepCounter">
-                    पायरी १ / ४
+                    पायरी १ / ३
                 </div>
 
                 <form id="farmForm" onsubmit="submitForm(event)">
@@ -800,7 +800,7 @@
                         </div>
                     </div>
 
-                    <!-- STEP 3: Land Size -->
+                    <!-- STEP 3: Land Size & Submit -->
                     <div class="form-step" id="step3">
                         <div class="form-group">
                             <label for="land">
@@ -814,29 +814,6 @@
                         </div>
                         <div class="step-buttons">
                             <button type="button" class="btn btn-secondary" onclick="prevStep(2)">
-                                <span class="btn-prev-text">⬅️ मागे (Back)</span>
-                            </button>
-                            <button type="button" class="btn" onclick="nextStep(4)">
-                                <span class="btn-next-text">पुढे जा (Next) ➔</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- STEP 4: Question & Submit -->
-                    <div class="form-step" id="step4">
-                        <div class="form-group">
-                            <label for="question">
-                                <span id="lblQuestion">४. छाया AI ला विचारा किंवा लक्षणे सांगा:</span>
-                                <span class="label-hint" id="lblQuestionHint">बोलण्यासाठी 🎤 आयकॉन दाबा किंवा लिहा</span>
-                            </label>
-                            <div class="input-mic-wrapper">
-                                <textarea id="question" rows="6" placeholder="उदा. हळदीवर करपा पडला आहे, किंवा सर्वोत्तम खत कोणते?"></textarea>
-                                <button type="button" id="voiceBtn" class="mic-btn-field" title="मराठीत बोला" onclick="recordVoiceQuery()">🎤</button>
-                            </div>
-                        </div>
-
-                        <div class="step-buttons">
-                            <button type="button" class="btn btn-secondary" onclick="prevStep(3)">
                                 <span class="btn-prev-text">⬅️ मागे (Back)</span>
                             </button>
                             <button type="submit" class="btn">
@@ -898,9 +875,6 @@
                 landLabel: "३. एकूण क्षेत्रफळ (Land Size):",
                 landHint: "उत्पादन व खर्च गणित यावर आधारित असेल",
                 unitAcres: "एकर",
-                questionLabel: "४. Chaya AI ला विचारा किंवा लक्षणे सांगा:",
-                questionHint: "बोलण्यासाठी 🎤 आयकॉन दाबा किंवा लिहा",
-                qPlaceholder: "उदा. हळदीवर करपा पडला आहे, किंवा सर्वोत्तम खत कोणते?",
                 btnNext: "पुढे जा (Next) ➔",
                 btnPrev: "⬅️ मागे (Back)",
                 btnSubmit: "🤖 सल्ला घ्या (Analyze & Recommend) ➔",
@@ -925,8 +899,7 @@
                 placeholderN: "उदा. 210",
                 placeholderP: "उदा. 18",
                 placeholderK: "उदा. 340",
-                placeholderPh: "उदा. 7.3",
-                micPrompt: "मराठीत बोला"
+                placeholderPh: "उदा. 7.3"
             },
             en: {
                 brandTitle: "Chaya AI",
@@ -966,9 +939,6 @@
                 landLabel: "3. Total Land Area:",
                 landHint: "Used for calculating yield & cost estimates",
                 unitAcres: "Acres",
-                questionLabel: "4. Ask Chaya AI or Describe Symptoms:",
-                questionHint: "Tap 🎤 to speak or type your question",
-                qPlaceholder: "e.g., Turmeric leaf spot disease, or best fertilizer dosage?",
                 btnNext: "Next Step ➔",
                 btnPrev: "⬅️ Back",
                 btnSubmit: "🤖 Get Recommendation ➔",
@@ -993,8 +963,7 @@
                 placeholderN: "e.g. 210",
                 placeholderP: "e.g. 18",
                 placeholderK: "e.g. 340",
-                placeholderPh: "e.g. 7.3",
-                micPrompt: "Tap to speak in English"
+                placeholderPh: "e.g. 7.3"
             }
         };
 
@@ -1060,10 +1029,6 @@
             document.getElementById("lblLand").innerText = t.landLabel;
             document.getElementById("lblLandHint").innerText = t.landHint;
             document.getElementById("unitAcres").innerText = t.unitAcres;
-            document.getElementById("lblQuestion").innerText = t.questionLabel;
-            document.getElementById("lblQuestionHint").innerText = t.questionHint;
-            document.getElementById("question").placeholder = t.qPlaceholder;
-            document.getElementById("voiceBtn").title = t.micPrompt;
             document.getElementById("btnText").innerText = t.btnSubmit;
             
             document.querySelectorAll(".btn-next-text").forEach(el => el.innerText = t.btnNext);
@@ -1117,7 +1082,7 @@
 
         // STEP-BY-STEP LOGIC
         let currentStep = 1;
-        const totalSteps = 4;
+        const totalSteps = 3;
 
         function nextStep(step) {
             document.getElementById(`step${currentStep}`).classList.remove('active');
@@ -1205,33 +1170,6 @@
             }
         }
 
-        function recordVoiceQuery() {
-            const btn = document.getElementById("voiceBtn");
-            const q = document.getElementById("question");
-
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert(currentLang === 'mr' ? "आपल्या ब्राउझरमध्ये व्हॉइस ओळख उपलब्ध नाही." : "Speech recognition is not supported in your browser.");
-                return;
-            }
-
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            const rec = new SpeechRecognition();
-            rec.lang = currentLang === 'mr' ? 'mr-IN' : 'en-IN'; 
-            rec.continuous = false;
-            rec.interimResults = false;
-
-            btn.classList.add("recording");
-
-            rec.onresult = (e) => {
-                q.value = e.results[0][0].transcript;
-                btn.classList.remove("recording");
-            };
-
-            rec.onerror = () => btn.classList.remove("recording");
-            rec.onend = () => btn.classList.remove("recording");
-            rec.start();
-        }
-
         function submitForm(e) {
             e.preventDefault();
             
@@ -1259,7 +1197,7 @@
                 water: document.getElementById("water").value,
                 waterText: document.getElementById("water").options[document.getElementById("water").selectedIndex].text,
                 land: document.getElementById("land").value,
-                question: document.getElementById("question").value
+                question: ""
             };
             
             localStorage.setItem("chaya_lang", currentLang);
