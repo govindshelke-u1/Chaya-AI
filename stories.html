@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seeds of Inspiration — Chaya AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #064e3b;
+            --text-light: #ffffff;
+            --text-sub: #ecfccb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Baloo 2', 'Poppins', sans-serif;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: linear-gradient(135deg, rgba(6, 78, 59, 0.88), rgba(16, 185, 129, 0.65)),
+                        url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
+            min-height: 100vh;
+            color: #ffffff;
+            position: relative;
+            padding-bottom: 70px;
+        }
+
+        /* Ambient Floating Particles */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            background: rgba(255, 255, 255, 0.35);
+            border-radius: 50%;
+            animation: floatUp 12s infinite linear;
+            z-index: 1;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(105vh) rotate(0deg) scale(0.8); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
+        }
+
+        header {
+            background: rgba(6, 78, 59, 0.92);
+            backdrop-filter: blur(12px);
+            color: white;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .brand {
+            font-size: 1.35rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+        }
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 22px auto 0;
+            padding: 0 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 14px;
+            background: rgba(0,0,0,0.3);
+            padding: 6px 14px;
+            border-radius: 20px;
+            backdrop-filter: blur(8px);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+        }
+        .back-link:hover {
+            background: rgba(0,0,0,0.45);
+        }
+
+        /* Page hero title without container box */
+        .stories-hero {
+            margin-bottom: 28px;
+            padding: 10px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .stories-hero-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ffffff;
+        }
+        .stories-hero-sub {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #dcfce7;
+            margin-top: 4px;
+        }
+
+        /* --- Free-flowing Story Row --- */
+        .story-item {
+            display: flex;
+            gap: 22px;
+            align-items: flex-start;
+            padding: 24px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .story-item:hover {
+            transform: translateX(4px);
+        }
+
+        /* Large Square Avatar styling */
+        .story-item-avatar {
+            width: 140px;
+            height: 140px;
+            flex-shrink: 0;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 3px solid rgba(255, 255, 255, 0.85);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+        }
+        .story-item-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .story-item-content {
+            flex: 1;
+        }
+
+        .story-item-name { font-weight: 800; color: #ffffff; font-size: 1.35rem; text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+        .story-item-meta { font-size: 0.9rem; color: #fef08a; margin-top: 2px; font-weight: 700; }
+        .story-item-headline { font-size: 1.1rem; color: #ecfccb; margin-top: 6px; font-weight: 700; line-height: 1.3; }
+        .story-item-summary { font-size: 0.96rem; color: #f1f5f9; margin-top: 6px; line-height: 1.5; opacity: 0.95; }
+        .story-item-cta { font-size: 0.92rem; color: #a7f3d0; font-weight: 800; margin-top: 10px; display: inline-block; }
+
+        /* --- Detail view styling --- */
+        .story-back-btn {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 0.9rem;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        .story-back-btn:hover {
+            background: rgba(0, 0, 0, 0.55);
+        }
+
+        .story-detail-header {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        /* Large Square Detail Avatar */
+        .story-detail-avatar {
+            width: 180px;
+            height: 180px;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 4px solid #ffffff;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+            flex-shrink: 0;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4.5rem;
+        }
+        .story-detail-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .story-detail-name { font-weight: 800; color: #ffffff; font-size: 1.65rem; text-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+        .story-detail-meta { font-size: 1rem; color: #fef08a; font-weight: 700; margin-top: 6px; }
+
+        .story-section {
+            margin-bottom: 20px;
+            padding-left: 16px;
+            border-left: 4px solid #a7f3d0;
+        }
+        .story-section-title {
+            font-weight: 800;
+            color: #fef08a;
+            font-size: 1.15rem;
+            margin-bottom: 4px;
+        }
+        .story-section p {
+            font-size: 1.02rem;
+            line-height: 1.7;
+            color: #ffffff;
+        }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 600px) {
+            .story-item { flex-direction: column; gap: 14px; }
+            .story-item-avatar { width: 100%; height: 220px; }
+            .story-detail-header { flex-direction: column; align-items: flex-start; }
+            .story-detail-avatar { width: 100%; height: 240px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="particle" style="width: 10px; height: 10px; left: 15%;"></div>
+    <div class="particle" style="width: 14px; height: 14px; left: 55%; animation-delay: 3s;"></div>
+    <div class="particle" style="width: 8px; height: 8px; left: 80%; animation-delay: 5s;"></div>
+
+    <header>
+        <a href="index.html" class="brand">
+            <span>🌿</span> <span id="brandTitle">Chaya AI</span>
+        </a>
+        <button class="lang-btn" onclick="toggleLanguage()">
+            🌐 <span id="langBtnText">मराठी</span>
+        </button>
+    </header>
+
+    <div class="container">
+        <a href="result.html" class="back-link" id="backLink">⬅ Back to Your Recommendation</a>
+
+        <div class="stories-hero">
+            <div class="stories-hero-title"><span>🌱</span> <span id="heroTitle">Seeds of Inspiration</span></div>
+            <div class="stories-hero-sub" id="heroSub">Real stories of successful farmers who transformed their fields</div>
+        </div>
+
+        <!-- LIST VIEW -->
+        <div id="storyListView">
+            <div id="storyListBody"><!-- Loaded dynamically --></div>
+        </div>
+
+        <!-- DETAIL VIEW -->
+        <div id="storyDetailView" class="hidden">
+            <button class="story-back-btn" id="storyBackBtn" onclick="showStoryList()">⬅️ <span id="storyBackText">Back to all stories</span></button>
+            <div id="storyDetailBody"><!-- Loaded dynamically --></div>
+        </div>
+    </div>
+
+    <script>
+        let currentLang = localStorage.getItem('chaya_lang') || 'en';
+
+        const farmerStories = [
+            {
+                id: "story1",
+                image: "image-st/Popatrao-Baguji-Pawar.webp",
+                icon: "🏅",
+                name_en: "Popatrao Baguji Pawar",
+                name_mr: "पोपटराव बागुजी पवार",
+                location_en: "Hiware Bazar, Ahilya Nagar",
+                location_mr: "हिवरे बाजार, अहिल्यानगर",
+                crop_en: "Pulses, Vegetables, Orchards & Dairy",
+                crop_mr: "कडधान्ये, भाज्या, फळबागा आणि दुग्धव्यवसाय",
+                headline_en: "Turning a Drought-Stricken Village into India’s Village of Millionaires",
+                headline_mr: "दुष्काळग्रस्त गावाला बनवले भारतातील श्रीमंत (करोडपती) शेतकऱ्यांचे गाव",
+                summary_en: "Led Hiware Bazar's transformation through community water budgeting, drip irrigation, and banning water-intensive crops.",
+                summary_mr: "ग्रामपंचायतीद्वारे पाणी अडवणे, वॉटर ऑडिटिंग आणि ठिबक सिंचनाचा सक्तीने वापर करून गावाला समृद्ध बनवले.",
+                challenge_en: "In the 1980s, Hiware Bazar was a severely drought-prone village in Ahilya Nagar (Ahmednagar) district with failing crops, acute water scarcity, and mass migration of families seeking daily wage labor in cities.",
+                challenge_mr: "१९८० च्या दशकात हिवरे बाजार हे अहिल्यानगर (अहमदनगर) जिल्ह्यातील अत्यंत दुष्काळी गाव होते, जिथे पिके वाळत होती, पाण्याची तीव्र टंचाई होती आणि रोजगारासाठी गावकऱ्यांचे शहरात स्थलांतर होत होते.",
+                story_en: "Popatrao Pawar returned to his native village with a vision. Elected as Sarpanch, he implemented a strict community water budget. The village banned water-intensive crops like sugarcane and deep borewells. Instead, they built continuous contour trenches (CCTs), check dams, and percolation tanks to trap every drop of monsoon rainfall.",
+                story_mr: "पोपटराव पवार यांनी दूरदृष्टी ठेवून आपल्या मूळ गावी पुनरागमन केले. सरपंच म्हणून निवडून आल्यानंतर त्यांनी कडक पाणी बजेट (Water Budgeting) लागू केले. गावाने ऊस आणि खोल बोअरवेल्स यांसारख्या जास्त पाणी लागणाऱ्या पिकांवर बंदी घातली. त्याऐवजी पावसाचे पाणी साचवण्यासाठी सलग समपातळी चर (CCT), साखळी बंधारे आणि पाझर तलाव बांधले.",
+                innovation_en: "Community Water Auditing & Drip-Irrigated Multi-Cropping. The village audits its groundwater levels every year before deciding which crops to plant. They shifted focus to pulses, vegetables, fruit orchards, and dairy farming—all irrigated strictly via drip and micro-irrigation systems.",
+                innovation_mr: "वॉटर ऑडिटिंग आणि ठिबक सिंचनावर आधारित बहु-पीक पद्धती. दरवर्षी पेरणीपूर्वी गाव आपल्या भूगर्भातील पाण्याचा आढावा घेते (ऑडिट करते). ऊस सोडून त्यांनी कडधान्ये, भाज्या, फळबागा आणि दुग्धव्यवसाय यावर भर दिला—सर्व काही ठिबक आणि सूक्ष्म सिंचनाने सिंचित केले गेले.",
+                result_en: "The groundwater table rose from 70–80 feet down to just 10–15 feet. Agriculture flourished, milk production skyrocketed from 150 liters to over 4,000 liters daily, and reverse migration began. Today, the village boasts over 60 millionaire farming families, and Popatrao Pawar was awarded the prestigious Padma Shri by the Government of India.",
+                result_mr: "भूजल पातळी ७०-८० फुटांवरून अवघ्या १०-१५ फुटांवर आली! शेती फुलली, दुधाचे उत्पादन दररोज १५० लिटरवरून ४,००० लिटरवर गेले आणि शहरात गेलेले लोक परत गावात आले. आज या गावात ६० हून अधिक करोडपती शेतकरी कुटुंबे आहेत आणि पोपटराव पवार यांना भारत सरकारतर्फे 'पद्मश्री' पुरस्काराने सन्मानित करण्यात आले.",
+                lesson_en: "Water auditing, collective discipline, and replacing water-guzzling crops with micro-irrigated cash crops can make an entire community wealthy.",
+                lesson_mr: "पाण्याचे ऑडिट, सामूहिक शिस्त आणि जास्त पाणी पिणाऱ्या पिकांऐवजी सूक्ष्म सिंचनावरील रोख पिके संपूर्ण गावाला समृद्ध बनवू शकतात."
+            },
+            {
+                id: "story2",
+                image: "image-st/Uddhav Asaram Khedekar.webp",
+                icon: "👨‍🌾",
+                name_en: "Uddhav Asaram Khedekar",
+                name_mr: "उद्धव आसाराम खेडेकर",
+                location_en: "Jalna",
+                location_mr: "जालना",
+                crop_en: "Cotton, Soybean & Onions",
+                crop_mr: "कापूस, सोयाबीन आणि कांदा",
+                headline_en: "Beating Drought with Smart Irrigation & Solar Power",
+                headline_mr: "स्मार्ट सिंचन आणि सौर ऊर्जेच्या बळावर दुष्काळावर मात",
+                summary_en: "Overcame Marathwada drought using micro-dams, drip irrigation, and solar power to earn ₹30–₹40 Lakh annually.",
+                summary_mr: "सूक्ष्म शेततळी, ठिबक सिंचन व सौरऊर्जेचा वापर करून दुष्काळावर मात केली आणि वर्षाला ₹३०-४० लाखांचे उत्पन्न मिळवले.",
+                challenge_en: "Farming in the drought-prone Marathwada region, facing severe water scarcity and rising electricity costs.",
+                challenge_mr: "दुष्काळग्रस्त मराठवाड्यात पाणीटंचाई आणि विजेच्या वाढत्या खर्चाचा सामना करत शेती करणे.",
+                story_en: "Uddhav refused to let low rainfall stop him. He invested in rainwater harvesting by building small micro-dams on his land and installed drip irrigation to deliver water directly to plant roots. To solve power cuts, he integrated solar-powered farm machinery and adopted Integrated Pest Management (IPM) to drastically cut pesticide costs.",
+                story_mr: "कमी पावसाची तमा न बाळगता उद्धव यांनी शेतात सूक्ष्म शेततळी/लहान बांध बांधून पावसाच्या पाण्याचे नियोजन केले. पिकांच्या मुळांपर्यंत थेट पाणी पोहचवण्यासाठी ठिबक सिंचनाचा वापर केला. लोडशेडिंगवर मात करण्यासाठी सौरऊर्जेवर चालणारी यंत्रे वापरली आणि सेंद्रिय किड व्यवस्थापनाने (IPM) फवारणीचा खर्च लक्षणीयरीत्या कमी केला.",
+                result_en: "By growing high-quality cotton, soybean, and onions, he now exports his produce directly to other states and earns ₹30–₹40 Lakh annually—winning the Millionaire Farmer of India Award.",
+                result_mr: "उच्च दर्जाचा कापूस, सोयाबीन आणि कांदा पिकवून ते इतर राज्यांत थेट विक्री करतात. यातून ते वर्षाला ₹३० ते ₹४० लाख कमवत असून त्यांना 'मिलियनेअर फार्मर ऑफ इंडिया' पुरस्कार मिळाला आहे.",
+                lesson_en: "Water harvesting and solar energy can turn a drought-prone farm into a high-profit enterprise.",
+                lesson_mr: "जलसंधारण आणि सौरऊर्जेचा योग्य वापर करून दुष्काळी भागातील शेतीसुद्धा भरघोस नफा देणारा उद्योग बनू शकते."
+            },
+            {
+                id: "story3",
+                image: "image-st/Samir-Dombe.webp",
+                icon: "🚜",
+                name_en: "Samir Dombe",
+                name_mr: "समीर डोम्बे",
+                location_en: "Baramati",
+                location_mr: "बारामती",
+                crop_en: "High-Density Orchards",
+                crop_mr: "सघन फलोत्पादन (ऑर्चर्ड)",
+                headline_en: "Solving Labor Shortages Through Farm Automation",
+                headline_mr: "शेतीच्या ऑटोमेशनद्वारे मजुरांच्या तुटवड्यावर मात",
+                summary_en: "Adopted automated fertigation and smart machinery to cut labor costs by 50% and boost crop output.",
+                summary_mr: "ऑटोमेटेड फर्टीगेशन आणि स्मार्ट यंत्रांचा वापर करून मजुरीचा खर्च ५०% कमी केला आणि पिकाचे उत्पादन वाढवले.",
+                challenge_en: "High labor costs and a severe shortage of manual farm workers during critical harvesting seasons.",
+                challenge_mr: "महत्त्वाच्या सुगीच्या हंगामात मजुरांची तीव्र टंचाई आणि मजुरीचा सतत वाढता खर्च.",
+                story_en: "Samir modernized his traditional farm setup by introducing smart machinery and high-density orchard planning. He installed automated drip fertigation systems—allowing him to supply precise water and nutrients directly to crops at the push of a button—and used mechanized tools for weeding and pruning.",
+                story_mr: "समीर यांनी आपल्या पारंपारिक शेतीचे आधुनिक रूप देत स्मार्ट मशिनरी आणि हाय-डेन्सिटी (सघन) फलोत्पादन पद्धत अमलात आणली. त्यांनी स्वयंचलित (ऑटोमेटेड) ठिबक फर्टीगेशन सिस्टीम बसवली—ज्यामुळे एका बटणावर पिकांना अचूक पाणी आणि खते पोहोचवता येतात. तसेच खुरपणी आणि छाटणीसाठी आधुनिक यांत्रिक अवजारांचा वापर सुरू केला.",
+                result_en: "He cut his labor expenses by over 50%, improved crop uniformity, and was honored with the national ICAR Jagjivan Ram Innovative Farmer Award.",
+                result_mr: "त्यांनी मजुरीच्या खर्चात ५०% पेक्षा जास्त कपात केली, पिकांची गुणवत्ता वाढवली आणि त्यांना राष्ट्रीय स्तरावरील 'आयसीआर जगजीवन राम नाविन्यपूर्ण शेतकरी पुरस्कार' (ICAR Jagjivan Ram Innovative Farmer Award) देऊन सन्मानित करण्यात आले.",
+                lesson_en: "Mechanization and automated irrigation save time, cut labor costs, and increase crop productivity.",
+                lesson_mr: "यांत्रिकीकरण आणि स्वयंचलित सिंचनामुळे वेळेची बचत होते, मजुरीचा खर्च कमी होतो आणि पिकांची उत्पादकता वाढते."
+            },
+            {
+                id: "story4",
+                image: "image-st/Bhaskar-Rajad.webp",
+                icon: "🐝",
+                name_en: "Bhaskar Jiva Rajad",
+                name_mr: "भास्कर जीवा रजड",
+                location_en: "Palghar",
+                location_mr: "पालघर",
+                crop_en: "Coconut & Guava Orchards",
+                crop_mr: "नारळ आणि पेरूच्या बागा",
+                headline_en: "Boosting Profits with Beekeeping & Pollination",
+                headline_mr: "मधुमक्षिका पालन आणि परागीभवनाने मिळवला दुप्पट नफा",
+                summary_en: "Introduced apiculture in fruit orchards, raising crop yields by 30% and generating year-round honey income.",
+                summary_mr: "फळबागांमध्ये मधमाशी पालन सुरू करून पिकांचे उत्पादन ३०% ने वाढवले आणि मधाच्या विक्रीतून अतिरिक्त उत्पन्न मिळवले.",
+                challenge_en: "Low crop yields from traditional fruit orchards and the need for additional income streams.",
+                challenge_mr: "पारंपारिक फळबागांमधून मिळणारे कमी उत्पादन आणि उत्पन्नाच्या अतिरिक्त मार्गांची गरज.",
+                story_en: "Bhaskar introduced beekeeping (apiculture) into his coconut and guava orchards. Instead of relying solely on traditional farming, he placed beehives across his field. The bees naturally pollinated his fruit trees, which dramatically increased fruit production while providing a fresh harvest of pure honey.",
+                story_mr: "भास्कर यांनी आपल्या नारळ आणि पेरूच्या बागांमध्ये मधमाशी पालन (Apiculture) उपक्रम सुरू केला. केवळ पारंपारिक शेतीवर अवलंबून न राहता त्यांनी शेतात मधमाशांच्या पेट्या ठेवल्या. मधमाशांमुळे फळझाडांचे नैसर्गिकरीत्या परागीभवन (Pollination) होऊन फळांचे उत्पादन प्रचंड वाढले आणि सोबतच शुद्ध मधाचे भरघोस उत्पन्नही मिळाले.",
+                result_en: "Crop yields jumped by over 30%, and selling raw, natural honey gave his family a steady secondary income year-round.",
+                result_mr: "फळबागांचे उत्पादन ३०% पेक्षा जास्त वाढले, आणि शुद्ध मधाच्या विक्रीमुळे त्यांच्या कुटुंबाला वर्षातील सर्व महिने स्थिर आणि अतिरिक्त उत्पन्न मिळू लागले.",
+                lesson_en: "Integrating beekeeping with fruit farming creates two income streams from the exact same plot of land.",
+                lesson_mr: "फळबागांसोबत मधमाशी पालन जोडल्यास एकाच शेतातून उत्पन्नाचे दोन भक्कम मार्ग तयार होतात."
+            },
+            
+        ];
+
+        const pageText = {
+            en: {
+                brandTitle: "Chaya AI",
+                langBtn: "मराठी",
+                backLink: "⬅ Back to Your Recommendation",
+                heroTitle: "Seeds of Inspiration",
+                heroSub: "Real stories of farmers who transformed their fields",
+                storyBackText: "Back to all stories",
+                readFullStory: "➔ Read full story",
+                challengeLabel: "The Challenge",
+                storyLabel: "The Journey & Solution",
+                innovationLabel: "Key Innovation",
+                resultLabel: "The Result",
+                lessonLabel: "Lesson for Farmers"
+            },
+            mr: {
+                brandTitle: "Chaya AI",
+                langBtn: "English",
+                backLink: "⬅ तुमच्या शिफारशीकडे परत जा",
+                heroTitle: "प्रेरणादायी शेतकरी गोष्टी",
+                heroSub: "शेतीत क्रांती घडवणाऱ्या शेतकऱ्यांच्या यशाच्या गोष्टी",
+                storyBackText: "सर्व गोष्टींकडे परत जा",
+                readFullStory: "➔ पूर्ण गोष्ट वाचा",
+                challengeLabel: "समस्या व आव्हान",
+                storyLabel: "प्रवास आणि उपाय",
+                innovationLabel: "महत्त्वाचे नाविन्य (Key Innovation)",
+                resultLabel: "मिळालेले यश व परिणाम",
+                lessonLabel: "इतर शेतकऱ्यांसाठी संदेश"
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'mr' ? 'en' : 'mr';
+            localStorage.setItem('chaya_lang', currentLang);
+            applyPageLanguage();
+            renderStoryList();
+        }
+
+        function applyPageLanguage() {
+            const t = pageText[currentLang];
+            document.getElementById("brandTitle").innerText = t.brandTitle;
+            document.getElementById("langBtnText").innerText = t.langBtn;
+            document.getElementById("backLink").innerText = t.backLink;
+            document.getElementById("heroTitle").innerText = t.heroTitle;
+            document.getElementById("heroSub").innerText = t.heroSub;
+            document.getElementById("storyBackText").innerText = t.storyBackText;
+        }
+
+        function renderStoryList() {
+            const isMr = currentLang === 'mr';
+            const t = pageText[currentLang];
+            const bodyEl = document.getElementById("storyListBody");
+            bodyEl.innerHTML = farmerStories.map(s => `
+                <div class="story-item" onclick="showStoryDetail('${s.id}')">
+                    <div class="story-item-avatar">
+                        <img src="${s.image}" alt="${s.name_en}" onerror="this.onerror=null; this.parentNode.innerHTML='${s.icon}';">
+                    </div>
+                    <div class="story-item-content">
+                        <div class="story-item-name">${isMr ? s.name_mr : s.name_en}</div>
+                        <div class="story-item-meta">📍 ${isMr ? s.location_mr : s.location_en} &nbsp;•&nbsp; 🌾 ${isMr ? s.crop_mr : s.crop_en}</div>
+                        <div class="story-item-headline">${isMr ? s.headline_mr : s.headline_en}</div>
+                        <div class="story-item-summary">${isMr ? s.summary_mr : s.summary_en}</div>
+                        <div class="story-item-cta">${t.readFullStory}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showStoryDetail(id) {
+            const story = farmerStories.find(s => s.id === id);
+            if (!story) return;
+            const isMr = currentLang === 'mr';
+            const t = pageText[currentLang];
+
+            const innovationHTML = story.innovation_en ? `
+                <div class="story-section">
+                    <div class="story-section-title">⚡ ${t.innovationLabel}:</div>
+                    <p>${isMr ? story.innovation_mr : story.innovation_en}</p>
+                </div>
+            ` : '';
+
+            document.getElementById("storyDetailBody").innerHTML = `
+                <div class="story-detail-header">
+                    <div class="story-detail-avatar">
+                        <img src="${story.image}" alt="${story.name_en}" onerror="this.onerror=null; this.parentNode.innerHTML='${story.icon}';">
+                    </div>
+                    <div>
+                        <div class="story-detail-name">${isMr ? story.name_mr : story.name_en}</div>
+                        <div class="story-detail-meta">📍 ${isMr ? story.location_mr : story.location_en} &nbsp;•&nbsp; 🌾 ${isMr ? story.crop_mr : story.crop_en}</div>
+                    </div>
+                </div>
+                <div>
+                    <div class="story-section">
+                        <div class="story-section-title">🚨 ${t.challengeLabel}:</div>
+                        <p>${isMr ? story.challenge_mr : story.challenge_en}</p>
+                    </div>
+                    <div class="story-section">
+                        <div class="story-section-title">💡 ${t.storyLabel}:</div>
+                        <p>${isMr ? story.story_mr : story.story_en}</p>
+                    </div>
+                    ${innovationHTML}
+                    <div class="story-section">
+                        <div class="story-section-title">🏆 ${t.resultLabel}:</div>
+                        <p>${isMr ? story.result_mr : story.result_en}</p>
+                    </div>
+                    <div class="story-section">
+                        <div class="story-section-title">🌱 ${t.lessonLabel}:</div>
+                        <p><em>${isMr ? story.lesson_mr : story.lesson_en}</em></p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById("storyListView").classList.add("hidden");
+            document.getElementById("storyDetailView").classList.remove("hidden");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        function showStoryList() {
+            document.getElementById("storyDetailView").classList.add("hidden");
+            document.getElementById("storyListView").classList.remove("hidden");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            applyPageLanguage();
+            renderStoryList();
+        });
+    </script>
+</body>
+</html>
