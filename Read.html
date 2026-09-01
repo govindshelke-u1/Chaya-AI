@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research & References — Chaya AI (छाया AI)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #064e3b;
+            --primary-deep: #022c22;
+            --accent: #f59e0b;
+            --accent-light: #fef3c7;
+            --glass: rgba(255, 255, 255, 0.95);
+            --glass-card: rgba(255, 255, 255, 0.92);
+            --border: rgba(255, 255, 255, 0.6);
+            --border-subtle: rgba(16, 185, 129, 0.2);
+            --text-main: #1f2937;
+            --text-muted: #4b5563;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Baloo 2', 'Poppins', sans-serif;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: linear-gradient(135deg, rgba(6, 78, 59, 0.88), rgba(16, 185, 129, 0.62)), 
+                        url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat fixed;
+            min-height: 100vh;
+            color: var(--text-main);
+            position: relative;
+            overflow-x: hidden;
+            padding-bottom: 90px;
+        }
+
+        /* Ambient Floating Particles */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            background: rgba(255, 255, 255, 0.35);
+            border-radius: 50%;
+            animation: floatUp 12s infinite linear;
+            z-index: 1;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(105vh) rotate(0deg) scale(0.8); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
+        }
+
+        /* Header */
+        header {
+            background: rgba(6, 78, 59, 0.92);
+            backdrop-filter: blur(14px);
+            color: white;
+            padding: 14px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+        }
+
+        .brand {
+            font-size: 1.35rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            font-size: 1.5rem;
+            animation: pulseLeaf 2.5s infinite ease-in-out;
+        }
+
+        @keyframes pulseLeaf {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.15) rotate(10deg); }
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.25s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1.5px solid rgba(255, 255, 255, 0.6);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.35);
+            transform: translateY(-1px);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1100px;
+            width: 92%;
+            margin: 32px auto 0;
+            padding: 0 12px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Hero Banner */
+        .hero-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.97), rgba(240, 253, 244, 0.95));
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            padding: 32px 36px;
+            border-radius: 24px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
+            margin-bottom: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #ecfdf5;
+            color: var(--primary-dark);
+            border: 1px solid #a7f3d0;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .hero-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            line-height: 1.25;
+            margin-bottom: 10px;
+        }
+
+        .hero-subtitle {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            max-width: 900px;
+        }
+
+        .team-meta-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 20px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .team-meta-pill {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.88rem;
+            color: #374151;
+            background: rgba(255,255,255,0.8);
+            padding: 6px 14px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            font-weight: 600;
+        }
+
+        /* Section Layout */
+        .section-card {
+            background: var(--glass-card);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            padding: 30px 32px;
+            margin-bottom: 26px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border-subtle);
+        }
+
+        .section-title {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: #d1fae5;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        /* Reference Grid */
+        .ref-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+            gap: 18px;
+        }
+
+        .ref-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 20px 22px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+        .ref-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            border-color: #a7f3d0;
+        }
+
+        .ref-tag {
+            align-self: flex-start;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .ref-tag.gov { background: #dbeafe; color: #1e40af; }
+        .ref-tag.univ { background: #fef3c7; color: #92400e; }
+        .ref-tag.ai { background: #ede9fe; color: #5b21b6; }
+        .ref-tag.survey { background: #d1fae5; color: #065f46; }
+
+        .ref-name {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .ref-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.55;
+            margin-bottom: 16px;
+            flex-grow: 1;
+        }
+
+        .ref-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #059669;
+            text-decoration: none;
+            border: 1px solid #10b981;
+            padding: 6px 14px;
+            border-radius: 8px;
+            background: #f0fdf4;
+            transition: all 0.2s ease;
+            width: fit-content;
+        }
+
+        .ref-link-btn:hover {
+            background: #10b981;
+            color: #ffffff;
+        }
+
+        /* Scientific Parameter Table */
+        .table-responsive {
+            overflow-x: auto;
+            margin-top: 14px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            background: #ffffff;
+            text-align: left;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #374151;
+            padding: 12px 16px;
+            font-weight: 700;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #4b5563;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #f0fdf4;
+        }
+
+        /* Grounding Architecture Diagram Box */
+        .diagram-box {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 24px;
+            border-radius: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.88rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            border: 1px solid #334155;
+            margin-top: 14px;
+        }
+
+        .diagram-box span.green { color: #4ade80; font-weight: bold; }
+        .diagram-box span.yellow { color: #facc15; font-weight: bold; }
+        .diagram-box span.cyan { color: #38bdf8; font-weight: bold; }
+        .diagram-box span.purple { color: #c084fc; font-weight: bold; }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 36px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header {
+                padding: 12px 16px;
+            }
+            .hero-card {
+                padding: 24px 20px;
+            }
+            .hero-title {
+                font-size: 1.5rem;
+            }
+            .section-card {
+                padding: 22px 18px;
+            }
+            .ref-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header>
+        <a href="/" class="brand" id="brand-link">
+            <span class="brand-icon">🌿</span>
+            <span>Chaya AI</span>
+        </a>
+        <div class="header-actions">
+            <a href="/" class="nav-btn" id="nav-home">
+                <span>🏡</span>
+                <span data-mr="मुख्य पृष्ठ" data-en="Home">मुख्य पृष्ठ</span>
+            </a>
+            <a href="/stories.html" class="nav-btn" id="nav-stories">
+                <span>🌾</span>
+                <span data-mr="यशोगाथा" data-en="Success Stories">यशोगाथा</span>
+            </a>
+            <button class="lang-btn" id="langToggleBtn" onclick="toggleLanguage()">
+                <span>🌐</span>
+                <span id="langText">English</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+
+        <!-- Hero Header -->
+        <div class="hero-card" id="hero-banner">
+            <div class="hero-badge" id="hero-badge">
+                <span>🔬</span>
+                <span data-mr="प्रमाणित कृषी संशोधन व स्रोत" data-en="Verified Agronomic Research & Datasets">प्रमाणित कृषी संशोधन व स्रोत</span>
+            </div>
+            <h1 class="hero-title" data-mr="संशोधन आधार आणि अधिकृत संदर्भ" data-en="Scientific Research Foundation & References">
+                संशोधन आधार आणि अधिकृत संदर्भ
+            </h1>
+            <p class="hero-subtitle" data-mr="छाया AI प्रणालीचे पीक शिफारस मॉडेल, माती पोषण गणित आणि रोग व्यवस्थापन वेळापत्रक हे भारतीय कृषी संशोधन परिषद (ICAR), वसंतराव नाईक मराठवाडा कृषी विद्यापीठ (VNMKV), आणि भारत सरकारच्या सॉईल हेल्थ कार्ड मानकांवर आधारित आहे." data-en="Chaya AI's crop recommendation engine, soil nutrient algorithms, and pest management schedules are firmly grounded in peer-reviewed agronomic standards from ICAR, VNMKV Parbhani, and the Ministry of Agriculture & Farmers Welfare.">
+                छाया AI प्रणालीचे पीक शिफारस मॉडेल, माती पोषण गणित आणि रोग व्यवस्थापन वेळापत्रक हे भारतीय कृषी संशोधन परिषद (ICAR), वसंतराव नाईक मराठवाडा कृषी विद्यापीठ (VNMKV), आणि भारत सरकारच्या सॉईल हेल्थ कार्ड मानकांवर आधारित आहे.
+            </p>
+
+            <div class="team-meta-bar">
+                <div class="team-meta-pill">
+                    <span>🏆</span>
+                    <span><strong>SIH 2026</strong> Problem ID: SIH25030</span>
+                </div>
+                <div class="team-meta-pill">
+                    <span>👥</span>
+                    <span><strong>Team:</strong> PyCoders (BSC-SIH-04)</span>
+                </div>
+                <div class="team-meta-pill">
+                    <span>📍</span>
+                    <span><strong>Domain:</strong> Smart Agriculture & AI Advisory</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 1: Agricultural Research Institutions & Scientific Frameworks -->
+        <div class="section-card" id="section-agronomy">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-icon">📚</div>
+                    <span data-mr="१. कृषी संशोधन संस्था आणि वैज्ञानिक मार्गदर्शक तत्त्वे" data-en="1. Agronomic Research Institutions & Guidelines">
+                        १. कृषी संशोधन संस्था आणि वैज्ञानिक मार्गदर्शक तत्त्वे
+                    </span>
+                </div>
+            </div>
+
+            <div class="ref-grid">
+                <!-- ICAR Card -->
+                <div class="ref-card" id="ref-icar">
+                    <div>
+                        <span class="ref-tag univ">National Research</span>
+                        <h3 class="ref-name" data-mr="भारतीय कृषी संशोधन परिषद (ICAR)" data-en="Indian Council of Agricultural Research (ICAR)">
+                            भारतीय कृषी संशोधन परिषद (ICAR)
+                        </h3>
+                        <p class="ref-desc" data-mr="हँडबुक ऑफ ॲग्रीकल्चर आणि पीक उत्पादन मार्गदर्शक तत्त्वांमधून विविध पिकांचे आदर्श तापमान, पाण्याचा ताण निर्देशांक, आणि प्रमाणित एन-पी-के (N-P-K) शोषण प्रमाण प्राप्त केले गेले आहे." data-en="Crop specific optimal temperature bounds, water stress indices, and standard N-P-K uptake parameters sourced from the ICAR Handbook of Agriculture.">
+                            हँडबुक ऑफ ॲग्रीकल्चर आणि पीक उत्पादन मार्गदर्शक तत्त्वांमधून विविध पिकांचे आदर्श तापमान, पाण्याचा ताण निर्देशांक, आणि प्रमाणित एन-पी-के (N-P-K) शोषण प्रमाण प्राप्त केले गेले आहे.
+                        </p>
+                    </div>
+                    <a href="https://icar.org.in" target="_blank" rel="noopener noreferrer" class="ref-link-btn">
+                        <span>icar.org.in</span>
+                        <span>↗</span>
+                    </a>
+                </div>
+
+                <!-- VNMKV Card -->
+                <div class="ref-card" id="ref-vnmkv">
+                    <div>
+                        <span class="ref-tag univ">Regional Krishi Vidyapeeth</span>
+                        <h3 class="ref-name" data-mr="वसंतराव नाईक मराठवाडा कृषी विद्यापीठ (VNMKV, परभणी)" data-en="VNMKV Agricultural University, Parbhani">
+                            वसंतराव नाईक मराठवाडा कृषी विद्यापीठ (VNMKV, परभणी)
+                        </h3>
+                        <p class="ref-desc" data-mr="मराठवाडा विभागासाठी विशेष पीक लागवड पद्धती (Package of Practices), काळी सुपीक कापूस माती (Regur) प्रोफाइल, आणि स्थानिक वाणांचे (जसे की कापूस, सोयाबीन, तूर) संशोधन आधार." data-en="Regional Package of Practices for Marathwada zone, deep black cotton soil profiles, and high-yielding local variety certifications (Cotton, Soybean, Tur).">
+                            मराठवाडा विभागासाठी विशेष पीक लागवड पद्धती (Package of Practices), काळी सुपीक कापूस माती (Regur) प्रोफाइल, आणि स्थानिक वाणांचे (जसे की कापूस, सोयाबीन, तूर) संशोधन आधार.
+                        </p>
+                    </div>
+                    <a href="https://vnmkv.ac.in" target="_blank" rel="noopener noreferrer" class="ref-link-btn">
+                        <span>vnmkv.ac.in</span>
+                        <span>↗</span>
+                    </a>
+                </div>
+
+                <!-- Soil Health Card Scheme -->
+                <div class="ref-card" id="ref-shc">
+                    <div>
+                        <span class="ref-tag gov">Government Standard</span>
+                        <h3 class="ref-name" data-mr="मृदा आरोग्य पत्रिका योजना (Soil Health Card Scheme)" data-en="Soil Health Card Scheme (Department of Agriculture, GoI)">
+                            मृदा आरोग्य पत्रिका योजना (Soil Health Card Scheme)
+                        </h3>
+                        <p class="ref-desc" data-mr="मातीचा सामू (pH), नायट्रोजन, स्फुरद, पालाश आणि सेंद्रिय कर्ब यांचे 'कमी', 'मध्यम', आणि 'उच्च' वर्गवारी मानके प्रणालीमध्ये थेट गणितीय नियमांसाठी वापरली जातात." data-en="Soil pH classification standards, Nitrogen, Phosphorus, Potassium and Organic Carbon rating matrices utilized for deterministic rule-based scoring.">
+                            मातीचा सामू (pH), नायट्रोजन, स्फुरद, पालाश आणि सेंद्रिय कर्ब यांचे 'कमी', 'मध्यम', आणि 'उच्च' वर्गवारी मानके प्रणालीमध्ये थेट गणितीय नियमांसाठी वापरली जातात.
+                        </p>
+                    </div>
+                    <a href="https://soilhealth.dac.gov.in" target="_blank" rel="noopener noreferrer" class="ref-link-btn">
+                        <span>soilhealth.dac.gov.in</span>
+                        <span>↗</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: Soil Parameter Benchmark Matrix -->
+        <div class="section-card" id="section-parameters">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-icon">🧪</div>
+                    <span data-mr="२. प्रणालीमध्ये समाविष्ट माती व पोषक तत्व निकष" data-en="2. Integrated Soil Health & Nutrient Benchmarks">
+                        २. प्रणालीमध्ये समाविष्ट माती व पोषक तत्व निकष
+                    </span>
+                </div>
+            </div>
+
+            <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 16px;" data-mr="छाया AI प्रणाली शेतकऱ्यांच्या इनपुटचे मूल्यमापन करताना खालील प्रमाणित वैज्ञानिक मर्यादांचा वापर करते:" data-en="Chaya AI validates farmer soil health values using the following official scientific baseline ranges:">
+                छाया AI प्रणाली शेतकऱ्यांच्या इनपुटचे मूल्यमापन करताना खालील प्रमाणित वैज्ञानिक मर्यादांचा वापर करते:
+            </p>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th data-mr="घटक / Parameter" data-en="Soil Parameter">घटक / Parameter</th>
+                            <th data-mr="कमी श्रेणी (Low)" data-en="Low Range">कमी श्रेणी (Low)</th>
+                            <th data-mr="मध्यम श्रेणी (Medium)" data-en="Medium Range">मध्यम श्रेणी (Medium)</th>
+                            <th data-mr="उच्च श्रेणी (High)" data-en="High Range">उच्च श्रेणी (High)</th>
+                            <th data-mr="कृषी परिणाम (Agronomic Action)" data-en="Agronomic Engine Action">कृषी परिणाम (Agronomic Action)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>मातीचा सामू (pH)</strong></td>
+                            <td>&lt; 6.0 (आम्लयुक्त)</td>
+                            <td>6.5 – 7.8 (आदर्श)</td>
+                            <td>&gt; 8.2 (क्षारयुक्त)</td>
+                            <td>सामू अनुकूल पिकांना प्राधान्य + जिप्सम/चुना शिफारस</td>
+                        </tr>
+                        <tr>
+                            <td><strong>नायट्रोजन (N - kg/ha)</strong></td>
+                            <td>&lt; 280 kg/ha</td>
+                            <td>280 – 560 kg/ha</td>
+                            <td>&gt; 560 kg/ha</td>
+                            <td>युरिया / नत्र खतांचे संतुलित डोस नियोजन</td>
+                        </tr>
+                        <tr>
+                            <td><strong>फॉस्फरस (P - kg/ha)</strong></td>
+                            <td>&lt; 10 kg/ha</td>
+                            <td>10 – 25 kg/ha</td>
+                            <td>&gt; 25 kg/ha</td>
+                            <td>DAP / सिंगल सुपर फॉस्फेट मात्रा नियमन</td>
+                        </tr>
+                        <tr>
+                            <td><strong>पोटॅशियम (K - kg/ha)</strong></td>
+                            <td>&lt; 108 kg/ha</td>
+                            <td>108 – 280 kg/ha</td>
+                            <td>&gt; 280 kg/ha</td>
+                            <td>म्युरिएट ऑफ पोटॅश (MOP) संतुलित वापर</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section 3: Government Open APIs & Market Economics -->
+        <div class="section-card" id="section-apis">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-icon">📈</div>
+                    <span data-mr="३. शासकीय ओपन डेटा आणि थेट बाजारभाव एपीआय" data-en="3. Government Open Data & Live Market APIs">
+                        ३. शासकीय ओपन डेटा आणि थेट बाजारभाव एपीआय
+                    </span>
+                </div>
+            </div>
+
+            <div class="ref-grid">
+                <!-- data.gov.in -->
+                <div class="ref-card" id="ref-ogd">
+                    <div>
+                        <span class="ref-tag gov">Government Open Data</span>
+                        <h3 class="ref-name" data-mr="Open Government Data (OGD) Platform India" data-en="Open Government Data (OGD) Platform (data.gov.in)">
+                            Open Government Data (OGD) Platform India
+                        </h3>
+                        <p class="ref-desc" data-mr="कृषी विपणन व तपासणी संचालनालय (DMI) द्वारे दैनिक बाजार आवक व मॉडेल दरांचे थेट एपीआय (Agmarknet Resource API) एकत्रीकरण." data-en="Direct API integration with Daily Wholesale Commodity Arrivals and Modal Prices feeds maintained by the Directorate of Marketing & Inspection (DMI).">
+                            कृषी विपणन व तपासणी संचालनालय (DMI) द्वारे दैनिक बाजार आवक व मॉडेल दरांचे थेट एपीआय (Agmarknet Resource API) एकत्रीकरण.
+                        </p>
+                    </div>
+                    <a href="https://data.gov.in" target="_blank" rel="noopener noreferrer" class="ref-link-btn">
+                        <span>data.gov.in</span>
+                        <span>↗</span>
+                    </a>
+                </div>
+
+                <!-- eNAM -->
+                <div class="ref-card" id="ref-enam">
+                    <div>
+                        <span class="ref-tag gov">National Market</span>
+                        <h3 class="ref-name" data-mr="राष्ट्रीय कृषी बाजार (e-NAM)" data-en="National Agriculture Market (e-NAM)">
+                            राष्ट्रीय कृषी बाजार (e-NAM)
+                        </h3>
+                        <p class="ref-desc" data-mr="पिकांच्या गुणवत्तेचे मानक, आंतरराज्यीय मागणी व पुरवठा विश्लेषण आणि शेतीमालाच्या सरासरी विक्री दरांचे संदर्भ." data-en="Inter-mandi agricultural commodity trade trends, quality grading parameters, and seasonal demand forecasting datasets.">
+                            पिकांच्या गुणवत्तेचे मानक, आंतरराज्यीय मागणी व पुरवठा विश्लेषण आणि शेतीमालाच्या सरासरी विक्री दरांचे संदर्भ.
+                        </p>
+                    </div>
+                    <a href="https://enam.gov.in" target="_blank" rel="noopener noreferrer" class="ref-link-btn">
+                        <span>enam.gov.in</span>
+                        <span>↗</span>
+                    </a>
+                </div>
+
+                <!-- Nanded Taluka Field Baseline -->
+                <div class="ref-card" id="ref-nanded">
+                    <div>
+                        <span class="ref-tag survey">Ground Survey</span>
+                        <h3 class="ref-name" data-mr="नांदेड जिल्हा १६ तालुके क्षेत्रीय सर्वेक्षण माहिती" data-en="Nanded District 16 Talukas Agro-Survey Data">
+                            नांदेड जिल्हा १६ तालुके क्षेत्रीय सर्वेक्षण माहिती
+                        </h3>
+                        <p class="ref-desc" data-mr="नांदेड, लोहा, मुखेड, अर्धापूर, बिलोली, हदगाव, किनवट इत्यादी १६ तालुक्यांमधील सरासरी पर्जन्यमान, मुख्य पिके आणि माती प्रकारांचा स्थानिक डेटा संच." data-en="Empirical field survey database capturing taluka-wise precipitation, historical crop patterns, and ground water levels across Nanded district.">
+                            नांदेड, लोहा, मुखेड, अर्धापूर, बिलोली, हदगाव, किनवट इत्यादी १६ तालुक्यांमधील सरासरी पर्जन्यमान, मुख्य पिके आणि माती प्रकारांचा स्थानिक डेटा संच.
+                        </p>
+                    </div>
+                    <span class="ref-link-btn" style="background:#f3f4f6; color:#374151; border-color:#d1d5db;">
+                        <span>Local Survey Dataset</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: AI Reasoning & Grounded Pipeline -->
+        <div class="section-card" id="section-ai">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-icon">🤖</div>
+                    <span data-mr="४. एआय मॉडेल ग्राउंडिंग आणि शून्य-भ्रम (Zero Hallucination) आर्किटेक्चर" data-en="4. AI Model Grounding & Zero-Hallucination Architecture">
+                        ४. एआय मॉडेल ग्राउंडिंग आणि शून्य-भ्रम (Zero Hallucination) आर्किटेक्चर
+                    </span>
+                </div>
+            </div>
+
+            <p style="font-size: 0.95rem; color: var(--text-muted);" data-mr="छाया AI प्रणाली अनियंत्रित किंवा चुकीचा कृषी सल्ला टाळण्यासाठी द्वि-स्तरीय (Two-Tier) निर्णय प्रक्रिया वापरते:" data-en="To prevent erroneous or fabricated agricultural advice, Chaya AI employs a rigorous two-tier hybrid decision pipeline:">
+                छाया AI प्रणाली अनियंत्रित किंवा चुकीचा कृषी सल्ला टाळण्यासाठी द्वि-स्तरीय (Two-Tier) निर्णय प्रक्रिया वापरते:
+            </p>
+
+            <div class="diagram-box">
+<span class="green">[ STEP 1: DETERMINISTIC AGRONOMIC RULE FILTER ]</span>
+  Input: (pH: 7.2, N: 240, P: 18, K: 210, Water: Well, Season: Kharif)
+  Filter: Check against <span class="yellow">crops_database.json</span> bounds.
+  Output: Candidate Crops (Bt Cotton, Soybean, Tur, Onion) with preliminary Fit Scores.
+
+<span class="cyan">[ STEP 2: ECONOMIC & PROFIT COMPUTATION ]</span>
+  Formula: Net Profit = (Yield_Per_Acre * Mandi_Rate) - Cultivation_Cost
+  Data: Real-time modal price lookup from <span class="yellow">market_prices.json / Agmarknet</span>.
+
+<span class="purple">[ STEP 3: GOOGLE GEMINI 2.5 REASONING & SYNTHESIS ]</span>
+  Prompt Injection: Injects certified remedies from <span class="yellow">pests_and_diseases.json</span> + <span class="yellow">fertilizers_and_schemes.json</span>
+  Constraint: System prompt forbids inventing non-approved pesticides or dosages.
+  Final Output: Structured Marathi advisory, day-wise schedule, and localized voice synthesis.
+            </div>
+        </div>
+
+        <!-- Section 5: Government Schemes & Welfare Portals -->
+        <div class="section-card" id="section-schemes">
+            <div class="section-header">
+                <div class="section-title">
+                    <div class="section-icon">🏛️</div>
+                    <span data-mr="५. थेट शासकीय योजना व अनुदान संदर्भ" data-en="5. Government Welfare Schemes & Subsidies">
+                        ५. थेट शासकीय योजना व अनुदान संदर्भ
+                    </span>
+                </div>
+            </div>
+
+            <div class="ref-grid">
+                <div class="ref-card">
+                    <div>
+                        <span class="ref-tag gov">Solar Energy</span>
+                        <h3 class="ref-name">PM-KUSUM Scheme</h3>
+                        <p class="ref-desc" data-mr="शेतकऱ्यांना सौर कृषी पंपांसाठी ९०% पर्यंत सबसिडी आणि शाश्वत सिंचन व्यवस्था." data-en="Subsidies up to 90% for standalone solar agriculture pumps ensuring uninterrupted irrigation.">
+                            शेतकऱ्यांना सौर कृषी पंपांसाठी ९०% पर्यंत सबसिडी आणि शाश्वत सिंचन व्यवस्था.
+                        </p>
+                    </div>
+                    <a href="https://pmkusum.mnre.gov.in" target="_blank" rel="noopener noreferrer" class="ref-link-btn">
+                        <span>pmkusum.mnre.gov.in</span> ↗
+                    </a>
+                </div>
+
+                <div class="ref-card">
+                    <div>
+                        <span class="ref-tag gov">Crop Insurance</span>
+                        <h3 class="ref-name">Pradhan Mantri Fasal Bima Yojana (PMFBY)</h3>
+                        <p class="ref-desc" data-mr="अनैसर्गिक आपत्ती, दुष्काळ किंवा कीड रोगामुळे पिकांचे नुकसान झाल्यास आर्थिक विमा संरक्षण." data-en="Comprehensive risk insurance coverage against natural calamities, pest attacks, and localized yield losses.">
+                            अनैसर्गिक आपत्ती, दुष्काळ किंवा कीड रोगामुळे पिकांचे नुकसान झाल्यास आर्थिक विमा संरक्षण.
+                        </p>
+                    </div>
+                    <a href="https://pmfby.gov.in" target="_blank" rel="noopener noreferrer" class="ref-link-btn">
+                        <span>pmfby.gov.in</span> ↗
+                    </a>
+                </div>
+
+                <div class="ref-card">
+                    <div>
+                        <span class="ref-tag gov">Micro Irrigation</span>
+                        <h3 class="ref-name">PM Krishi Sinchayee Yojana (Per Drop More Crop)</h3>
+                        <p class="ref-desc" data-mr="ठिबक सिंचन व तुषार सिंचन पद्धतींसाठी ५५% ते ८०% शासकीय अनुदान साहाय्य." data-en="Financial assistance and subsidies for Drip and Sprinkler irrigation systems to maximize water use efficiency.">
+                            ठिबक सिंचन व तुषार सिंचन पद्धतींसाठी ५५% ते ८०% शासकीय अनुदान साहाय्य.
+                        </p>
+                    </div>
+                    <a href="https://pmksy.gov.in" target="_blank" rel="noopener noreferrer" class="ref-link-btn">
+                        <span>pmksy.gov.in</span> ↗
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>🌿 <strong>छाया AI (Chaya AI)</strong> — Smart Agricultural Advisor | Smart India Hackathon 2026</p>
+        <p style="font-size: 0.82rem; opacity: 0.8; margin-top: 4px;">Designed with ❤️ for Indian Farmers by Team PyCoders (BSC-SIH-04)</p>
+    </footer>
+
+    <!-- Script for Particle Generator & Language Toggle -->
+    <script>
+        // Floating Ambient Particles
+        function createParticles() {
+            const count = 15;
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const size = Math.random() * 6 + 4;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + 'vw';
+                particle.style.animationDuration = (Math.random() * 8 + 8) + 's';
+                particle.style.animationDelay = (Math.random() * 5) + 's';
+                document.body.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // Language Switcher Logic
+        let currentLang = 'mr';
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'mr' ? 'en' : 'mr';
+            document.documentElement.lang = currentLang;
+
+            const langText = document.getElementById('langText');
+            if (langText) {
+                langText.textContent = currentLang === 'mr' ? 'English' : 'मराठी';
+            }
+
+            document.querySelectorAll('[data-mr][data-en]').forEach(el => {
+                const text = el.getAttribute(`data-${currentLang}`);
+                if (text) {
+                    el.textContent = text;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
